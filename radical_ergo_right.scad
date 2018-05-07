@@ -3,7 +3,7 @@ difference(){
         hull(){
             union(){
                 translate(v=[-3, 0, 0]){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -15,14 +15,12 @@ difference(){
                         };
                     };
                 };
-                translate(v=[-6, -8, 0.0]){
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[86.46, 0.0, 0]){
-                                rotate(a=[0, 0, 0]){
-                                    translate(v=[-13.4575, -9.2075, -1.5]){
-                                        cube(size=[7, 2, 3]);
-                                    };
+                translate(v=[0, 0, 110]){
+                    rotate(a=[0, 78, -10]){
+                        translate(v=[86.86, -16.0, -2.0]){
+                            rotate(a=[-26, -6, 0]){
+                                translate(v=[-13.4575, -9.2075, -1.5]){
+                                    cube(size=[7, 2, 3]);
                                 };
                             };
                         };
@@ -32,7 +30,7 @@ difference(){
         };
         hull(){
             union(){
-                translate(v=[-34.0, -40.0, 75]){
+                translate(v=[-34.0, -39.2, 73.3]){
                     rotate(a=[40, -15, 0]){
                         translate(v=[0.0, 43.03, 0]){
                             rotate(a=[12, 18, 0]){
@@ -43,14 +41,12 @@ difference(){
                         };
                     };
                 };
-                translate(v=[-7, 0, 0]){
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[0.0, 26.215, 0]){
-                                rotate(a=[0, 0, 0]){
-                                    translate(v=[-12.4575, -9.2075, -1.5]){
-                                        cube(size=[8, 1.2, 3]);
-                                    };
+                translate(v=[0, 0, 110]){
+                    rotate(a=[0, 78, -10]){
+                        translate(v=[-0.65, 27.015, -6.9]){
+                            rotate(a=[0, 7.199999999999999, 0]){
+                                translate(v=[-12.4575, -9.2075, -1.5]){
+                                    cube(size=[8, 1.2, 3]);
                                 };
                             };
                         };
@@ -67,11 +63,11 @@ difference(){
                     cylinder(h=0.001, r=5);
                     sphere(r=1);
                 };
-                translate(v=[-6, -1.5, 0]){
+                translate(v=[-3.5, -8, 0]){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[0.0, 52.43, 0]){
-                                rotate(a=[0, 0, 0]){
+                            translate(v=[0.0, 53.23, 0.30000000000000004]){
+                                rotate(a=[36, 7.199999999999999, 0]){
                                     translate(v=[-12.4575, -9.2075, -1.5]){
                                         cube(size=[18, 5, 3]);
                                     };
@@ -84,7 +80,7 @@ difference(){
         };
         union(){
             cube(size=0);
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[0.0, 0.0, 0]){
                         rotate(a=[-12, 18, 0]){
@@ -100,7 +96,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[0.0, 0.0, 0]){
                                         rotate(a=[-12, 18, 0]){
@@ -112,7 +108,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[0.0, 0.0, 0]){
                                             rotate(a=[-12, 18, 0]){
@@ -137,7 +133,7 @@ difference(){
                     union(){
                         hull(){
                             union(){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[0.0, 0.0, 0]){
                                             rotate(a=[-12, 18, 0]){
@@ -148,7 +144,7 @@ difference(){
                                         };
                                     };
                                 };
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[21.314999999999998, 0.0, -3.6]){
                                             rotate(a=[-12, 0, 0]){
@@ -161,7 +157,7 @@ difference(){
                                 };
                                 translate(v=[0, 0, -100]){
                                     union(){
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[0.0, 0.0, 0]){
                                                     rotate(a=[-12, 18, 0]){
@@ -172,7 +168,7 @@ difference(){
                                                 };
                                             };
                                         };
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[21.314999999999998, 0.0, -3.6]){
                                                     rotate(a=[-12, 0, 0]){
@@ -198,7 +194,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[0.0, 0.0, 0]){
                                         rotate(a=[-12, 18, 0]){
@@ -210,7 +206,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[0.0, 0.0, 0]){
                                             rotate(a=[-12, 18, 0]){
@@ -236,7 +232,7 @@ difference(){
                         union(){
                             hull(){
                                 union(){
-                                    translate(v=[-34.0, -40.0, 75]){
+                                    translate(v=[-34.0, -39.2, 73.3]){
                                         rotate(a=[40, -15, 0]){
                                             translate(v=[0.0, 0.0, 0]){
                                                 rotate(a=[-12, 18, 0]){
@@ -247,7 +243,7 @@ difference(){
                                             };
                                         };
                                     };
-                                    translate(v=[-34.0, -40.0, 75]){
+                                    translate(v=[-34.0, -39.2, 73.3]){
                                         rotate(a=[40, -15, 0]){
                                             translate(v=[0.0, 21.515, -2.4]){
                                                 rotate(a=[0, 18, 0]){
@@ -263,7 +259,7 @@ difference(){
                             translate(v=[0, 0, -100]){
                                 hull(){
                                     union(){
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[0.0, 0.0, 0]){
                                                     rotate(a=[-12, 18, 0]){
@@ -274,7 +270,7 @@ difference(){
                                                 };
                                             };
                                         };
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[0.0, 21.515, -2.4]){
                                                     rotate(a=[0, 18, 0]){
@@ -298,7 +294,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 0.0, 0]){
                                 rotate(a=[-12, 18, 0]){
@@ -309,7 +305,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 21.515, -2.4]){
                                 rotate(a=[0, 18, 0]){
@@ -324,7 +320,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 0.0, 0]){
                                 rotate(a=[-12, 18, 0]){
@@ -335,7 +331,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 0.0, -3.6]){
                                 rotate(a=[-12, 0, 0]){
@@ -346,7 +342,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 21.515, -2.4]){
                                 rotate(a=[0, 18, 0]){
@@ -357,7 +353,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -372,7 +368,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 0.0, 0]){
                                 rotate(a=[-12, 18, 0]){
@@ -383,7 +379,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 0.0, -3.6]){
                                 rotate(a=[-12, 0, 0]){
@@ -396,7 +392,7 @@ difference(){
                     };
                 };
             };
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[0.0, 21.515, -2.4]){
                         rotate(a=[0, 18, 0]){
@@ -412,7 +408,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[0.0, 21.515, -2.4]){
                                         rotate(a=[0, 18, 0]){
@@ -424,7 +420,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[0.0, 21.515, -2.4]){
                                             rotate(a=[0, 18, 0]){
@@ -450,7 +446,7 @@ difference(){
                         union(){
                             hull(){
                                 union(){
-                                    translate(v=[-34.0, -40.0, 75]){
+                                    translate(v=[-34.0, -39.2, 73.3]){
                                         rotate(a=[40, -15, 0]){
                                             translate(v=[0.0, 21.515, -2.4]){
                                                 rotate(a=[0, 18, 0]){
@@ -461,7 +457,7 @@ difference(){
                                             };
                                         };
                                     };
-                                    translate(v=[-34.0, -40.0, 75]){
+                                    translate(v=[-34.0, -39.2, 73.3]){
                                         rotate(a=[40, -15, 0]){
                                             translate(v=[0.0, 43.03, 0]){
                                                 rotate(a=[12, 18, 0]){
@@ -477,7 +473,7 @@ difference(){
                             translate(v=[0, 0, -100]){
                                 hull(){
                                     union(){
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[0.0, 21.515, -2.4]){
                                                     rotate(a=[0, 18, 0]){
@@ -488,7 +484,7 @@ difference(){
                                                 };
                                             };
                                         };
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[0.0, 43.03, 0]){
                                                     rotate(a=[12, 18, 0]){
@@ -512,7 +508,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 21.515, -2.4]){
                                 rotate(a=[0, 18, 0]){
@@ -523,7 +519,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 43.03, 0]){
                                 rotate(a=[12, 18, 0]){
@@ -538,7 +534,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 21.515, -2.4]){
                                 rotate(a=[0, 18, 0]){
@@ -549,7 +545,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -560,7 +556,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 43.03, 0]){
                                 rotate(a=[12, 18, 0]){
@@ -571,7 +567,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 43.03, -3.6]){
                                 rotate(a=[12, 0, 0]){
@@ -586,7 +582,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 21.515, -2.4]){
                                 rotate(a=[0, 18, 0]){
@@ -597,7 +593,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -610,7 +606,7 @@ difference(){
                     };
                 };
             };
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[0.0, 43.03, 0]){
                         rotate(a=[12, 18, 0]){
@@ -626,7 +622,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[0.0, 43.03, 0]){
                                         rotate(a=[12, 18, 0]){
@@ -638,7 +634,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[0.0, 43.03, 0]){
                                             rotate(a=[12, 18, 0]){
@@ -662,7 +658,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[0.0, 43.03, 0]){
                                         rotate(a=[12, 18, 0]){
@@ -674,7 +670,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[0.0, 43.03, 0]){
                                             rotate(a=[12, 18, 0]){
@@ -696,7 +692,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[0.0, 43.03, 0]){
                                 rotate(a=[12, 18, 0]){
@@ -707,7 +703,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 43.03, -3.6]){
                                 rotate(a=[12, 0, 0]){
@@ -720,7 +716,7 @@ difference(){
                     };
                 };
             };
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[21.314999999999998, 0.0, -3.6]){
                         rotate(a=[-12, 0, 0]){
@@ -736,7 +732,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[21.314999999999998, 0.0, -3.6]){
                                         rotate(a=[-12, 0, 0]){
@@ -748,7 +744,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[21.314999999999998, 0.0, -3.6]){
                                             rotate(a=[-12, 0, 0]){
@@ -773,7 +769,7 @@ difference(){
                     union(){
                         hull(){
                             union(){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[21.314999999999998, 0.0, -3.6]){
                                             rotate(a=[-12, 0, 0]){
@@ -784,7 +780,7 @@ difference(){
                                         };
                                     };
                                 };
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[42.629999999999995, 0.0, 0]){
                                             rotate(a=[-12, -18, 0]){
@@ -797,7 +793,7 @@ difference(){
                                 };
                                 translate(v=[0, 0, -100]){
                                     union(){
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[21.314999999999998, 0.0, -3.6]){
                                                     rotate(a=[-12, 0, 0]){
@@ -808,7 +804,7 @@ difference(){
                                                 };
                                             };
                                         };
-                                        translate(v=[-34.0, -40.0, 75]){
+                                        translate(v=[-34.0, -39.2, 73.3]){
                                             rotate(a=[40, -15, 0]){
                                                 translate(v=[42.629999999999995, 0.0, 0]){
                                                     rotate(a=[-12, -18, 0]){
@@ -832,7 +828,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 0.0, -3.6]){
                                 rotate(a=[-12, 0, 0]){
@@ -843,7 +839,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -858,7 +854,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 0.0, -3.6]){
                                 rotate(a=[-12, 0, 0]){
@@ -869,7 +865,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 0.0, 0]){
                                 rotate(a=[-12, -18, 0]){
@@ -880,7 +876,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -891,7 +887,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 21.515, -2.4]){
                                 rotate(a=[0, -18, 0]){
@@ -906,7 +902,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 0.0, -3.6]){
                                 rotate(a=[-12, 0, 0]){
@@ -917,7 +913,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 0.0, 0]){
                                 rotate(a=[-12, -18, 0]){
@@ -930,7 +926,7 @@ difference(){
                     };
                 };
             };
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[21.314999999999998, 21.515, -6.0]){
                         rotate(a=[0, 0, 0]){
@@ -944,7 +940,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -955,7 +951,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 43.03, -3.6]){
                                 rotate(a=[12, 0, 0]){
@@ -970,7 +966,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -981,7 +977,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 21.515, -2.4]){
                                 rotate(a=[0, -18, 0]){
@@ -992,7 +988,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 43.03, -3.6]){
                                 rotate(a=[12, 0, 0]){
@@ -1003,7 +999,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 43.03, 0]){
                                 rotate(a=[12, -18, 0]){
@@ -1018,7 +1014,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 21.515, -6.0]){
                                 rotate(a=[0, 0, 0]){
@@ -1029,7 +1025,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 21.515, -2.4]){
                                 rotate(a=[0, -18, 0]){
@@ -1042,7 +1038,7 @@ difference(){
                     };
                 };
             };
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[21.314999999999998, 43.03, -3.6]){
                         rotate(a=[12, 0, 0]){
@@ -1056,7 +1052,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[21.314999999999998, 43.03, -3.6]){
                                 rotate(a=[12, 0, 0]){
@@ -1067,7 +1063,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 43.03, 0]){
                                 rotate(a=[12, -18, 0]){
@@ -1080,7 +1076,7 @@ difference(){
                     };
                 };
             };
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[42.629999999999995, 0.0, 0]){
                         rotate(a=[-12, -18, 0]){
@@ -1096,7 +1092,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[42.629999999999995, 0.0, 0]){
                                         rotate(a=[-12, -18, 0]){
@@ -1108,7 +1104,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[42.629999999999995, 0.0, 0]){
                                             rotate(a=[-12, -18, 0]){
@@ -1132,7 +1128,7 @@ difference(){
                 union(){
                     hull(){
                         union(){
-                            translate(v=[-34.0, -40.0, 75]){
+                            translate(v=[-34.0, -39.2, 73.3]){
                                 rotate(a=[40, -15, 0]){
                                     translate(v=[42.629999999999995, 0.0, 0]){
                                         rotate(a=[-12, -18, 0]){
@@ -1144,7 +1140,7 @@ difference(){
                                 };
                             };
                             translate(v=[0, 0, -100]){
-                                translate(v=[-34.0, -40.0, 75]){
+                                translate(v=[-34.0, -39.2, 73.3]){
                                     rotate(a=[40, -15, 0]){
                                         translate(v=[42.629999999999995, 0.0, 0]){
                                             rotate(a=[-12, -18, 0]){
@@ -1166,7 +1162,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 0.0, 0]){
                                 rotate(a=[-12, -18, 0]){
@@ -1177,7 +1173,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 21.515, -2.4]){
                                 rotate(a=[0, -18, 0]){
@@ -1190,7 +1186,7 @@ difference(){
                     };
                 };
             };
-            translate(v=[-34.0, -40.0, 75]){
+            translate(v=[-34.0, -39.2, 73.3]){
                 rotate(a=[40, -15, 0]){
                     translate(v=[42.629999999999995, 21.515, -2.4]){
                         rotate(a=[0, -18, 0]){
@@ -1204,7 +1200,7 @@ difference(){
             };
             hull(){
                 union(){
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 21.515, -2.4]){
                                 rotate(a=[0, -18, 0]){
@@ -1215,7 +1211,7 @@ difference(){
                             };
                         };
                     };
-                    translate(v=[-34.0, -40.0, 75]){
+                    translate(v=[-34.0, -39.2, 73.3]){
                         rotate(a=[40, -15, 0]){
                             translate(v=[42.629999999999995, 43.03, 0]){
                                 rotate(a=[12, -18, 0]){
@@ -1318,7 +1314,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[-1.0, 27.015, -6.9]){
+                            translate(v=[-0.65, 27.015, -6.9]){
                                 rotate(a=[0, 7.199999999999999, 0]){
                                     translate(v=[-13.4575, -9.2075, -1.5]){
                                         cube(size=[4, 0.01, 3]);
@@ -1344,7 +1340,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[-1.0, 27.015, -6.9]){
+                            translate(v=[-0.65, 27.015, -6.9]){
                                 rotate(a=[0, 7.199999999999999, 0]){
                                     translate(v=[-9.4575, -9.2175, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -1381,7 +1377,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[-1.0, 27.015, -6.9]){
+                            translate(v=[-0.65, 27.015, -6.9]){
                                 rotate(a=[0, 7.199999999999999, 0]){
                                     translate(v=[9.4475, -9.2075, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -1392,7 +1388,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[-9.4575, -9.2075, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -1431,7 +1427,7 @@ difference(){
             };
             translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[-1.0, 27.015, -6.9]){
+                    translate(v=[-0.65, 27.015, -6.9]){
                         rotate(a=[0, 7.199999999999999, 0]){
                             difference(){
                                 cube(size=[18.915, 18.415, 3], center=true);
@@ -1443,7 +1439,7 @@ difference(){
             };
             #translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[-1.0, 27.015, -6.9]){
+                    translate(v=[-0.65, 27.015, -6.9]){
                         rotate(a=[0, 7.199999999999999, 0]){
                             translate(v=[-13.4575, -9.2075, -1.5]){
                                 cube(size=[4, 18.415, 3]);
@@ -1456,7 +1452,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[-1.0, 27.015, -6.9]){
+                            translate(v=[-0.65, 27.015, -6.9]){
                                 rotate(a=[0, 7.199999999999999, 0]){
                                     translate(v=[-13.4575, 9.1975, -1.5]){
                                         cube(size=[4, 0.01, 3]);
@@ -1482,7 +1478,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[-1.0, 27.015, -6.9]){
+                            translate(v=[-0.65, 27.015, -6.9]){
                                 rotate(a=[0, 7.199999999999999, 0]){
                                     translate(v=[-9.4575, 9.2075, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -1508,7 +1504,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[-1.0, 27.015, -6.9]){
+                            translate(v=[-0.65, 27.015, -6.9]){
                                 rotate(a=[0, 7.199999999999999, 0]){
                                     translate(v=[9.4475, 9.1975, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -1519,7 +1515,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[-9.4575, 9.1975, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -1556,7 +1552,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[-1.0, 27.015, -6.9]){
+                            translate(v=[-0.65, 27.015, -6.9]){
                                 rotate(a=[0, 7.199999999999999, 0]){
                                     translate(v=[9.4575, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -1567,7 +1563,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[-9.4675, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -1739,7 +1735,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[-9.4575, -9.2175, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -1776,7 +1772,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[9.4475, -9.2075, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -1826,7 +1822,7 @@ difference(){
             };
             translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[20.615, 27.015, -9.600000000000001]){
+                    translate(v=[20.965, 27.015, -9.600000000000001]){
                         rotate(a=[0, 6, 0]){
                             difference(){
                                 cube(size=[18.915, 18.415, 3], center=true);
@@ -1840,7 +1836,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[-9.4575, 9.2075, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -1866,7 +1862,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[9.4475, 9.1975, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -1914,7 +1910,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[20.615, 27.015, -9.600000000000001]){
+                            translate(v=[20.965, 27.015, -9.600000000000001]){
                                 rotate(a=[0, 6, 0]){
                                     translate(v=[9.4575, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -2123,7 +2119,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[-9.4575, -9.2075, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2213,7 +2209,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[-9.4575, 9.1975, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2261,7 +2257,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[-9.4675, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -2385,7 +2381,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, -16.0, -2]){
+                            translate(v=[86.86, -16.0, -2.0]){
                                 rotate(a=[-26, -6, 0]){
                                     translate(v=[-9.4575, -13.2075, -1.5]){
                                         cube(size=[0.01, 4, 3]);
@@ -2411,7 +2407,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[-9.4575, -9.2175, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -2437,7 +2433,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, -16.0, -2]){
+                            translate(v=[86.86, -16.0, -2.0]){
                                 rotate(a=[-26, -6, 0]){
                                     translate(v=[-9.4575, 9.1975, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2448,7 +2444,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[9.4475, -9.2075, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2459,7 +2455,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[87.86, 8.015, -7.2]){
+                            translate(v=[87.50999999999999, 8.015, -7.2]){
                                 rotate(a=[0, -6, 0]){
                                     translate(v=[-9.4575, -9.2075, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2485,7 +2481,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, -16.0, -2]){
+                            translate(v=[86.86, -16.0, -2.0]){
                                 rotate(a=[-26, -6, 0]){
                                     translate(v=[-9.4675, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -2498,7 +2494,7 @@ difference(){
             };
             translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[65.845, 19.015, -15.600000000000001]){
+                    translate(v=[65.495, 19.015, -15.600000000000001]){
                         rotate(a=[0, -7.199999999999999, 0]){
                             difference(){
                                 cube(size=[18.915, 18.415, 3], center=true);
@@ -2512,7 +2508,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[-9.4575, 9.2075, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -2538,7 +2534,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[9.4475, 9.1975, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2549,7 +2545,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[87.86, 8.015, -7.2]){
+                            translate(v=[87.50999999999999, 8.015, -7.2]){
                                 rotate(a=[0, -6, 0]){
                                     translate(v=[-9.4575, 9.1975, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2571,7 +2567,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, 32.03, 0]){
+                            translate(v=[86.86, 32.03, 0.0]){
                                 rotate(a=[36, -6, 0]){
                                     translate(v=[-9.4575, -9.2075, -1.5]){
                                         cube(size=[0.01, 0.01, 3]);
@@ -2586,7 +2582,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[65.845, 19.015, -15.600000000000001]){
+                            translate(v=[65.495, 19.015, -15.600000000000001]){
                                 rotate(a=[0, -7.199999999999999, 0]){
                                     translate(v=[9.4575, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -2597,7 +2593,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[87.86, 8.015, -7.2]){
+                            translate(v=[87.50999999999999, 8.015, -7.2]){
                                 rotate(a=[0, -6, 0]){
                                     translate(v=[-9.4675, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -2646,7 +2642,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, 32.03, 0]){
+                            translate(v=[86.86, 32.03, 0.0]){
                                 rotate(a=[36, -6, 0]){
                                     translate(v=[-9.4575, 9.2075, -1.5]){
                                         cube(size=[0.01, 4, 3]);
@@ -2672,7 +2668,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, 32.03, 0]){
+                            translate(v=[86.86, 32.03, 0.0]){
                                 rotate(a=[36, -6, 0]){
                                     translate(v=[-9.4675, -9.2075, -1.5]){
                                         cube(size=[0.01, 18.415, 3]);
@@ -2685,7 +2681,7 @@ difference(){
             };
             translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[86.86, -16.0, -2]){
+                    translate(v=[86.86, -16.0, -2.0]){
                         rotate(a=[-26, -6, 0]){
                             difference(){
                                 cube(size=[18.915, 18.415, 3], center=true);
@@ -2697,7 +2693,7 @@ difference(){
             };
             #translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[86.86, -16.0, -2]){
+                    translate(v=[86.86, -16.0, -2.0]){
                         rotate(a=[-26, -6, 0]){
                             translate(v=[-9.4575, -13.2075, -1.5]){
                                 cube(size=[18.915, 4, 3]);
@@ -2712,7 +2708,7 @@ difference(){
                         union(){
                             translate(v=[0, 0, 110]){
                                 rotate(a=[0, 78, -10]){
-                                    translate(v=[86.86, -16.0, -2]){
+                                    translate(v=[86.86, -16.0, -2.0]){
                                         rotate(a=[-26, -6, 0]){
                                             translate(v=[9.4575, -12.2075, -1.5]){
                                                 cube(size=[4, 3, 3]);
@@ -2724,7 +2720,7 @@ difference(){
                             translate(v=[0, 0, -100]){
                                 translate(v=[0, 0, 110]){
                                     rotate(a=[0, 78, -10]){
-                                        translate(v=[86.86, -16.0, -2]){
+                                        translate(v=[86.86, -16.0, -2.0]){
                                             rotate(a=[-26, -6, 0]){
                                                 translate(v=[9.4575, -12.2075, -1.5]){
                                                     cube(size=[4, 3, 3]);
@@ -2748,7 +2744,7 @@ difference(){
                         union(){
                             translate(v=[0, 0, 110]){
                                 rotate(a=[0, 78, -10]){
-                                    translate(v=[86.86, -16.0, -2]){
+                                    translate(v=[86.86, -16.0, -2.0]){
                                         rotate(a=[-26, -6, 0]){
                                             translate(v=[9.4575, -9.2075, -1.5]){
                                                 cube(size=[4, 18.415, 3]);
@@ -2760,7 +2756,7 @@ difference(){
                             translate(v=[0, 0, -100]){
                                 translate(v=[0, 0, 110]){
                                     rotate(a=[0, 78, -10]){
-                                        translate(v=[86.86, -16.0, -2]){
+                                        translate(v=[86.86, -16.0, -2.0]){
                                             rotate(a=[-26, -6, 0]){
                                                 translate(v=[9.4575, -9.2075, -1.5]){
                                                     cube(size=[4, 18.415, 3]);
@@ -2786,7 +2782,7 @@ difference(){
                                 union(){
                                     translate(v=[0, 0, 110]){
                                         rotate(a=[0, 78, -10]){
-                                            translate(v=[86.86, -16.0, -2]){
+                                            translate(v=[86.86, -16.0, -2.0]){
                                                 rotate(a=[-26, -6, 0]){
                                                     translate(v=[9.4575, 9.1975, -1.5]){
                                                         cube(size=[4, 0.01, 3]);
@@ -2797,7 +2793,7 @@ difference(){
                                     };
                                     translate(v=[0, 0, 110]){
                                         rotate(a=[0, 78, -10]){
-                                            translate(v=[87.86, 8.015, -7.2]){
+                                            translate(v=[87.50999999999999, 8.015, -7.2]){
                                                 rotate(a=[0, -6, 0]){
                                                     translate(v=[9.4575, -9.2075, -1.5]){
                                                         cube(size=[4, 0.01, 3]);
@@ -2813,7 +2809,7 @@ difference(){
                                     union(){
                                         translate(v=[0, 0, 110]){
                                             rotate(a=[0, 78, -10]){
-                                                translate(v=[86.86, -16.0, -2]){
+                                                translate(v=[86.86, -16.0, -2.0]){
                                                     rotate(a=[-26, -6, 0]){
                                                         translate(v=[9.4575, 9.1975, -1.5]){
                                                             cube(size=[4, 0.01, 3]);
@@ -2824,7 +2820,7 @@ difference(){
                                         };
                                         translate(v=[0, 0, 110]){
                                             rotate(a=[0, 78, -10]){
-                                                translate(v=[87.86, 8.015, -7.2]){
+                                                translate(v=[87.50999999999999, 8.015, -7.2]){
                                                     rotate(a=[0, -6, 0]){
                                                         translate(v=[9.4575, -9.2075, -1.5]){
                                                             cube(size=[4, 0.01, 3]);
@@ -2848,7 +2844,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, -16.0, -2]){
+                            translate(v=[86.86, -16.0, -2.0]){
                                 rotate(a=[-26, -6, 0]){
                                     translate(v=[-9.4575, 9.2075, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -2859,7 +2855,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[87.86, 8.015, -7.2]){
+                            translate(v=[87.50999999999999, 8.015, -7.2]){
                                 rotate(a=[0, -6, 0]){
                                     translate(v=[-9.4575, -9.2175, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -2872,7 +2868,7 @@ difference(){
             };
             translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[87.86, 8.015, -7.2]){
+                    translate(v=[87.50999999999999, 8.015, -7.2]){
                         rotate(a=[0, -6, 0]){
                             difference(){
                                 cube(size=[18.915, 18.415, 3], center=true);
@@ -2888,7 +2884,7 @@ difference(){
                         union(){
                             translate(v=[0, 0, 110]){
                                 rotate(a=[0, 78, -10]){
-                                    translate(v=[87.86, 8.015, -7.2]){
+                                    translate(v=[87.50999999999999, 8.015, -7.2]){
                                         rotate(a=[0, -6, 0]){
                                             translate(v=[9.4575, -9.2075, -1.5]){
                                                 cube(size=[4, 18.415, 3]);
@@ -2900,7 +2896,7 @@ difference(){
                             translate(v=[0, 0, -100]){
                                 translate(v=[0, 0, 110]){
                                     rotate(a=[0, 78, -10]){
-                                        translate(v=[87.86, 8.015, -7.2]){
+                                        translate(v=[87.50999999999999, 8.015, -7.2]){
                                             rotate(a=[0, -6, 0]){
                                                 translate(v=[9.4575, -9.2075, -1.5]){
                                                     cube(size=[4, 18.415, 3]);
@@ -2926,7 +2922,7 @@ difference(){
                                 union(){
                                     translate(v=[0, 0, 110]){
                                         rotate(a=[0, 78, -10]){
-                                            translate(v=[87.86, 8.015, -7.2]){
+                                            translate(v=[87.50999999999999, 8.015, -7.2]){
                                                 rotate(a=[0, -6, 0]){
                                                     translate(v=[9.4575, 9.1975, -1.5]){
                                                         cube(size=[4, 0.01, 3]);
@@ -2937,7 +2933,7 @@ difference(){
                                     };
                                     translate(v=[0, 0, 110]){
                                         rotate(a=[0, 78, -10]){
-                                            translate(v=[86.86, 32.03, 0]){
+                                            translate(v=[86.86, 32.03, 0.0]){
                                                 rotate(a=[36, -6, 0]){
                                                     translate(v=[9.4575, -9.2075, -1.5]){
                                                         cube(size=[4, 0.01, 3]);
@@ -2953,7 +2949,7 @@ difference(){
                                     union(){
                                         translate(v=[0, 0, 110]){
                                             rotate(a=[0, 78, -10]){
-                                                translate(v=[87.86, 8.015, -7.2]){
+                                                translate(v=[87.50999999999999, 8.015, -7.2]){
                                                     rotate(a=[0, -6, 0]){
                                                         translate(v=[9.4575, 9.1975, -1.5]){
                                                             cube(size=[4, 0.01, 3]);
@@ -2964,7 +2960,7 @@ difference(){
                                         };
                                         translate(v=[0, 0, 110]){
                                             rotate(a=[0, 78, -10]){
-                                                translate(v=[86.86, 32.03, 0]){
+                                                translate(v=[86.86, 32.03, 0.0]){
                                                     rotate(a=[36, -6, 0]){
                                                         translate(v=[9.4575, -9.2075, -1.5]){
                                                             cube(size=[4, 0.01, 3]);
@@ -2988,7 +2984,7 @@ difference(){
                 union(){
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[87.86, 8.015, -7.2]){
+                            translate(v=[87.50999999999999, 8.015, -7.2]){
                                 rotate(a=[0, -6, 0]){
                                     translate(v=[-9.4575, 9.2075, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -2999,7 +2995,7 @@ difference(){
                     };
                     translate(v=[0, 0, 110]){
                         rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, 32.03, 0]){
+                            translate(v=[86.86, 32.03, 0.0]){
                                 rotate(a=[36, -6, 0]){
                                     translate(v=[-9.4575, -9.2175, -1.5]){
                                         cube(size=[18.915, 0.01, 3]);
@@ -3012,7 +3008,7 @@ difference(){
             };
             translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[86.86, 32.03, 0]){
+                    translate(v=[86.86, 32.03, 0.0]){
                         rotate(a=[36, -6, 0]){
                             difference(){
                                 cube(size=[18.915, 18.415, 3], center=true);
@@ -3024,7 +3020,7 @@ difference(){
             };
             #translate(v=[0, 0, 110]){
                 rotate(a=[0, 78, -10]){
-                    translate(v=[86.86, 32.03, 0]){
+                    translate(v=[86.86, 32.03, 0.0]){
                         rotate(a=[36, -6, 0]){
                             translate(v=[-9.4575, 9.2075, -1.5]){
                                 cube(size=[18.915, 4, 3]);
@@ -3039,7 +3035,7 @@ difference(){
                         union(){
                             translate(v=[0, 0, 110]){
                                 rotate(a=[0, 78, -10]){
-                                    translate(v=[86.86, 32.03, 0]){
+                                    translate(v=[86.86, 32.03, 0.0]){
                                         rotate(a=[36, -6, 0]){
                                             translate(v=[9.4575, 9.2075, -1.5]){
                                                 cube(size=[4, 3, 3]);
@@ -3051,7 +3047,7 @@ difference(){
                             translate(v=[0, 0, -100]){
                                 translate(v=[0, 0, 110]){
                                     rotate(a=[0, 78, -10]){
-                                        translate(v=[86.86, 32.03, 0]){
+                                        translate(v=[86.86, 32.03, 0.0]){
                                             rotate(a=[36, -6, 0]){
                                                 translate(v=[9.4575, 9.2075, -1.5]){
                                                     cube(size=[4, 3, 3]);
@@ -3075,7 +3071,7 @@ difference(){
                         union(){
                             translate(v=[0, 0, 110]){
                                 rotate(a=[0, 78, -10]){
-                                    translate(v=[86.86, 32.03, 0]){
+                                    translate(v=[86.86, 32.03, 0.0]){
                                         rotate(a=[36, -6, 0]){
                                             translate(v=[9.4575, -9.2075, -1.5]){
                                                 cube(size=[4, 18.415, 3]);
@@ -3087,7 +3083,7 @@ difference(){
                             translate(v=[0, 0, -100]){
                                 translate(v=[0, 0, 110]){
                                     rotate(a=[0, 78, -10]){
-                                        translate(v=[86.86, 32.03, 0]){
+                                        translate(v=[86.86, 32.03, 0.0]){
                                             rotate(a=[36, -6, 0]){
                                                 translate(v=[9.4575, -9.2075, -1.5]){
                                                     cube(size=[4, 18.415, 3]);
@@ -3103,178 +3099,6 @@ difference(){
                 };
                 translate(v=[0, 0, -125]){
                     cube(size=[500, 500, 250], center=true);
-                };
-            };
-        };
-        union(){
-            #translate(v=[0, 0, 110]){
-                rotate(a=[0, 78, -10]){
-                    translate(v=[0.0, 53.23, 0.30000000000000004]){
-                        rotate(a=[36, 7.199999999999999, 0]){
-                            translate(v=[-9.4575, 9.2075, -1.5]){
-                                cube(size=[18.915, 4, 3]);
-                            };
-                        };
-                    };
-                };
-            };
-            #translate(v=[0, 0, 110]){
-                rotate(a=[0, 78, -10]){
-                    translate(v=[0.0, 53.23, 0.30000000000000004]){
-                        rotate(a=[36, 7.199999999999999, 0]){
-                            translate(v=[-9.4575, 9.2075, -1.5]){
-                                cube(size=[18.915, 4, 3]);
-                            };
-                        };
-                    };
-                };
-            };
-            #translate(v=[0, 0, 110]){
-                rotate(a=[0, 78, -10]){
-                    translate(v=[21.615, 53.23, -2.4000000000000004]){
-                        rotate(a=[36, 6, 0]){
-                            translate(v=[-9.4575, 9.2075, -1.5]){
-                                cube(size=[18.915, 4, 3]);
-                            };
-                        };
-                    };
-                };
-            };
-            #translate(v=[0, 0, 110]){
-                rotate(a=[0, 78, -10]){
-                    translate(v=[43.23, 53.43, -10.6]){
-                        rotate(a=[36, 0, 0]){
-                            translate(v=[-9.4575, 9.2075, -1.5]){
-                                cube(size=[18.915, 4, 3]);
-                            };
-                        };
-                    };
-                };
-            };
-            #translate(v=[0, 0, 110]){
-                rotate(a=[0, 78, -10]){
-                    translate(v=[64.845, 46.03, -8.4]){
-                        rotate(a=[36, -7.199999999999999, 0]){
-                            translate(v=[-9.4575, 9.2075, -1.5]){
-                                cube(size=[18.915, 4, 3]);
-                            };
-                        };
-                    };
-                };
-            };
-            #translate(v=[0, 0, 110]){
-                rotate(a=[0, 78, -10]){
-                    translate(v=[86.86, 32.03, 0]){
-                        rotate(a=[36, -6, 0]){
-                            translate(v=[-9.4575, 9.2075, -1.5]){
-                                cube(size=[18.915, 4, 3]);
-                            };
-                        };
-                    };
-                };
-            };
-            #hull(){
-                union(){
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[0.0, 53.23, 0.30000000000000004]){
-                                rotate(a=[36, 7.199999999999999, 0]){
-                                    translate(v=[9.4475, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[21.615, 53.23, -2.4000000000000004]){
-                                rotate(a=[36, 6, 0]){
-                                    translate(v=[-9.4575, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                };
-            };
-            #hull(){
-                union(){
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[21.615, 53.23, -2.4000000000000004]){
-                                rotate(a=[36, 6, 0]){
-                                    translate(v=[9.4475, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[43.23, 53.43, -10.6]){
-                                rotate(a=[36, 0, 0]){
-                                    translate(v=[-9.4575, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                };
-            };
-            #hull(){
-                union(){
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[43.23, 53.43, -10.6]){
-                                rotate(a=[36, 0, 0]){
-                                    translate(v=[9.4475, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[64.845, 46.03, -8.4]){
-                                rotate(a=[36, -7.199999999999999, 0]){
-                                    translate(v=[-9.4575, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                };
-            };
-            #hull(){
-                union(){
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[64.845, 46.03, -8.4]){
-                                rotate(a=[36, -7.199999999999999, 0]){
-                                    translate(v=[9.4475, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                    translate(v=[0, 0, 110]){
-                        rotate(a=[0, 78, -10]){
-                            translate(v=[86.86, 32.03, 0]){
-                                rotate(a=[36, -6, 0]){
-                                    translate(v=[-9.4575, 9.2075, -1.5]){
-                                        cube(size=[0.01, 4, 3]);
-                                    };
-                                };
-                            };
-                        };
-                    };
                 };
             };
         };
