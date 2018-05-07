@@ -1,4 +1,4 @@
-from pykeeb import DSA_KEY_WIDTH, Keyboard_matrix, Cylinder, project
+from pykeeb import DSA_KEY_WIDTH, Keyboard_matrix, Cylinder, project, Keyswitch_mount
 from openpyscad import Cube, Sphere, Cylinder, Minkowski
 
 # 13.80 was too much.
@@ -22,7 +22,7 @@ def transform_switch(shape, transformations):
 
 
 def make_round(shape):
-    IR = 1
+    IR = 2
     OR = 1
     cube_size = [500, 500, 500]
     cube_size_2 = [500 - .1, 500 - .1, 500 - .1]
@@ -37,6 +37,15 @@ def make_round(shape):
     return pos_shape
 
 
+def round_edges(shape, xy_radius=5, z_curve=5, z_radius=1):
+    shape = shape.minkowski()
+    # Round x and y corners
+    shape.append(Cylinder(r=xy_radius, h=.001))
+    # Round z edges
+    shape.append(Sphere(r=z_radius, fn=z_curve))
+    return shape
+
+
 columns = 5
 rows = 3
 
@@ -45,13 +54,13 @@ rows = 3
 mount_width = DSA_KEY_WIDTH + .5
 plate = Keyboard_matrix(rows,
                         columns,
-                        row_spacing=6.0,
-                        column_spacing=2,
+                        row_spacing=7.8,
+                        column_spacing=2.7,
                         plate_thickness=plate_thickness,
                         origin=[0, 0, 110],
                         x_tent=0,
-                        y_tent=65,
-                        z_tent=-18,
+                        y_tent=78,
+                        z_tent=-10,
                         mount_length=DSA_KEY_WIDTH,
                         mount_width=mount_width,
                         switch_type="mx",
@@ -64,16 +73,16 @@ plate = Keyboard_matrix(rows,
 # sm: switch_matrix
 # left to right are columns 0 and up, bottom to up are rows 0 and up
 v_curvature = 36
-plate.rm[0] = [0, 0, 0, -v_curvature, 0, 0]
-plate.rm[1] = [0, 0, -v_curvature/columns - 2, 0, 0, 0]
+plate.rm[0] = [0, 0, -2, -v_curvature + 10, 0, 0]
+plate.rm[1] = [0, 0, -v_curvature/columns, 0, 0, 0]
 plate.rm[2] = [0, 0, 0, v_curvature, 0, 0]
 
 h_curvature = 6
-plate.cm[0] = [0,   3.6,    h_curvature * .05,  0,  h_curvature * 1.4,   0]
-plate.cm[1] = [0,   3.6,    -h_curvature * .4,  0,  h_curvature,  0]
-plate.cm[2] = [0,   3,   -h_curvature * .6 - 12,  0,   0,  0]  # long finger column up
-plate.cm[3] = [0,   -8,    -h_curvature * .4 - 12,  0,  -h_curvature,   0]
-plate.cm[4] = [.5,  -16,    h_curvature * .05,  0, -h_curvature * 1.4,   0]   # offset the pinky back and outwards
+plate.cm[0] = [0,   0.8,    h_curvature * .05,  0,  h_curvature * 1.2,   0]
+plate.cm[1] = [0,   0.8,    -h_curvature * .4,  0,  h_curvature,  0]
+plate.cm[2] = [0,   -3,   -h_curvature * .6 - 7,  0,   0,  0]  # long finger column up
+plate.cm[3] = [0,   -8,    -h_curvature * .4 - 6,  0,  -h_curvature * 1.2,   0]
+plate.cm[4] = [.4,  -16,    0,  0, -h_curvature,   0]   # offset the pinky back and outwards
 
 # Middle row, first column. Bring the key outward.
 plate.im[1][0][0] -= 1
@@ -86,16 +95,16 @@ plate.im[1][4][0] += 1
 
 
 # Thumb cluster
-thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-35, -32, 60])))
+thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-34, -40, 75])))
 
-thumb = Keyboard_matrix(2,
+thumb = Keyboard_matrix(3,
                         3,
-                        row_spacing=0.5,
-                        column_spacing=2,
+                        row_spacing=3.1,
+                        column_spacing=2.4,
                         plate_thickness=3,
                         origin=thumb_origin,
-                        x_tent=60,
-                        y_tent=0,
+                        x_tent=40,
+                        y_tent=-15,
                         z_tent=0,
                         mount_length=DSA_KEY_WIDTH,
                         mount_width=mount_width,
@@ -107,9 +116,12 @@ thumb.cm[0] = [0, 0, 0,  0, h_curve, 0]
 thumb.cm[1] = [0, 0, -h_curve * .2,  0, 0, 0]
 thumb.cm[2] = [0, 0, 0,  0, -h_curve, 0]
 
-v_curve = 8
+v_curve = 12
 thumb.rm[0] = [0, 0, 0, -v_curve, 0, 0]
-thumb.rm[1] = [0, 0, 0,  v_curve, 0, 0]
+thumb.rm[1] = [0, 0, -v_curve/5,  0, 0, 0]
+thumb.rm[2] = [0, 0, 0,  v_curve, 0, 0]
+
+thumb.ignore_keys[2][2] = True
 thumb.generate()
 thumb.right_wall = [[] for row in range(thumb.rows)]
 thumb.right_wall_hulls = [[] for row in range(thumb.rows)]
@@ -117,6 +129,7 @@ thumb.left_wall[0] = []
 
 thumb.front_wall[2] = []
 thumb.front_wall[1] = []
+thumb.front_wall[0] = []
 thumb.front_wall_hulls[0] = []
 thumb.front_wall_hulls[1] = []
 
@@ -127,11 +140,11 @@ thumb.front_right_corner_hulls = []
 
 # hulls connecting thumb and matrix
 
-conn_hulls = (thumb.sm[1][2].get_front(thickness=0.6) + plate.sm[0][0].get_back(thickness=.1, extrude=-6)).hull()
-conn_hulls = (thumb.sm[1][2].get_corner("fl", .5, 3, 3, 3) + plate.sm[0][0].get_corner("bl", 1, 3.5, 1).translate([7, -.6, 5.0])).hull()
-conn_hulls += (thumb.sm[1][2].get_corner("br", .5, 3, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 1, 1.5, 1).translate([-12, -4.6, 0.0])).hull()
-conn_hulls += (thumb.sm[0][0].get_corner("fl", .5, 3, 3, 3) + plate.sm[2][0].get_corner("bl", 1, .6, 1).translate([-44.4, -24, -24])).hull()
-conn_hulls += (plate.sm[2][0].get_corner("bl", 1, 2.2, 1).translate([-4.4, 4, 0]) + plate.sm[2][0].get_corner("bl", 1, .6, 1).translate([-44.4, -24, -24])).hull()
+conn_hulls = (thumb.sm[2][1].get_front(thickness=0.6) + plate.sm[0][0].get_back(thickness=.1, extrude=-6)).hull()
+#conn_hulls = (thumb.sm[2][1].get_corner("fl", 4.5, 6, 3, 3) + plate.sm[0][0].get_corner("bl", 6, 3.5, 1).translate([6, -.2, 2.0])).hull()
+conn_hulls = (thumb.sm[1][1].get_corner("br", .5, 4, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 7, 2, 4).translate([-6, -8, 0.0])).hull()
+conn_hulls += (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[1][0].get_corner("bl", 8, 1.2, 3).translate([-7, 0, 0])).hull()
+conn_hulls += (round_edges(Cube([10, 10, .1]).translate([-55, 70, 0])) + plate.sm[2][0].get_corner("bl", 18, 5, 3).translate([-6, -1.5, 0])).hull()
 #conn_hulls += project((thumb.sm[1][1].get_corner("fl", 1.6, 8.5, 0, 9) + plate.sm[0][0].get_corner("bl", 2, .5, 3, 3)).hull())
 
 
@@ -143,6 +156,40 @@ plate.side_wall_thickness = 3
 
 plate.side_extrude = 4
 plate.generate()
+
+modifiers = [[list(map(sum, zip(plate.rm[row], plate.cm[column], plate.im[row][column]))) for column in range(plate.columns)] for row in range(plate.rows)]
+modifiers = [[modifiers[row][column] + [plate.ik[row][column]] for column in range(plate.columns)] for row in range(plate.rows)]
+
+switch_matrix = []
+for row in range(plate.rows):
+    switch_row = []
+    for column in range(plate.columns):
+        # Make the arc length longer for longer fingers
+        row_spacing = plate.row_spacing
+        if column == 2:
+            row_spacing += 2.0
+        if column == 3:
+            row_spacing += 0.8
+        if column == 4:
+            row_spacing -= 2.2
+        switch = Keyswitch_mount([list(map(sum, zip(modifiers[row][column][:3], [column * (plate.mount_width + plate.column_spacing), row * (plate.mount_length + row_spacing), 0]))) + modifiers[row][column][3:6], [plate.origin[0], plate.origin[1], plate.origin[2], plate.x_tent, plate.y_tent, plate.z_tent]], modifiers[row][column][6], plate.switch_type, plate.mount_length, plate.mount_width, plate.mx_notches)
+        switch_row.append(switch)
+    switch_matrix.append(switch_row)
+plate.sm = plate.switch_matrix = switch_matrix
+# Re-generate the hulls to account for the extended arcs
+plate.row_hulls = [[(plate.sm[row][column].get_front(plate.row_hull_thickness, plate.row_hull_extrude) + plate.sm[row+1][column].get_back(plate.row_hull_thickness, plate.row_hull_extrude)).hull() for column in range(plate.columns)] for row in range(plate.rows-1)]
+plate.column_hulls = [[(plate.sm[row][column].get_right(plate.col_hull_thickness, plate.col_hull_extrude) + plate.sm[row][column+1].get_left(plate.col_hull_thickness, plate.col_hull_extrude)).hull() for column in range(plate.columns - 1)] for row in range(plate.rows)]
+plate.corner_hulls = [[(plate.sm[row][column].get_corner("fr", plate.ch_thickness, plate.ch_thickness)
+                    + plate.sm[row][column+1].get_corner("fl", plate.ch_thickness, plate.ch_thickness)
+                    + plate.sm[row+1][column].get_corner("br", plate.ch_thickness, plate.ch_thickness)
+                    + plate.sm[row+1][column+1].get_corner("bl", plate.ch_thickness, plate.ch_thickness)).hull() for column in range(plate.columns-1)] for row in range(plate.rows-1)]
+
+plate.right_wall = [project(plate.sm[row][plate.columns-1].get_right(plate.side_wall_thickness, plate.side_extrude)) for row in range(plate.rows)]
+plate.right_wall_hulls = [project((plate.sm[row][plate.columns-1].get_corner("fr", plate.side_wall_thickness, plate.wall_y, plate.side_extrude)
+                    + plate.sm[row+1][plate.columns-1].get_corner("br", plate.side_wall_thickness, plate.wall_y, plate.side_extrude)).hull()) for row in range(plate.rows - 1)]
+plate.front_right_corner = project(plate.sm[plate.rows-1][plate.columns-1].get_corner("fr", plate.side_extrude, plate.wall_extrude, plate.side_extrude, plate.wall_extrude))
+
+
 left_wall = []
 for row in range(plate.rows):
     piece = plate.sm[row][0].get_left(plate.side_wall_thickness, plate.side_extrude).turn_on_debug()
@@ -246,9 +293,9 @@ for wall in front_wall:
 for wall_hull in front_wall_hulls:
     front_walls += wall_hull
 #front_walls = front_wall + front_wall_hulls
-cyl = Cylinder(100, 17, center=True).rotate([90,0,0])
-cable_hole = (cyl + cyl.translate([12,-1,0])).hull().translate([-20, -25, 12]).color("Blue")
-cable_hole += (cyl + cyl.translate([12,-1,0])).hull().translate([-20, -25, 28]).color("Blue")
+cyl = Cylinder(38, 24, center=True).rotate([90,0,0])
+cable_hole = cyl.translate([-12, -48, 42]).color("Blue")
+cable_hole += cyl.translate([-12, -48, 18]).color("Blue")
 right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + front_walls - cable_hole
 #right_hand += transform(Cube(18, 2), plate.sm[2][0].transformations)
 #self.mount_width
