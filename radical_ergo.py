@@ -81,7 +81,7 @@ def apply_columns_ergo_main(plate):
     plate.cm[PINKY][Y_MOV]      += -16
 
     # Apply horizontal curvature
-    h_curve = 6
+    h_curve = 2
     plate.cm[INDEX_SIDE][Y_ROT] += h_curve * 1.2
     plate.cm[INDEX][Y_ROT]      += h_curve
     plate.cm[MIDDLE][Y_ROT]     += 0
@@ -99,10 +99,10 @@ def apply_columns_ergo_main(plate):
     center_row = plate.rows // 2
     # Shifting the entire row does not compensate in the way we want, so we apply the shifting
     # to individual mounts instead, except for the middle finger one.
-    plate.im[center_row][INDEX_SIDE][X_MOV] -= 0.65
-    plate.im[center_row][INDEX][X_MOV] -= 0.65
-    plate.im[center_row][RING][X_MOV] += 0.65
-    plate.im[center_row][PINKY][X_MOV] += 0.65
+    plate.im[center_row][INDEX_SIDE][X_MOV] -= h_curve / 10
+    plate.im[center_row][INDEX][X_MOV] -= h_curve / 10
+    plate.im[center_row][RING][X_MOV] += h_curve / 10
+    plate.im[center_row][PINKY][X_MOV] += h_curve / 10
 
     # Create column cavities to account for different finger lengths
     plate.cm[INDEX_SIDE][Z_MOV] += 0
@@ -252,7 +252,7 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-34, -40, 75])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-54, 6, 50])))
 
     thumb = Keyboard_matrix(3,
                             3,
@@ -260,9 +260,9 @@ def generate_thumb_cluster(plate):
                             column_spacing=2.4,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
-                            x_tent=40,
-                            y_tent=-15,
-                            z_tent=0,
+                            x_tent=35,
+                            y_tent=-25,
+                            z_tent=-42,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
@@ -283,6 +283,8 @@ def generate_thumb_cluster(plate):
     thumb.right_wall = [[] for row in range(thumb.rows)]
     thumb.right_wall_hulls = [[] for row in range(thumb.rows)]
     thumb.left_wall[0] = []
+    thumb.left_wall_hulls[0] = []
+    thumb.left_wall[1] = []
 
     thumb.front_wall[2] = []
     thumb.front_wall[1] = []
@@ -309,14 +311,14 @@ thumb = generate_thumb_cluster(plate)
 conn_hulls = (thumb.sm[2][1].get_front(thickness=0.6) + plate.sm[0][0].get_back(thickness=.1, extrude=-6)).hull()
 #conn_hulls = (thumb.sm[2][1].get_corner("fl", 4.5, 6, 3, 3) + plate.sm[0][0].get_corner("bl", 6, 3.5, 1).translate([6, -.2, 2.0])).hull()
 conn_hulls = (thumb.sm[1][1].get_corner("br", .5, 4, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 7, 2, 4)).hull()
-conn_hulls += (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[1][0].get_corner("bl", 8, 1.2, 3)).hull()
+conn_hulls += (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[2][0].get_corner("bl", 8, 1.2, 3)).hull()
 conn_hulls += (round_edges(Cube([10, 10, .1]).translate([-55, 70, 0])) + plate.sm[2][0].get_corner("bl", 18, 5, 3).translate([-3.5, -8, 0])).hull()
 
 
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() - plate.left_wall
-cyl = Cylinder(38, 24, center=True).rotate([90,0,0])
-cable_hole = cyl.translate([-12, -48, 42]).color("Blue")
-cable_hole += cyl.translate([-12, -48, 18]).color("Blue")
+cyl = Cylinder(38, 16, center=True).rotate([100,0,0])
+cable_hole = cyl.translate([-46, -20, 22]).color("Blue")
+cable_hole += cyl.translate([-46, -20, 6]).color("Blue")
 right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() - cable_hole
 #right_hand += transform(Cube(18, 2), plate.sm[2][0].transformations)
 #self.mount_width
