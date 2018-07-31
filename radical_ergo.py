@@ -330,7 +330,7 @@ def generate_main_plate():
                             plate_thickness=plate_thickness,
                             origin=[0, 0, 110],
                             x_tent=0,
-                            y_tent=78,
+                            y_tent=66,
                             z_tent=-10,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
