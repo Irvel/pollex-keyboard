@@ -372,6 +372,8 @@ def generate_thumb_cluster(plate):
     thumb.rm[2] = [0, 0, 0,  v_curve, 0, 0]
 
     thumb.ignore_keys[2][2] = True
+    thumb.ignore_keys[0][2] = True
+    thumb.ignore_keys[0][1] = True
     thumb.generate()
     thumb.right_wall = [[] for row in range(thumb.rows)]
     thumb.right_wall_hulls = [[] for row in range(thumb.rows)]
