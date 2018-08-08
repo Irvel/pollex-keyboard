@@ -348,7 +348,7 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-28, -17, 48])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-26, -17, 48])))
 
     thumb = Keyboard_matrix(2,
                             4,
@@ -358,7 +358,7 @@ def generate_thumb_cluster(plate):
                             origin=thumb_origin,
                             x_tent=-40,
                             y_tent=-80,
-                            z_tent=40,
+                            z_tent=48,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
