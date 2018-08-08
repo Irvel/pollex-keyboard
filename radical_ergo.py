@@ -165,8 +165,8 @@ def apply_columns_ergo_main(plate):
     Z_ROT = 5
 
     # Shift columns back towards the base of the hand
-    plate.cm[INDEX_SIDE][Y_MOV] += 0.2
-    plate.cm[INDEX][Y_MOV]      += 0.2
+    plate.cm[INDEX_SIDE][Y_MOV] += -0.8
+    plate.cm[INDEX][Y_MOV]      += -0.8
     plate.cm[MIDDLE][Y_MOV]     += -3
     plate.cm[RING][Y_MOV]       += -8
     plate.cm[PINKY][Y_MOV]      += -18.5
