@@ -348,7 +348,7 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-50, -6, 60])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-28, -17, 48])))
 
     thumb = Keyboard_matrix(2,
                             4,
@@ -356,21 +356,21 @@ def generate_thumb_cluster(plate):
                             column_spacing=2.4,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
-                            x_tent=35,
-                            y_tent=-25,
-                            z_tent=-42,
+                            x_tent=-40,
+                            y_tent=-80,
+                            z_tent=40,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
                             mx_notches=False)
     plate.side_wall_thickness = 1
-    h_curve = 18
+    h_curve = 30
     thumb.cm[0] = [0, 0, 0,  0, h_curve, 0]
-    thumb.cm[1] = [0, 0, -h_curve * .2,  0, 0, 0]
-    thumb.cm[2] = [0, 0, -h_curve * .2,  0, 0, 0]
-    thumb.cm[3] = [0, 0, 0,  0, -h_curve, 0]
+    thumb.cm[1] = [0, 0, -h_curve * .25,  0, 0, 0]
+    thumb.cm[2] = [0, 0, -h_curve * .25,  0, 0, 0]
+    thumb.cm[3] = [0, 0, 0,  0, -h_curve * 1.3, 0]   # Top thumb column
 
-    v_curve = 12
+    v_curve = 6
     thumb.rm[0] = [0, 0, 0, -v_curve, 0, 0]
     thumb.rm[1] = [0, 0, -v_curve/5,  0, 0, 0]
     #thumb.rm[2] = [0, 0, 0,  v_curve, 0, 0]
@@ -399,6 +399,28 @@ def generate_thumb_cluster(plate):
         left_wall_hulls.append((fl_corner + bl_corner).hull().turn_on_debug())
         #left_wall_hulls.append(fl_corner + bl_corner)
     thumb.left_wall_hulls = left_wall_hulls
+
+
+    # Remove corners and walls
+    thumb.back_wall = [[] for row in range(thumb.columns)]
+    thumb.back_wall_hulls = [[] for row in range(thumb.columns)]
+    thumb.back_right_corner = []
+    thumb.back_right_corner_hulls = []
+    back_wall_hulls = []
+    # Complete the gap that gets left from removing the corners
+    for column in range(thumb.columns - 1):
+        br_corner = thumb.sm[0][column].get_corner("br",
+                                                   thumb.wall_x,
+                                                   thumb.side_wall_thickness,
+                                                   0,
+                                                   thumb.side_extrude)
+        bl_corner = thumb.sm[0][column+1].get_corner("bl",
+                                                     thumb.wall_x,
+                                                     thumb.side_wall_thickness,
+                                                     0,
+                                                     thumb.side_extrude)
+        back_wall_hulls.append((br_corner + bl_corner).hull().turn_on_debug())
+    thumb.back_wall_hulls = back_wall_hulls
 
     thumb.front_wall[2] = []
     thumb.front_wall[1] = []
@@ -431,8 +453,8 @@ def generate_thumb_cluster(plate):
     thumb.front_wall = front_wall
 
     #thumb.left_wall[2] = thumb.sm[2][0].get_left(3, 3)
-    thumb.left_wall[1] = thumb.sm[1][0].get_left(3, 3)
-    thumb.front_left_corner = thumb.sm[thumb.rows-1][0].get_corner("fl", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
+    #thumb.left_wall[1] = thumb.sm[1][0].get_left(3, 3)
+    #thumb.front_left_corner = thumb.sm[thumb.rows-1][0].get_corner("fl", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
     return thumb
 
 
@@ -601,17 +623,17 @@ supports = generate_supports(plate, thumb)
 # hulls connecting thumb and matrix
 #conn_hulls = (thumb.sm[1][1].get_corner("br", .5, 4, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 7, 2, 4)).hull()
 #conn_hulls = (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[2][0].get_corner("bl", 3, 3, 0)).hull()
-conn_hulls = (thumb.sm[1][2].get_right(3, 3) + plate.sm[BOTTOM_ROW][MIDDLE].get_back(3, 3)).hull()
-conn_hulls += (thumb.sm[1][2].get_right(3, 3) + plate.back_wall_hulls[MIDDLE]).hull()
-conn_hulls += (thumb.sm[1][2].get_right(3, 3) + plate.sm[BOTTOM_ROW][RING].get_back(3, 3)).hull()
-conn_hulls += (thumb.sm[1][2].get_right(3, 3) + plate.back_wall_hulls[RING]).hull()
-fr_corner = thumb.sm[0][2].get_corner("fr", 3, 3, 3)
-br_corner = thumb.sm[1][2].get_corner("br", 3, 3, 3)
+conn_hulls = (thumb.sm[0][2].get_back(3, 3) + plate.sm[BOTTOM_ROW][MIDDLE].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[MIDDLE]).hull()
+conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][RING].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[RING]).hull()
+#fr_corner = thumb.sm[0][3].get_corner("br", 3, 3, 3)
+#br_corner = thumb.sm[0][3].get_corner("bl", 3, 3, 3)
 #bbr_corner = thumb.sm[0][1].get_corner("br", 3, 3, 3)
-conn_hulls += (br_corner + plate.back_wall_hulls[RING]).hull()
-conn_hulls += (fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
+#conn_hulls += (br_corner + plate.back_wall_hulls[RING]).hull()
+#conn_hulls += (fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
 #conn_hulls += (thumb.sm[0][2].get_right(3, 3) + fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
-conn_hulls += (thumb.sm[0][2].get_right(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][0].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
 
 
 
