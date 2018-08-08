@@ -205,6 +205,9 @@ def apply_columns_ergo_main(plate):
     # Shift the pinky finger column away from the other columns
     plate.cm[PINKY][X_MOV]      += .4
 
+    # Shift index side column towards the index
+    plate.cm[INDEX_SIDE][X_MOV]      += .8
+
 
     # Variable arc length for each finger
     modifiers = [[list(map(sum, zip(plate.rm[row], plate.cm[column], plate.im[row][column]))) for column in range(plate.columns)] for row in range(plate.rows)]
