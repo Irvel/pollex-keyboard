@@ -328,9 +328,9 @@ def generate_main_plate():
                             row_spacing=7.8,
                             column_spacing=2.7,
                             plate_thickness=plate_thickness,
-                            origin=[0, 0, 110],
+                            origin=[0, 0, 88],
                             x_tent=0,
-                            y_tent=66,
+                            y_tent=55,
                             z_tent=-10,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
@@ -345,7 +345,7 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-50, -6, 70])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-50, -6, 60])))
 
     thumb = Keyboard_matrix(3,
                             3,
@@ -571,7 +571,7 @@ def generate_supports(plate, thumb):
 
     #supports += (Cube([15, 50, .1]).rotate([0,0,-40]).translate([-60, 80, 0]) + anchor_1 + anchor_2 + anchor_3).hull()
 
-    arc = make_arc(90, 28, [-20, 40, 80]).rotate([-20,10,30]).translate([-40, 80, 1])
+    arc = make_arc(90, 28, [-15, 30, 80]).rotate([-20,10,30]).translate([-40, 80, 1])
     cube_size = 300
     arc -= Cube(cube_size, center=True).translate([0, 0, -cube_size/2])
     supports += arc
