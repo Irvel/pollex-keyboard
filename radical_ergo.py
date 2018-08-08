@@ -329,7 +329,7 @@ def generate_main_plate():
     plate = Keyboard_matrix(num_rows,
                             num_columns,
                             row_spacing=7.8,
-                            column_spacing=2.7,
+                            column_spacing=2.5,
                             plate_thickness=plate_thickness,
                             origin=[0, 0, 88],
                             x_tent=0,
