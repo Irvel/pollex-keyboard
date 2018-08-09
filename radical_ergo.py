@@ -348,7 +348,7 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-26, -17, 48])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-14, -2, 48])))
 
     thumb = Keyboard_matrix(2,
                             4,
@@ -357,8 +357,8 @@ def generate_thumb_cluster(plate):
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
                             x_tent=-40,
-                            y_tent=-80,
-                            z_tent=48,
+                            y_tent=-102,
+                            z_tent=52,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
@@ -370,7 +370,7 @@ def generate_thumb_cluster(plate):
     thumb.cm[2] = [0, 0, -h_curve * .25,  0, 0, 0]
     thumb.cm[3] = [0, 0, 0,  0, -h_curve * 1.3, 0]   # Top thumb column
 
-    v_curve = 6
+    v_curve = 0
     thumb.rm[0] = [0, 0, 0, -v_curve, 0, 0]
     thumb.rm[1] = [0, 0, -v_curve/5,  0, 0, 0]
     #thumb.rm[2] = [0, 0, 0,  v_curve, 0, 0]
@@ -511,6 +511,8 @@ def generate_supports(plate, thumb):
                 continue
             if row == BOTTOM_ROW and column == INDEX_SIDE:
                 continue
+            if row == CENTER_ROW and column == INDEX_SIDE:
+                continue
             center = get_coordinates(plate.sm[row][column].transformations)
             if row == TOP_ROW:
                 # The curvature of the top row makes the angle too great
@@ -552,7 +554,7 @@ def generate_supports(plate, thumb):
             end = Cube(3).translate(centers[row + 1][col]).translate([-distance, 0, 0])
             supports += (start + end).hull()
 
-    for row in range(1, len(centers) -2):
+    for row in range(2, len(centers) -2):
         for col in range(len(centers[row]) - 1):
             start = Cube(3).translate(centers[row][col]).translate([-distance, 0, 0])
             end = Cube(3).translate(centers[row - 1][col + 1]).translate([-distance, 0, 0])
