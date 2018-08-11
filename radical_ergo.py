@@ -165,8 +165,8 @@ def apply_columns_ergo_main(plate):
     Z_ROT = 5
 
     # Shift columns back towards the base of the hand
-    plate.cm[INDEX_SIDE][Y_MOV] += -2.4
-    plate.cm[INDEX][Y_MOV]      += -2.4
+    plate.cm[INDEX_SIDE][Y_MOV] += -3
+    plate.cm[INDEX][Y_MOV]      += -3
     plate.cm[MIDDLE][Y_MOV]     += -3
     plate.cm[RING][Y_MOV]       += -8
     plate.cm[PINKY][Y_MOV]      += -18.5
@@ -206,7 +206,7 @@ def apply_columns_ergo_main(plate):
     plate.cm[PINKY][X_MOV]      += .4
 
     # Shift index side column towards the index
-    plate.cm[INDEX_SIDE][X_MOV]      += 1.0
+    plate.cm[INDEX_SIDE][X_MOV]      += 1.2
 
 
     # Variable arc length for each finger
@@ -331,7 +331,7 @@ def generate_main_plate():
                             row_spacing=7.8,
                             column_spacing=2.5,
                             plate_thickness=plate_thickness,
-                            origin=[0, 0, 88],
+                            origin=[0, 0, 84],
                             x_tent=0,
                             y_tent=55,
                             z_tent=-10,
@@ -348,7 +348,7 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-14, -2, 48])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-14, -18, 38])))
 
     thumb = Keyboard_matrix(2,
                             4,
@@ -356,19 +356,19 @@ def generate_thumb_cluster(plate):
                             column_spacing=2.4,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
-                            x_tent=-40,
-                            y_tent=-102,
-                            z_tent=52,
+                            x_tent=-50,
+                            y_tent=-92,
+                            z_tent=60,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
                             mx_notches=False)
     plate.side_wall_thickness = 1
-    h_curve = 30
-    thumb.cm[0] = [0, 0, 0,  0, h_curve, 0]
-    thumb.cm[1] = [0, 0, -h_curve * .25,  0, 0, 0]
-    thumb.cm[2] = [0, 0, -h_curve * .25,  0, 0, 0]
-    thumb.cm[3] = [0, 0, 0,  0, -h_curve * 1.3, 0]   # Top thumb column
+    h_curve = 26
+    thumb.cm[0] = [0, -h_curve * .08, 0,  0, h_curve, 0]
+    thumb.cm[1] = [0, 0, -h_curve * .25,  0, h_curve * .3, 0]
+    thumb.cm[2] = [0, 0, -h_curve * .25,  0, -h_curve * .3 , 0]
+    thumb.cm[3] = [0, -h_curve * .08, 0,  0, -h_curve, 0]   # Top thumb column
 
     v_curve = 0
     thumb.rm[0] = [0, 0, 0, -v_curve, 0, 0]
