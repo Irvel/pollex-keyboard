@@ -348,31 +348,35 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-14, -18, 38])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-23, -36, 22])))
 
-    thumb = Keyboard_matrix(2,
-                            4,
+    thumb = Keyboard_matrix(1,
+                            5,
                             row_spacing=3.1,
-                            column_spacing=2.4,
+                            column_spacing=3.3,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
-                            x_tent=-50,
-                            y_tent=-92,
-                            z_tent=60,
+                            x_tent=-1,
+                            y_tent=-52,
+                            z_tent=15,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
                             mx_notches=False)
     plate.side_wall_thickness = 1
-    h_curve = 26
-    thumb.cm[0] = [0, -h_curve * .08, 0,  0, h_curve, 0]
-    thumb.cm[1] = [0, 0, -h_curve * .25,  0, h_curve * .3, 0]
-    thumb.cm[2] = [0, 0, -h_curve * .25,  0, -h_curve * .3 , 0]
-    thumb.cm[3] = [0, -h_curve * .08, 0,  0, -h_curve, 0]   # Top thumb column
+    h_curve = 36
+    thumb.cm[0] = [ 13, -16,   h_curve * 1.0,  14,  h_curve * 2.4,  24]
+    thumb.cm[1] = [ -1,  -8,   h_curve * .42,  8,  h_curve * 1.3,  12]
+    thumb.cm[2] = [  0,   0,   h_curve * .15,  0,              0,  0]
+    thumb.cm[3] = [  1,  -8,   h_curve * .42,  8, -h_curve * 1.3,  -12]
+    thumb.cm[4] = [-13, -16,   h_curve * 1.0,  14, -h_curve * 2.4,  -24]
 
-    v_curve = 0
-    thumb.rm[0] = [0, 0, 0, -v_curve, 0, 0]
-    thumb.rm[1] = [0, 0, -v_curve/5,  0, 0, 0]
+
+
+    #v_curve = 0
+    #thumb.rm[0] = [0, 0, 0, -v_curve, 0, 0]
+
+    #thumb.rm[1] = [0, 0, -v_curve/5,  0, 0, 0]
     #thumb.rm[2] = [0, 0, 0,  v_curve, 0, 0]
 
     #thumb.ignore_keys[2][2] = True
@@ -460,7 +464,7 @@ def generate_thumb_cluster(plate):
 
 def generate_case(plate, thumb):
     lb_main = plate.sm[BOTTOM_ROW][INDEX_SIDE].get_left(thickness=.1, extrude=plate_thickness)
-    trf_thumb = thumb.sm[1][2].get_front(thickness=.1, extrude=plate_thickness)
+    trf_thumb = thumb.sm[0][2].get_front(thickness=.1, extrude=plate_thickness)
     #tmr_thumb = thumb.sm[2][1].get_right(thickness=.1, extrude=plate_thickness)
     bl_corner_main = plate.sm[BOTTOM_ROW][INDEX_SIDE].get_corner("bl", 1,1, x_extrude=0, y_extrude=0)
 
@@ -480,13 +484,13 @@ def generate_case(plate, thumb):
     case += (lm_main_gap + lb_main_gap + plate.left_wall_hulls[0]).hull()
 
 
-    trr_corner_thumb = thumb.sm[1][2].get_corner("fr", 1, 1, x_extrude=0, y_extrude=0)
+    trr_corner_thumb = thumb.sm[0][2].get_corner("fr", 1, 1, x_extrude=0, y_extrude=0)
     case += (bl_corner_main + trr_corner_thumb).hull()
 
     #mmr_corner_thumb = thumb.sm[1][1].get_corner("fr", 1, 1, x_extrude=0, y_extrude=0)
     #case += (bl_corner_main + mmr_corner_thumb).hull()
 
-    trr_thumb = thumb.sm[1][2].get_right(thickness=.1, extrude=plate_thickness)
+    trr_thumb = thumb.sm[0][2].get_right(thickness=.1, extrude=plate_thickness)
     bi_main = plate.sm[BOTTOM_ROW][INDEX].get_back(thickness=.1, extrude=plate_thickness)
     case += (bi_main + trr_thumb + bi_main + bl_corner_main).hull()
 
