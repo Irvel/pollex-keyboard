@@ -547,13 +547,13 @@ def generate_supports(plate, thumb):
             #arc -= switch_cut
             #supports += rot_arc
         centers.append(row_centers)
-
+    """
     for row in range(len(centers) - 1):
         for col in range(len(centers[row]) - 1):
             start = Cube(3).translate(centers[row][col]).translate([-distance, 0, 0])
             end = Cube(3).translate(centers[row + 1][col]).translate([-distance, 0, 0])
             supports += (start + end).hull()
-
+    """
     for row in range(2, len(centers) -2):
         for col in range(len(centers[row]) - 1):
             start = Cube(3).translate(centers[row][col]).translate([-distance, 0, 0])
@@ -599,7 +599,7 @@ def generate_supports(plate, thumb):
 
     #supports += (Cube([15, 50, .1]).rotate([0,0,-40]).translate([-60, 80, 0]) + anchor_1 + anchor_2 + anchor_3).hull()
 
-    arc = make_arc(90, 28, [-15, 30, 80]).rotate([-20,10,30]).translate([-40, 80, 1])
+    arc = make_arc(90, 18.8251, [-15, 30, 80]).rotate([-20,10,30]).translate([-40, 80, 1])
     cube_size = 300
     arc -= Cube(cube_size, center=True).translate([0, 0, -cube_size/2])
     supports += arc
@@ -625,17 +625,17 @@ supports = generate_supports(plate, thumb)
 # hulls connecting thumb and matrix
 #conn_hulls = (thumb.sm[1][1].get_corner("br", .5, 4, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 7, 2, 4)).hull()
 #conn_hulls = (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[2][0].get_corner("bl", 3, 3, 0)).hull()
-conn_hulls = (thumb.sm[0][2].get_back(3, 3) + plate.sm[BOTTOM_ROW][MIDDLE].get_back(3, 3)).hull()
-conn_hulls += (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[MIDDLE]).hull()
-conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][RING].get_back(3, 3)).hull()
-conn_hulls += (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[RING]).hull()
+conn_hulls = (thumb.sm[0][2].get_front(3, 3) + plate.sm[BOTTOM_ROW][MIDDLE].get_back(3, 3)).hull()
+#   conn_hulls += (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[MIDDLE]).hull()
+conn_hulls += (thumb.sm[0][3].get_front(3, 3) + plate.sm[BOTTOM_ROW][INDEX].get_back(3, 3)).hull()
+#   conn_hulls = (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[RING]).hull()
 #fr_corner = thumb.sm[0][3].get_corner("br", 3, 3, 3)
 #br_corner = thumb.sm[0][3].get_corner("bl", 3, 3, 3)
 #bbr_corner = thumb.sm[0][1].get_corner("br", 3, 3, 3)
 #conn_hulls += (br_corner + plate.back_wall_hulls[RING]).hull()
 #conn_hulls += (fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
 #conn_hulls += (thumb.sm[0][2].get_right(3, 3) + fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
-conn_hulls += (thumb.sm[0][0].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
 
 
 
