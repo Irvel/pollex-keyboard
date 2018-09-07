@@ -653,7 +653,8 @@ conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_b
 
 
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() - plate.left_wall
-right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
+# right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
+right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + conn_hulls
 
 
 #right_hand = plate.sm[0][0].transform(make_arc())
