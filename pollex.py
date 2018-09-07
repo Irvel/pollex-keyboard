@@ -662,5 +662,5 @@ right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + conn_hulls
 #right_hand += transform(Cube(18, 2), plate.sm[2][0].transformations)
 #self.mount_width
 left_hand = right_hand.mirror([1, 0, 0])
-(left_hand).write("radical_ergo_left.scad")
-(right_hand).write("radical_ergo_right.scad")
+(left_hand).write("pollex_left.scad")
+(right_hand).write("pollex_right.scad")
