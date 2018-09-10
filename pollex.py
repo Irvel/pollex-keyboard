@@ -461,6 +461,45 @@ def generate_thumb_cluster(plate):
     #thumb.front_left_corner = thumb.sm[thumb.rows-1][0].get_corner("fl", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
     return thumb
 
+def generate_back(plate):
+    print(plate.sm[CENTER_ROW][INDEX_SIDE].transformations)
+    print(dir(plate.sm[CENTER_ROW][INDEX_SIDE]))
+    top_center_key = plate.sm[CENTER_ROW][INDEX_SIDE]
+    detail = 110
+    def top_double_bevel(initial_radius=51, first_length=1, first_angle=25, second_length=1, second_angle=50):
+        # 90° Amounts to a fully vertical transition while 0° is no transition.  
+        first_radians = ((90 - first_angle) * np.pi) / 180
+
+        # Vertical distance from bevel 1 to bevel 2.
+        first_height = np.cos(first_radians) * first_length
+        first_radius_delta = np.sin(first_radians) * first_length
+
+        # Radius of the intermediate cylinder.
+        middle_radius = initial_radius + first_radius_delta 
+        small_sub_bevel = Cylinder(r1=initial_radius, r2=middle_radius, 
+                                   h=first_height, _center=False, _fn=detail)
+
+        second_radians = ((90 - second_angle) * np.pi) / 180
+        second_height = np.cos(second_radians) * second_length
+        second_radius_delta = np.sin(second_radians) * second_length
+        final_radius = middle_radius + second_radius_delta 
+        large_sub_bevel = Cylinder(r1=middle_radius, r2=final_radius, 
+                                   h=second_height, _center=False, _fn=detail)
+
+        # Start the transition from where the middle cylinder ends vertically.
+        large_sub_bevel = large_sub_bevel.translate([0, 0, first_height])
+        total_height = first_height + second_height 
+        return small_sub_bevel + large_sub_bevel, total_height, final_radius
+
+    top_bevel, top_height, top_radius = top_double_bevel(initial_radius=51, 
+                                                         first_length=.6, 
+                                                         first_angle=32, 
+                                                         second_length=6, 
+                                                         second_angle=50)
+    top_bevel = top_bevel.translate([-45.5, -2.3, -13])
+    top_bevel = top_center_key.transform(top_bevel.rotate([0,90,0]))
+    #top_bevel = top_bevel.translate([0, 0, 10])
+    return top_bevel
 
 def generate_case(plate, thumb):
     lb_main = plate.sm[BOTTOM_ROW][INDEX_SIDE].get_left(thickness=.1, extrude=plate_thickness)
@@ -654,7 +693,7 @@ conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_b
 
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() - plate.left_wall
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
-right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + conn_hulls
+right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + generate_back(plate)
 
 
 #right_hand = plate.sm[0][0].transform(make_arc())
