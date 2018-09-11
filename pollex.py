@@ -243,82 +243,99 @@ def apply_walls_main(plate):
                         + plate.sm[row+1][column].get_corner("br", plate.ch_thickness, plate.ch_thickness)
                         + plate.sm[row+1][column+1].get_corner("bl", plate.ch_thickness, plate.ch_thickness)).hull() for column in range(plate.columns-1)] for row in range(plate.rows-1)]
 
-    plate.right_wall = [project(plate.sm[row][plate.columns-1].get_right(plate.side_wall_thickness, plate.side_extrude)) for row in range(plate.rows)]
-    plate.right_wall_hulls = [project((plate.sm[row][plate.columns-1].get_corner("fr", plate.side_wall_thickness, plate.wall_y, plate.side_extrude)
-                        + plate.sm[row+1][plate.columns-1].get_corner("br", plate.side_wall_thickness, plate.wall_y, plate.side_extrude)).hull()) for row in range(plate.rows - 1)]
-    plate.front_right_corner = project(plate.sm[plate.rows-1][plate.columns-1].get_corner("fr", plate.side_extrude, plate.wall_extrude, plate.side_extrude, plate.wall_extrude))
+    # plate.right_wall = [project(plate.sm[row][plate.columns-1].get_right(plate.side_wall_thickness, plate.side_extrude)) for row in range(plate.rows)]
+    # plate.right_wall_hulls = [project((plate.sm[row][plate.columns-1].get_corner("fr", plate.side_wall_thickness, plate.wall_y, plate.side_extrude)
+    #                     + plate.sm[row+1][plate.columns-1].get_corner("br", plate.side_wall_thickness, plate.wall_y, plate.side_extrude)).hull()) for row in range(plate.rows - 1)]
+    #plate.front_right_corner = project(plate.sm[plate.rows-1][plate.columns-1].get_corner("fr", plate.side_extrude, plate.wall_extrude, plate.side_extrude, plate.wall_extrude))
+    plate.back_right_corner = []
+    plate.back_left_corner = []
+    plate.front_right_corner = []
+    plate.front_left_corner = []
 
-    left_wall = []
-    for row in range(plate.rows):
-        piece = plate.sm[row][0].get_left(plate.side_wall_thickness, plate.side_extrude).turn_on_debug()
-        left_wall.append(piece)
+    plate.right_wall = [[] for row in range(plate.rows)]
+    plate.left_wall = [[] for row in range(plate.rows)]
+    plate.right_wall_hulls = [[] for row in range(plate.rows)]
+    plate.left_wall_hulls = [[] for row in range(plate.rows)]
+    plate.front_wall = [[] for column in range(plate.columns)]
+    plate.front_wall_hulls  = [[] for column in range(plate.columns - 1)]
+    plate.back_wall = [[] for column in range(plate.columns)]
+    plate.back_wall_hulls  = [[] for column in range(plate.columns - 1)]
 
-    plate.left_wall = left_wall
-    left_wall_hulls = []
-    for row in range(plate.rows - 1):
-        fl_corner = plate.sm[row][0].get_corner("fl",
-                                                plate.side_wall_thickness,
-                                                plate.wall_y,
-                                                plate.side_extrude)
-        bl_corner = plate.sm[row+1][0].get_corner("bl",
-                                                  plate.side_wall_thickness,
-                                                  plate.wall_y,
-                                                  plate.side_extrude)
-        left_wall_hulls.append((fl_corner + bl_corner).hull().turn_on_debug())
-        #left_wall_hulls.append(fl_corner + bl_corner)
-    plate.left_wall_hulls = left_wall_hulls
+    # left_wall = []
+    # for row in range(plate.rows):
+    #     piece = plate.sm[row][0].get_left(plate.side_wall_thickness, plate.side_extrude).turn_on_debug()
+    #     left_wall.append(piece)
 
-    front_wall = []
-    for column in range(plate.columns):
-        piece = plate.sm[plate.rows - 1][column].get_front(plate.side_wall_thickness, plate.side_extrude).turn_on_debug()
-        front_wall.append(piece)
+    # plate.left_wall = left_wall
+    # left_wall_hulls = []
+    # for row in range(plate.rows - 1):
+    #     fl_corner = plate.sm[row][0].get_corner("fl",
+    #                                             plate.side_wall_thickness,
+    #                                             plate.wall_y,
+    #                                             plate.side_extrude)
+    #     bl_corner = plate.sm[row+1][0].get_corner("bl",
+    #                                               plate.side_wall_thickness,
+    #                                               plate.wall_y,
+    #                                               plate.side_extrude)
+    #     left_wall_hulls.append((fl_corner + bl_corner).hull().turn_on_debug())
+    #     #left_wall_hulls.append(fl_corner + bl_corner)
+    # plate.left_wall_hulls = left_wall_hulls
 
-    plate.front_wall = front_wall
+    # front_wall = []
+    # for column in range(plate.columns):
+    #     piece = plate.sm[plate.rows - 1][column].get_front(plate.side_wall_thickness, plate.side_extrude).turn_on_debug()
+    #     front_wall.append(piece)
 
-    # Remove walls from main matrix to curve them manually
-    #plate.front_wall = [[] for column in range(plate.columns)]
-    front_wall_hulls = []
-    for column in range(plate.columns - 1):
-        fr_corner = plate.sm[plate.rows - 1][column].get_corner("fr",
-                                                                plate.wall_x,
-                                                                plate.side_wall_thickness,
-                                                                0,
-                                                                plate.side_extrude)
-        fl_corner = plate.sm[plate.rows - 1][column+1].get_corner("fl",
-                                                                  plate.wall_x,
-                                                                  plate.side_wall_thickness,
-                                                                  0,
-                                                                  plate.side_extrude)
-        front_wall_hulls.append((fr_corner + fl_corner).hull().turn_on_debug())
-    plate.front_wall_hulls = front_wall_hulls
-    #plate.front_wall_hulls  = [[] for column in range(plate.columns - 1)]
+    # plate.front_wall = front_wall
 
-
-    back_wall = []
-    for column in range(plate.columns):
-        piece = plate.sm[0][column].get_back(plate.side_wall_thickness, plate.side_extrude).turn_on_debug()
-        back_wall.append(piece)
-
-    plate.back_wall = back_wall
-    #plate.back_wall = [[] for column in range(plate.columns)]
-    back_wall_hulls = []
-    for column in range(plate.columns - 1):
-        br_corner = plate.sm[0][column].get_corner("br",
-                                                   plate.wall_x,
-                                                   plate.side_wall_thickness,
-                                                   0,
-                                                   plate.side_extrude)
-        bl_corner = plate.sm[0][column+1].get_corner("bl",
-                                                     plate.wall_x,
-                                                     plate.side_wall_thickness,
-                                                     0,
-                                                     plate.side_extrude)
-        back_wall_hulls.append((br_corner + bl_corner).hull().turn_on_debug())
-    plate.back_wall_hulls = back_wall_hulls
+    # Remove front walls from main matrix to curve them manually
+    # plate.front_wall = [[] for column in range(plate.columns)]
+    # front_wall_hulls = []
+    # for column in range(plate.columns - 1):
+    #     fr_corner = plate.sm[plate.rows - 1][column].get_corner("fr",
+    #                                                             plate.wall_x,
+    #                                                             plate.side_wall_thickness,
+    #                                                             0,
+    #                                                             plate.side_extrude)
+    #     fl_corner = plate.sm[plate.rows - 1][column+1].get_corner("fl",
+    #                                                               plate.wall_x,
+    #                                                               plate.side_wall_thickness,
+    #                                                               0,
+    #                                                               plate.side_extrude)
+    #     front_wall_hulls.append((fr_corner + fl_corner).hull().turn_on_debug())
+    # plate.front_wall_hulls = front_wall_hulls
+    # # Remove generated front hulls
+    # plate.front_wall_hulls  = [[] for column in range(plate.columns - 1)]
 
 
-    plate.front_left_corner = plate.sm[plate.rows-1][0].get_corner("fl", plate.side_extrude, plate.side_extrude, plate.side_extrude, plate.side_extrude).turn_on_debug()
-    plate.back_left_corner = plate.sm[0][0].get_corner("bl", plate.side_extrude, plate.side_extrude, plate.side_extrude, plate.side_extrude).turn_on_debug()
+    # back_wall = []
+    # for column in range(plate.columns):
+    #     piece = plate.sm[0][column].get_back(plate.side_wall_thickness, plate.side_extrude).turn_on_debug()
+    #     back_wall.append(piece)
+
+    # plate.back_wall = back_wall
+    # # Remove generated back wall
+    # plate.back_wall = [[] for column in range(plate.columns)]
+    # back_wall_hulls = []
+    # for column in range(plate.columns - 1):
+    #     br_corner = plate.sm[0][column].get_corner("br",
+    #                                                plate.wall_x,
+    #                                                plate.side_wall_thickness,
+    #                                                0,
+    #                                                plate.side_extrude)
+    #     bl_corner = plate.sm[0][column+1].get_corner("bl",
+    #                                                  plate.wall_x,
+    #                                                  plate.side_wall_thickness,
+    #                                                  0,
+    #                                                  plate.side_extrude)
+    #     back_wall_hulls.append((br_corner + bl_corner).hull().turn_on_debug())
+    # plate.back_wall_hulls = back_wall_hulls
+    # # Remove generated hulls back hulls
+    # plate.back_wall_hulls  = [[] for column in range(plate.columns - 1)]
+
+
+    #plate.front_left_corner = plate.sm[plate.rows-1][0].get_corner("fl", plate.side_extrude, plate.side_extrude, plate.side_extrude, plate.side_extrude).turn_on_debug()
+    #plate.back_left_corner = plate.sm[0][0].get_corner("bl", plate.side_extrude, plate.side_extrude, plate.side_extrude, plate.side_extrude).turn_on_debug()
 
     return plate
 
