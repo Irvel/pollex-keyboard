@@ -370,10 +370,10 @@ def generate_thumb_cluster(plate):
     thumb = Keyboard_matrix(1,
                             5,
                             row_spacing=3.1,
-                            column_spacing=3.3,
+                            column_spacing=3.8,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
-                            x_tent=-1,
+                            x_tent=-5,
                             y_tent=-52,
                             z_tent=15,
                             mount_length=DSA_KEY_WIDTH,
@@ -382,11 +382,11 @@ def generate_thumb_cluster(plate):
                             mx_notches=False)
     plate.side_wall_thickness = 1
     h_curve = 36
-    thumb.cm[0] = [ 13, -16,   h_curve * 1.0,  14,  h_curve * 2.4,  24]
-    thumb.cm[1] = [ -1,  -8,   h_curve * .42,  8,  h_curve * 1.3,  12]
+    thumb.cm[0] = [ 13, -16,   h_curve * 1.0,  11,  h_curve * 2.4,  16]
+    thumb.cm[1] = [ -1,  -8,   h_curve * .42,  5,  h_curve * 1.3,  8]
     thumb.cm[2] = [  0,   0,   h_curve * .15,  0,              0,  0]
-    thumb.cm[3] = [  1,  -8,   h_curve * .42,  8, -h_curve * 1.3,  -12]
-    thumb.cm[4] = [-13, -16,   h_curve * 1.0,  14, -h_curve * 2.4,  -24]
+    thumb.cm[3] = [  1,  -8,   h_curve * .42,  5, -h_curve * 1.3,  -8]
+    thumb.cm[4] = [-13, -16,   h_curve * 1.0,  11, -h_curve * 2.4,  -16]
 
 
 
