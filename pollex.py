@@ -1,5 +1,6 @@
 from pykeeb import DSA_KEY_WIDTH, Keyboard_matrix, Cylinder, project, Keyswitch_mount
 from openpyscad import Cube, Sphere, Cylinder, Minkowski, Circle, Polygon
+from functools import reduce
 
 import numpy as np
 
@@ -481,7 +482,6 @@ def generate_thumb_cluster(plate):
 def generate_back(plate):
     print(plate.sm[CENTER_ROW][INDEX_SIDE].transformations)
     print(dir(plate.sm[CENTER_ROW][INDEX_SIDE]))
-    top_center_key = plate.sm[CENTER_ROW][INDEX_SIDE]
     detail = 110
     def top_double_bevel(initial_radius=51, first_length=1, first_angle=25, second_length=1, second_angle=50):
         # 90° Amounts to a fully vertical transition while 0° is no transition.  
@@ -514,9 +514,188 @@ def generate_back(plate):
                                                          second_length=6, 
                                                          second_angle=50)
     top_bevel = top_bevel.translate([-45.5, -2.3, -13])
+    top_center_key = plate.sm[CENTER_ROW][INDEX_SIDE]
     top_bevel = top_center_key.transform(top_bevel.rotate([0,90,0]))
+    top_top_key = plate.sm[TOP_ROW][INDEX_SIDE]
     #top_bevel = top_bevel.translate([0, 0, 10])
-    return top_bevel
+    def mount_corner(radius, height, key_mount, corner_type, shape, x_offset=0, y_offset=0):
+        if shape == "cylinder":
+            corner = Cylinder(r=radius, h=height, center=True, _fn=detail)
+        elif shape == "cube":
+            corner = Cube([radius * 2, radius * 2, height], center=True)
+        elif shape == "cyli_cube_1":
+            cube = Cube([radius * 2, radius, height], center=True)
+            cube = cube.translate([0, -radius/2, 0]) + cube.translate([-radius, radius/2, 0])
+            cylinder = Cylinder(r=radius, h=height, center=True, _fn=detail)
+            corner = cube + cylinder
+        elif shape == "cyli_cube_2":
+            cube = Cube([radius * 2, radius, height], center=True)
+            cube = cube.translate([0, -radius/2, 0]) #+ cube.translate([-radius/2, 0, 0])
+            cylinder = Cylinder(r=radius, h=height, center=True, _fn=detail)
+            corner = cube + cylinder
+        elif shape == "cyli_cube_3":
+            cube = Cube([radius * 2, radius, height], center=True)
+            cube = cube.translate([0, radius/2, 0]) #+ cube.translate([-radius/2, 0, 0])
+            cylinder = Cylinder(r=radius, h=height, center=True, _fn=detail)
+            corner = cube + cylinder
+        # Middle to Ring long shifted side. 
+        elif shape == "cyli_cube_4":
+            cube = Cube([radius * 2, radius, height], center=True)
+            cube = cube.translate([0, -radius/2, 0]) + cube.translate([radius, radius/2, 0])
+            cyl2 = Cylinder(r=radius, h=height, center=True, _fn=detail).translate([radius * 9.461, 0, 0])
+            cylinder = Cylinder(r=radius, h=height, center=True, _fn=detail)
+            corner = cube + cylinder + cyl2
+        # Middle to Pinky long shifted side. 
+        elif shape == "cyli_cube_5":
+            cube = Cube([radius * 2, radius, height], center=True)
+            cube = cube.translate([0, -radius/2, 0]) #+ cube.translate([-radius/2, 0, 0])
+            cylinder = Cylinder(r=radius, h=height, center=True, _fn=detail)
+            cyl2 = Cylinder(r=radius, h=height, center=True, _fn=detail).translate([radius * 9.461, 0, 0])
+            corner = cube + cylinder + cyl2
+        # Middle finger to index shifted side. 
+        elif shape == "cyli_cube_6":
+            cube = Cube([radius * 2, radius, height], center=True)
+            cube = cube.translate([0, radius/2, 0]) #+ cube.translate([-radius/2, 0, 0])
+            cylinder = Cylinder(r=radius, h=height, center=True, _fn=detail)
+            cyl2 = Cylinder(r=radius, h=height, center=True, _fn=detail).translate([-radius * 9.461, 0, 0])
+            corner = cube + cylinder + cyl2
+        
+        corner_map = {"bl":[-1,-1,-1],
+                      "br":[1,-1,-1],
+                      "tl":[-1,1,-1],
+                      "tr":[1,1,-1],
+                      "fl":[-1,1,-1],
+                      "fr":[1,1,-1]}
+        shift_magnitudes = [key_mount.mount_width/2 + radius,
+                            key_mount.mount_length/2 + radius,
+                            0]
+        translate_vec = [m * sig for m, sig in zip(shift_magnitudes, corner_map[corner_type])]
+        translate_vec[0] += x_offset
+        translate_vec[1] += y_offset
+        corner = corner.translate(translate_vec)
+        corner = key_mount.transform(corner)
+        return corner
+    
+    def rounded_horizontal_side(side, corner_radius, corner_height):
+        if side == "left":
+            col_idx = INDEX_SIDE
+            corner_pos = "l"
+        elif side == "right":
+            col_idx = PINKY
+            corner_pos = "r"
+
+        edge_list = []
+        prev_corner = None
+        for row_idx in range(plate.rows):
+            # Only round first and last corners.
+            if row_idx == 0:
+                shape="cylinder"
+            else:
+                shape="cube"
+            corner1 = mount_corner(radius=corner_radius, 
+                                   height=corner_height, 
+                                   key_mount=plate.sm[row_idx][col_idx], 
+                                   corner_type="b" + corner_pos,
+                                   shape=shape)
+            if row_idx == (plate.rows - 1):
+                shape="cylinder"
+            else:
+                shape="cube"
+            corner2 = mount_corner(radius=corner_radius, 
+                                   height=corner_height, 
+                                   key_mount=plate.sm[row_idx][col_idx], 
+                                   corner_type="t" + corner_pos,
+                                   shape=shape)
+            edge_list.append((corner1 + corner2).hull())
+            if row_idx != 0 and prev_corner:
+                edge_list.append((prev_corner + corner1).hull())
+            prev_corner = corner2
+        return edge_list
+
+    def rounded_vertical_side(side, corner_radius, corner_height):
+        if side == "top":
+            row_idx = TOP_ROW
+            corner_pos = "t"
+        elif side == "bottom":
+            row_idx = BOTTOM_ROW
+            corner_pos = "b"
+
+        edge_list = []
+        prev_corner = None
+        for col_idx in range(plate.columns):
+            # Only round first and last corners.
+            if col_idx == 0:
+                shape="cylinder"
+            else:
+                shape="cube"
+            offset = 0
+            if col_idx == RING:
+                if side == "top":
+                    shape="cyli_cube_4"
+                    offset = 3.99
+                else:
+                    shape = "cyli_cube_3"
+                    offset = 0
+            elif col_idx == PINKY:
+                shape="cyli_cube_5"
+                offset = 3.99
+                if side == "bottom":
+                    offset = 0
+                    shape = "cyli_cube_3"
+            elif col_idx == MIDDLE:
+                if side == "bottom":
+                    shape="cyli_cube_3"
+                else:
+                    shape="cyli_cube_2"
+            corner1 = mount_corner(radius=corner_radius, 
+                                   height=corner_height, 
+                                   key_mount=plate.sm[row_idx][col_idx], 
+                                   corner_type=corner_pos + "l",
+                                   shape=shape,
+                                   x_offset=offset)
+            if col_idx == (plate.columns - 1):
+                shape="cylinder"
+            else:
+                shape="cube"
+            offset = 0
+            if col_idx == INDEX_SIDE:
+                offset = -4
+            elif col_idx == INDEX:
+                if side == "bottom":
+                    shape = "cyli_cube_3"
+                else:
+                    shape = "cyli_cube_2"
+                offset = -3.99
+            elif col_idx == MIDDLE:
+                if side == "bottom":
+                    offset = -3.99
+                    shape = "cyli_cube_6"
+                else:
+                    shape = "cyli_cube_2"
+            elif col_idx == RING:
+                if side == "bottom":
+                    offset = -3.99
+                    shape = "cyli_cube_6"
+                else:
+                    shape = "cyli_cube_2"
+        
+            corner2 = mount_corner(radius=corner_radius, 
+                                   height=corner_height, 
+                                   key_mount=plate.sm[row_idx][col_idx], 
+                                   corner_type=corner_pos + "r",
+                                   shape=shape,
+                                   x_offset=offset)
+            edge_list.append((corner1 + corner2).hull())
+            if col_idx != 0 and prev_corner:
+                edge_list.append((prev_corner + corner1).hull())
+            prev_corner = corner2
+        return edge_list
+
+    edge_list = rounded_horizontal_side(side="left", corner_radius=2, corner_height=3)
+    edge_list.extend(rounded_horizontal_side(side="right", corner_radius=2, corner_height=3))
+    edge_list2 = rounded_vertical_side(side="top", corner_radius=2, corner_height=3)
+    edge_list2.extend(rounded_vertical_side(side="bottom", corner_radius=2, corner_height=3))
+    return reduce((lambda a, b: a + b), edge_list + edge_list2).turn_on_debug()
 
 def generate_case(plate, thumb):
     lb_main = plate.sm[BOTTOM_ROW][INDEX_SIDE].get_left(thickness=.1, extrude=plate_thickness)
@@ -710,7 +889,7 @@ conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_b
 
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() - plate.left_wall
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
-right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + generate_back(plate)
+right_hand =  thumb.get_matrix() + plate.get_matrix() + generate_back(plate)
 
 
 #right_hand = plate.sm[0][0].transform(make_arc())
