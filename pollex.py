@@ -348,7 +348,7 @@ def generate_main_plate():
                             row_spacing=7.8,
                             column_spacing=2.5,
                             plate_thickness=plate_thickness,
-                            origin=[0, 0, 84],
+                            origin=[0, 0, 91],
                             x_tent=0,
                             y_tent=57,
                             z_tent=-10,
@@ -365,7 +365,7 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-23, -36, 22])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-23, -36, 29])))
 
     thumb = Keyboard_matrix(1,
                             5,
