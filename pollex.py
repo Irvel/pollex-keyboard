@@ -180,7 +180,7 @@ def apply_columns_ergo_main(plate):
     plate.cm[INDEX][Y_MOV]      += -3
     plate.cm[MIDDLE][Y_MOV]     += -3
     plate.cm[RING][Y_MOV]       += -8
-    plate.cm[PINKY][Y_MOV]      += -18.5
+    plate.cm[PINKY][Y_MOV]      += -19
 
     # Apply horizontal curvature
     h_curve = 2
