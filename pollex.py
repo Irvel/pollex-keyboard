@@ -431,11 +431,15 @@ def generate_thumb_cluster(plate):
         left_wall_hulls.append((fl_corner + bl_corner).hull().turn_on_debug())
         #left_wall_hulls.append(fl_corner + bl_corner)
     thumb.left_wall_hulls = left_wall_hulls
+    thumb.left_wall_hulls = [[] for row in range(thumb.rows)]
+    thumb.left_wall = [[] for row in range(thumb.rows)]
+
+
 
 
     # Remove corners and walls
-    thumb.back_wall = [[] for row in range(thumb.columns)]
-    thumb.back_wall_hulls = [[] for row in range(thumb.columns)]
+    thumb.back_wall = [[] for col in range(thumb.columns)]
+    thumb.back_wall_hulls = [[] for col in range(thumb.columns)]
     thumb.back_right_corner = []
     thumb.back_right_corner_hulls = []
     back_wall_hulls = []
@@ -453,6 +457,8 @@ def generate_thumb_cluster(plate):
                                                      thumb.side_extrude)
         back_wall_hulls.append((br_corner + bl_corner).hull().turn_on_debug())
     thumb.back_wall_hulls = back_wall_hulls
+    thumb.back_wall_hulls = [[] for col in range(thumb.columns - 1)]
+
 
     thumb.front_wall[2] = []
     thumb.front_wall[1] = []
@@ -471,6 +477,8 @@ def generate_thumb_cluster(plate):
                                                                   thumb.side_extrude)
         front_wall_hulls.append((fr_corner + fl_corner).hull().turn_on_debug())
     thumb.front_wall_hulls = front_wall_hulls
+    thumb.front_wall_hulls = [[] for col in range(thumb.columns - 1)]
+
 
     thumb.front_right_corner = thumb.sm[thumb.rows-1][2].get_corner("fr", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
     thumb.front_right_corner = []
@@ -483,6 +491,7 @@ def generate_thumb_cluster(plate):
         piece = thumb.sm[thumb.rows - 1][column].get_front(thumb.side_wall_thickness, thumb.side_extrude)
         front_wall.append(piece)
     thumb.front_wall = front_wall
+    thumb.front_wall = [[] for col in range(thumb.columns)]
 
     #thumb.left_wall[2] = thumb.sm[2][0].get_left(3, 3)
     #thumb.left_wall[1] = thumb.sm[1][0].get_left(3, 3)
