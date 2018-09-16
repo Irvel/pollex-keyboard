@@ -508,21 +508,20 @@ def generate_thumb_cluster(plate):
     return thumb
 
 
-def bezier_two_points(point_a, point_b, bezier_point, segments=10):
+def interpolate_cuadratic_bezier(point_a, point_b, control_point, segments=10):
     point_a = np.array(point_a)
     point_b = np.array(point_b)
-    bezier_point = np.array(bezier_point)
+    control_point = np.array(control_point)
 
-    curve_points = [point_a.tolist()]
+    curve_points = []
     for seg in range(segments): 
         t = seg / segments
-        curve_point = ((1.0-t)**2 * point_a + 2.0*(1.0-t)*t*bezier_point + t**2 * point_b)
+        curve_point = ((1-t)**2 * point_a + 2*(1-t)*t*control_point + t**2 * point_b)
         curve_points.append(curve_point.tolist())
-    curve_points.append(point_b.tolist())
     return curve_points
 
 
-def get_cubic_trajectory(start, end, bezier_1, bezier_2, segments=10):
+def interpolate_cubic_bezier(start, end, bezier_1, bezier_2, segments=10):
     start = np.array(start) # 0
     end = np.array(end) # 3
     bezier_1 = np.array(bezier_1) # 1
@@ -705,7 +704,7 @@ def generate_back(plate, draft_version=True, outline_size=4):
                              key_mount=top_key, 
                              corner_type="tl",
                              origin=bezier_b_offset)
-    trajectory = get_cubic_trajectory(start=point_a, 
+    trajectory = interpolate_cubic_bezier(start=point_a, 
                                       end=point_b, 
                                       bezier_1=bezier_a, 
                                       bezier_2=bezier_b, 
@@ -789,8 +788,6 @@ def generate_plate_outline(plate, draft_version=True):
     def make_curve_points(current_key, next_key, segments, middle_delta, 
                           corner_radius, corner_height, corner_pos, 
                           start_offset=[0,0,0], end_offset=[0,0,0]):
-        #current_key = plate.sm[row_idx][col_idx]
-        #next_key = plate.sm[row_idx][col_idx - 1]
         corner1_pos = get_corner_pos(
             corner_radius, 
             corner_height, 
@@ -801,26 +798,33 @@ def generate_plate_outline(plate, draft_version=True):
             corner_height, 
             next_key, 
             corner_pos)
-        start_coords = np.array(corner1_pos) + np.array(start_offset)
-        end_coords = np.array(corner2_pos) + np.array(end_offset)
+        point_a = np.array(corner1_pos) + np.array(start_offset)
+        point_b = np.array(corner2_pos) + np.array(end_offset)
+
+        middle_point = np.array(get_middle_point(
+            point_a=point_a, 
+            point_b=point_b, 
+            key_mount=current_key, 
+            offset=middle_delta)
+        )
+        trajectory = interpolate_cuadratic_bezier(
+            point_a=point_a, 
+            point_b=point_b, 
+            control_point=middle_point, 
+            segments=segments
+        )
+        
         rotation_angles = get_rotation_angles(current_key.transformations)
-        #middle_point = np.array(corner1_pos) - np.array(corner2_pos) + np.array(middle_delta)
-        middle_point = get_middle_point(start_coords, end_coords, current_key, offset=middle_delta)
-        middle_point = np.array(middle_point)
-        curve_points = []
-        for seg in range(segments):
+        curve_pieces = []
+        for point in trajectory:
             cylinder = Cylinder(r=corner_radius, 
                                 h=corner_height, 
                                 center=True, 
                                 _fn=detail)
             cylinder = cylinder.rotate(rotation_angles)
-            t = seg / segments
-            segment_coords = ((1.0-t)**2 * start_coords + 2.0*(1.0-t)*t*middle_point + t**2 * end_coords);
-            cylinder = cylinder.translate(list(segment_coords))
-            
-            curve_points.append(cylinder)
-            
-        return sum_shapes(curve_points)
+            cylinder = cylinder.translate(point)
+            curve_pieces.append(cylinder)
+        return sum_shapes(curve_pieces)
     
     def rounded_horizontal_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
         if side == "left":
@@ -979,8 +983,8 @@ def generate_plate_outline(plate, draft_version=True):
                                                 corner_radius,
                                                 corner_height,
                                                 corner_pos + "r",
-                                                [1,-.3,0],
-                                                [.35,.1,.2])
+                                                start_offset=[1,-.3,0],
+                                                end_offset=[.35,.1,.2])
                 if draft_version:
                     edge_list.append((corner1 + corner2 + curved_edge))
                 else:
@@ -994,7 +998,9 @@ def generate_plate_outline(plate, draft_version=True):
                                                 [6.0, -17.0, -1.0],
                                                 corner_radius,
                                                 corner_height,
-                                                corner_pos + "l")
+                                                corner_pos + "l",
+                                                start_offset=[1.1,.1,.2],
+                                                end_offset=[.35,.1,.2])
                 if draft_version:
                     edge_list.append((corner1 + corner2 + curved_edge))
                 else:
