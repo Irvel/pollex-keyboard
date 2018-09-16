@@ -868,7 +868,7 @@ def generate_plate_outline(plate, draft_version=True):
             if row_idx != 0 and prev_corner:
                 edge_list.append((prev_corner + corner1).hull())
             prev_corner = corner2
-        return edge_list
+        return sum_shapes(edge_list)
 
     def rounded_vertical_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
         if side == "top":
@@ -1011,22 +1011,23 @@ def generate_plate_outline(plate, draft_version=True):
             if col_idx != 0 and prev_corner:
                 edge_list.append((prev_corner + corner1).hull())
             prev_corner = corner2
-        return edge_list
-
-    edge_list = rounded_horizontal_side(side="left", corner_radius=4, corner_height=6, z_offset=1)
-    right_outline = rounded_horizontal_side(side="right", corner_radius=4, corner_height=6, z_offset=1)
-    right_outline = sum_shapes(right_outline)
-    right_outline -= rounded_horizontal_side(
-        side="right", 
-        corner_radius=.5, 
-        corner_height=2, 
-        x_offset=0,
-        y_offset=0,
-        z_offset=3.5)
-    edge_list.append(right_outline)
-    edge_list2 = rounded_vertical_side(side="top", corner_radius=4, corner_height=6, z_offset=1)
-    edge_list2.extend(rounded_vertical_side(side="bottom", corner_radius=4, corner_height=6, z_offset=1))
-    return sum_shapes(edge_list + edge_list2).turn_on_debug()
+        return sum_shapes(edge_list)
+    outer_outline_sides = [
+        rounded_horizontal_side(side="left", corner_radius=4, corner_height=6, z_offset=1),
+        rounded_horizontal_side(side="right", corner_radius=4, corner_height=6, z_offset=1),
+        rounded_vertical_side(side="top", corner_radius=4, corner_height=6, z_offset=1),
+        rounded_vertical_side(side="bottom", corner_radius=4, corner_height=6, z_offset=1),
+    ]
+    outer_outline = sum_shapes(outer_outline_sides)
+    inner_outline_sides = [
+        rounded_horizontal_side(side="left", corner_radius=.5, corner_height=2, z_offset=3.5),
+        rounded_horizontal_side(side="right", corner_radius=.5, corner_height=2, z_offset=3.5),
+        rounded_vertical_side(side="top", corner_radius=.5, corner_height=2, z_offset=3.5),
+        rounded_vertical_side(side="bottom", corner_radius=.5, corner_height=2, z_offset=3.5),
+    ]
+    inner_outline = sum_shapes(inner_outline_sides)
+    outline = outer_outline - inner_outline
+    return outline.turn_on_debug()
 
 
 def generate_thumb_outline(thumb, draft_version=True):
