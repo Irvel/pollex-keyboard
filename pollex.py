@@ -359,7 +359,7 @@ def generate_main_plate():
                             row_spacing=7.8,
                             column_spacing=2.5,
                             plate_thickness=plate_thickness,
-                            origin=[0, 0, 91],
+                            origin=[0, 0, 96],
                             x_tent=0,
                             y_tent=57,
                             z_tent=-10,
