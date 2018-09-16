@@ -1,6 +1,5 @@
-from pykeeb import DSA_KEY_WIDTH, Keyboard_matrix, Cylinder, project, Keyswitch_mount
+from pykeeb import DSA_KEY_WIDTH, Keyboard_matrix, project, Keyswitch_mount
 from openpyscad import Cube, Sphere, Cylinder, Minkowski, Circle, Polygon
-from functools import reduce
 
 import numpy as np
 
@@ -19,6 +18,16 @@ mount_width = 13.60
 mount_height = 13.60
 plate_thickness = 3
 mount_width = 18.915
+
+
+def sum_shapes(shapes):
+    # The built-in Python sum() doesn't work with shapes
+    if len(shapes) == 1:
+        return shapes[0]
+    total = shapes[0] 
+    for shape in shapes[1:]:
+        total += shape
+    return total
 
 
 def rotate_point(point, angle_list):
@@ -811,7 +820,7 @@ def generate_plate_outline(plate, draft_version=True):
             
             curve_points.append(cylinder)
             
-        return reduce((lambda a, b: a + b), curve_points)
+        return sum_shapes(curve_points)
     
     def rounded_horizontal_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
         if side == "left":
@@ -1000,7 +1009,7 @@ def generate_plate_outline(plate, draft_version=True):
 
     edge_list = rounded_horizontal_side(side="left", corner_radius=4, corner_height=6, z_offset=1)
     right_outline = rounded_horizontal_side(side="right", corner_radius=4, corner_height=6, z_offset=1)
-    right_outline = reduce((lambda a, b: a + b), right_outline)
+    right_outline = sum_shapes(right_outline)
     right_outline -= rounded_horizontal_side(
         side="right", 
         corner_radius=.5, 
@@ -1011,7 +1020,7 @@ def generate_plate_outline(plate, draft_version=True):
     edge_list.append(right_outline)
     edge_list2 = rounded_vertical_side(side="top", corner_radius=4, corner_height=6, z_offset=1)
     edge_list2.extend(rounded_vertical_side(side="bottom", corner_radius=4, corner_height=6, z_offset=1))
-    return reduce((lambda a, b: a + b), edge_list + edge_list2).turn_on_debug()
+    return sum_shapes(edge_list + edge_list2).turn_on_debug()
 
 
 def generate_thumb_outline(thumb, draft_version=True):
@@ -1109,7 +1118,7 @@ def generate_thumb_outline(thumb, draft_version=True):
     edge_list.extend(rounded_horizontal_side(side="left", corner_radius=3, corner_height=3))
     edge_list.extend(rounded_horizontal_side(side="right", corner_radius=3, corner_height=3))
     
-    return reduce((lambda a, b: a + b), edge_list).turn_on_debug()
+    return sum_shapes(edge_list).turn_on_debug()
 
 
 def generate_case(plate, thumb):
@@ -1304,13 +1313,14 @@ conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_b
 
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() - plate.left_wall
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
-right_hand =  reduce((lambda a, b: a + b), 
-                     [thumb.get_matrix(), 
-                      plate.get_matrix(),
-                      conn_hulls,
-                      #generate_back(plate, draft_version=True),
-                      generate_plate_outline(plate, draft_version=True),
-                      generate_thumb_outline(thumb, draft_version=True)])
+right_hand = sum_shapes(
+    [thumb.get_matrix(), 
+    plate.get_matrix(),
+    conn_hulls,
+    generate_back(plate, draft_version=True),
+    generate_plate_outline(plate, draft_version=True),
+    generate_thumb_outline(thumb, draft_version=True)]
+)
 
 #right_hand = plate.sm[0][0].transform(make_arc())
 
