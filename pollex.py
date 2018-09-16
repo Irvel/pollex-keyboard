@@ -207,9 +207,9 @@ def apply_columns_ergo_main(plate):
     plate.im[center_row][PINKY][X_MOV] += h_curve / 10
 
     # Create column cavities to account for different finger lengths
-    plate.cm[INDEX_SIDE][Z_MOV] += 0
-    plate.cm[INDEX][Z_MOV]      += 0
-    plate.cm[MIDDLE][Z_MOV]     += -7
+    plate.cm[INDEX_SIDE][Z_MOV] += -3
+    plate.cm[INDEX][Z_MOV]      += -3
+    plate.cm[MIDDLE][Z_MOV]     += -8
     plate.cm[RING][Z_MOV]       += -6
     plate.cm[PINKY][Z_MOV]      += -4
 
