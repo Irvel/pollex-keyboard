@@ -605,6 +605,13 @@ def mount_corner(radius, height, key_mount, corner_type, shape, detail, x_offset
         return corner
 
 
+def get_middle_point(point_a, point_b, key_mount, offset=[0,0,0]):
+        rel_middle = np.array(point_a) / np.array(point_b)
+        rel_middle = (rel_middle + np.array(offset)).tolist()
+        abs_middle = get_coordinates(key_mount.transformations, rel_middle)
+        return abs_middle
+
+
 def generate_back(plate, draft_version=True, outline_size=4):
     thickness = 2
     if draft_version:
@@ -616,13 +623,6 @@ def generate_back(plate, draft_version=True, outline_size=4):
         interpolation_segments = 448
         make_top_hull = True
 
-    def get_middle_point(point_a, point_b, key_mount, offset=[0,0,0]):
-        rel_middle = np.array(point_a) / np.array(point_b)
-        rel_middle = (rel_middle + np.array(offset)).tolist()
-        abs_middle = get_coordinates(key_mount.transformations, rel_middle)
-        return abs_middle
-
-    
     def top_double_bevel(initial_radius=51, first_length=1, first_angle=25, second_length=1, second_angle=50):
         # 90° Amounts to a fully vertical transition while 0° is no transition.  
         first_radians = ((90 - first_angle) * np.pi) / 180
@@ -777,53 +777,37 @@ def generate_plate_outline(plate, draft_version=True):
     else:
         detail = 146
 
-    def get_corner_translation(corner_radius, height, key_mount, corner_type):
-        corner_map = {"bl":[-1,-1,-1],
-                      "br":[1,-1,-1],
-                      "tl":[-1,1,-1],
-                      "tr":[1,1,-1],
-                      "fl":[-1,1,-1],
-                      "fr":[1,1,-1]}
-        shift_magnitudes = [key_mount.mount_width/2 + corner_radius,
-                            key_mount.mount_length/2 + corner_radius,
-                            0]
-        translate_vec = [m * sig for m, sig in zip(shift_magnitudes, corner_map[corner_type])]
-        return translate_vec
-
     def make_curve_points(current_key, next_key, segments, middle_delta, 
                           corner_radius, corner_height, corner_pos, 
                           start_offset=[0,0,0], end_offset=[0,0,0]):
         #current_key = plate.sm[row_idx][col_idx]
         #next_key = plate.sm[row_idx][col_idx - 1]
-        corner1_pos = get_corner_translation(corner_radius, 
-                                             corner_height, 
-                                             current_key, 
-                                             corner_pos)
-        corner2_pos = get_corner_translation(corner_radius, 
-                                             corner_height, 
-                                             next_key, 
-                                             corner_pos)
-        key1_pos = get_coordinates(current_key.transformations)
-        key2_pos = get_coordinates(next_key.transformations)
-        corner1_rel_pos = np.array(corner1_pos) + np.array(start_offset)
-        corner2_rel_pos = np.array(corner2_pos) + np.array(end_offset)
-        corner1_abs_pos = np.array(key1_pos) + corner1_rel_pos
-        corner2_abs_pos = np.array(key2_pos) + corner2_rel_pos
-        middle_point = np.array(key1_pos) + np.array(middle_delta)
-
+        corner1_pos = get_corner_pos(
+            corner_radius, 
+            corner_height, 
+            current_key,
+            corner_pos)
+        corner2_pos = get_corner_pos(
+            corner_radius, 
+            corner_height, 
+            next_key, 
+            corner_pos)
+        start_coords = np.array(corner1_pos) + np.array(start_offset)
+        end_coords = np.array(corner2_pos) + np.array(end_offset)
+        rotation_angles = get_rotation_angles(current_key.transformations)
+        #middle_point = np.array(corner1_pos) - np.array(corner2_pos) + np.array(middle_delta)
+        middle_point = get_middle_point(start_coords, end_coords, current_key, offset=middle_delta)
+        middle_point = np.array(middle_point)
         curve_points = []
         for seg in range(segments):
             cylinder = Cylinder(r=corner_radius, 
                                 h=corner_height, 
                                 center=True, 
                                 _fn=detail)
-            cylinder = cylinder.translate(list(corner1_rel_pos))
-            
-            cylinder = current_key.transform(cylinder)
+            cylinder = cylinder.rotate(rotation_angles)
             t = seg / segments
-            current_pos = ((1.0-t)**2 * corner1_abs_pos + 2.0*(1.0-t)*t*middle_point + t**2 * corner2_abs_pos);
-            cylinder = cylinder.translate(list(current_pos))
-            cylinder = cylinder.translate(list(-corner1_abs_pos))
+            segment_coords = ((1.0-t)**2 * start_coords + 2.0*(1.0-t)*t*middle_point + t**2 * end_coords);
+            cylinder = cylinder.translate(list(segment_coords))
             
             curve_points.append(cylinder)
             
@@ -965,7 +949,7 @@ def generate_plate_outline(plate, draft_version=True):
                 curved_edge = make_curve_points(current_key, 
                                                 next_key,
                                                 curve_segments, 
-                                                [10.0, 25.0, 2.0],
+                                                [10.0, 20.0, -3.0],
                                                 corner_radius,
                                                 corner_height,
                                                 corner_pos + "r",
@@ -982,7 +966,7 @@ def generate_plate_outline(plate, draft_version=True):
                 curved_edge = make_curve_points(current_key, 
                                                 next_key,
                                                 curve_segments, 
-                                                [10.0, 19.0, 2.0],
+                                                [10.0, 14.0, -2.0],
                                                 corner_radius,
                                                 corner_height,
                                                 corner_pos + "r",
@@ -998,7 +982,7 @@ def generate_plate_outline(plate, draft_version=True):
                 curved_edge = make_curve_points(current_key, 
                                                 next_key,
                                                 curve_segments, 
-                                                [-7.0, -19.0, -11.0],
+                                                [6.0, -17.0, -1.0],
                                                 corner_radius,
                                                 corner_height,
                                                 corner_pos + "l")
