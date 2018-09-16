@@ -68,6 +68,16 @@ def get_coordinates(transformations, origin=[0,0,0]):
     return point
 
 
+def get_rotation_angles(transformations):
+    rotation_angles = [0,0,0]
+    for transformation in transformations:
+        a, b, c = transformation[3:]
+        rotation_angles[0] += a
+        rotation_angles[1] += b
+        rotation_angles[2] += c
+    return rotation_angles
+
+
 def make_arc(length, thickness, rot=[0,90,45]):
     points = []
     for t in np.linspace(0.01, 1.0, num=60).tolist():
