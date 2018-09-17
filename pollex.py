@@ -826,7 +826,7 @@ def generate_plate_outline(plate, draft_version=True):
             curve_pieces.append(cylinder)
         return sum_shapes(curve_pieces)
     
-    def rounded_horizontal_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
+    def rounded_horizontal_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0, is_cut=False):
         if side == "left":
             col_idx = INDEX_SIDE
             corner_pos = "l"
@@ -840,8 +840,20 @@ def generate_plate_outline(plate, draft_version=True):
             # Only round first and last corners.
             if row_idx == 0:
                 shape="cylinder"
+                if is_cut and side == "left":
+                    y_offset = .17
+                elif is_cut and side == "right":
+                    y_offset = 1.17
             else:
                 shape="cube"
+
+            if row_idx == (plate.rows - 1):
+                if is_cut and side == "left":
+                    y_offset = -.17
+                    x_offset = .18
+                elif is_cut and side == "right":
+                    y_offset = -.17
+           
             corner1 = mount_corner(radius=corner_radius, 
                                    height=corner_height, 
                                    key_mount=plate.sm[row_idx][col_idx], 
@@ -870,7 +882,7 @@ def generate_plate_outline(plate, draft_version=True):
             prev_corner = corner2
         return sum_shapes(edge_list)
 
-    def rounded_vertical_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
+    def sculped_vertical_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
         if side == "top":
             row_idx = TOP_ROW
             corner_pos = "t"
@@ -922,9 +934,12 @@ def generate_plate_outline(plate, draft_version=True):
             offset = 0
             if col_idx == INDEX_SIDE:
                 offset = -7.99
+                #if side == "top":
+                    #y_offset += 0.1
             elif col_idx == INDEX:
                 if side == "bottom":
                     shape = "cyli_cube_3"
+                    #y_offset -= 0.2
                 else:
                     shape = "cyli_cube_2"
                 offset = -7.99
@@ -969,7 +984,7 @@ def generate_plate_outline(plate, draft_version=True):
                                                 [0,0,0],
                                                 [0,.4,0])
                 if draft_version:
-                    edge_list.append((corner1 + corner2 + curved_edge))
+                    edge_list.append((corner1 + corner2 + curved_edge).hull())
                 else:
                     edge_list.append((corner1 + corner2 + curved_edge).hull())
                    
@@ -986,7 +1001,7 @@ def generate_plate_outline(plate, draft_version=True):
                                                 start_offset=[1,-.3,0],
                                                 end_offset=[.35,.1,.2])
                 if draft_version:
-                    edge_list.append((corner1 + corner2 + curved_edge))
+                    edge_list.append((corner1 + corner2 + curved_edge).hull())
                 else:
                     edge_list.append((corner1 + corner2 + curved_edge).hull())
             elif col_idx == RING and side == "bottom":
@@ -1002,7 +1017,7 @@ def generate_plate_outline(plate, draft_version=True):
                                                 start_offset=[1.1,.1,.2],
                                                 end_offset=[.35,.1,.2])
                 if draft_version:
-                    edge_list.append((corner1 + corner2 + curved_edge))
+                    edge_list.append((corner1 + corner2 + curved_edge).hull())
                 else:
                     edge_list.append((corner1 + corner2 + curved_edge).hull())
     
@@ -1012,22 +1027,143 @@ def generate_plate_outline(plate, draft_version=True):
                 edge_list.append((prev_corner + corner1).hull())
             prev_corner = corner2
         return sum_shapes(edge_list)
+
+    def rounded_vertical_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
+        if side == "top":
+            row_idx = TOP_ROW
+            corner_pos = "t"
+        elif side == "bottom":
+            row_idx = BOTTOM_ROW
+            corner_pos = "b"
+
+        edge_list = []
+        prev_corner = None
+        for col_idx in range(plate.columns):
+            # Only round first and last corners.
+            if col_idx == 0:
+                shape="cylinder"
+            else:
+                shape="cube"
+            offset = 0
+            if col_idx == RING:
+                if side == "top":
+                    shape = "cyli_cube_2"
+                    offset = -2.99
+                else:
+                    shape = "cyli_cube_3"
+                    offset -= 0.1
+            elif col_idx == PINKY:
+                if side == "bottom":
+                    offset = 0.1
+                    shape = "cyli_cube_3"
+                else:
+                    shape="cyli_cube_2"
+                    offset -= 1.3
+            elif col_idx == MIDDLE:
+                if side == "bottom":
+                    shape="cyli_cube_3"
+                    offset -= .2
+                else:
+                    shape="cyli_cube_2"
+                    offset = 1.97
+            elif col_idx == INDEX:
+                offset = 1.8
+                if side == "top":
+                    y_offset = -.11
+                else:
+                    y_offset = .17
+                    x_offset = 3.17
+            elif col_idx == INDEX_SIDE:
+                offset = .07
+                if side == "top":
+                    y_offset = -.17
+                    x_offset += .25
+                else:
+                    y_offset = .17
+            corner1 = mount_corner(radius=corner_radius, 
+                                   height=corner_height, 
+                                   key_mount=plate.sm[row_idx][col_idx], 
+                                   corner_type=corner_pos + "l",
+                                   shape=shape,
+                                   detail=detail,
+                                   x_offset=offset + x_offset, 
+                                   y_offset=y_offset, 
+                                   z_offset=z_offset)
+            if col_idx == (plate.columns - 1):
+                shape="cylinder"
+            else:
+                shape="cube"
+            offset = 0
+            if col_idx == INDEX_SIDE:
+                offset = -.99
+            elif col_idx == INDEX:
+                if side == "bottom":
+                    shape = "cylinder"
+                    corner_radius += .6 
+                    y_offset += .9
+                    offset -= 0.7
+                else:
+                    shape = "cyli_cube_2"
+                    offset = .9
+            elif col_idx == MIDDLE:
+                if side == "bottom":
+                    offset -= .99
+                    shape = "cyli_cube_3"
+                else:
+                    offset = -2.15
+                    shape = "cyli_cube_2"
+            elif col_idx == RING:
+                if side == "bottom":
+                    offset = 3.99
+                    shape = "cyli_cube_3"
+                else:
+                    offset = -2.4
+                    shape = "cyli_cube_2"
+            elif col_idx == PINKY:
+                if side == "bottom":
+                    offset -= 4.5
+                    y_offset += .25
+                    shape = "cyli_cube_3"
+                else:
+                    offset = -.32
+
+            corner2 = mount_corner(radius=corner_radius, 
+                                   height=corner_height, 
+                                   key_mount=plate.sm[row_idx][col_idx], 
+                                   corner_type=corner_pos + "r",
+                                   shape=shape,
+                                   detail=detail,
+                                   x_offset=offset + x_offset,
+                                   y_offset=y_offset, 
+                                   z_offset=z_offset)
+            if draft_version:
+                curve_segments = 12
+            else:
+                curve_segments = 48
+            
+            edge_list.append((corner1 + corner2).hull())
+            if col_idx != 0 and prev_corner:
+                edge_list.append((prev_corner + corner1).hull())
+            prev_corner = corner2
+        return sum_shapes(edge_list)
     outer_outline_sides = [
         rounded_horizontal_side(side="left", corner_radius=4, corner_height=6, z_offset=1),
         rounded_horizontal_side(side="right", corner_radius=4, corner_height=6, z_offset=1),
-        rounded_vertical_side(side="top", corner_radius=4, corner_height=6, z_offset=1),
-        rounded_vertical_side(side="bottom", corner_radius=4, corner_height=6, z_offset=1),
+        sculped_vertical_side(side="top", corner_radius=4, corner_height=6, z_offset=1),
+        sculped_vertical_side(side="bottom", corner_radius=4, corner_height=6, z_offset=1),
     ]
     outer_outline = sum_shapes(outer_outline_sides)
     inner_outline_sides = [
-        rounded_horizontal_side(side="left", corner_radius=.5, corner_height=2, z_offset=3.5),
-        rounded_horizontal_side(side="right", corner_radius=.5, corner_height=2, z_offset=3.5),
-        rounded_vertical_side(side="top", corner_radius=.5, corner_height=2, z_offset=3.5),
-        rounded_vertical_side(side="bottom", corner_radius=.5, corner_height=2, z_offset=3.5),
+        rounded_horizontal_side(side="left", corner_radius=.95, corner_height=2, x_offset=.06, z_offset=3.5, is_cut=True),
+        rounded_horizontal_side(side="right", corner_radius=.95, corner_height=2, x_offset=-.06, z_offset=3.5, is_cut=True),
+        rounded_vertical_side(side="top", corner_radius=.95, corner_height=2, y_offset=-.01, z_offset=3.5),
+        rounded_vertical_side(side="bottom", corner_radius=.95, corner_height=2, y_offset=.01, z_offset=3.5),
     ]
     inner_outline = sum_shapes(inner_outline_sides)
-    outline = outer_outline - inner_outline
-    return outline.turn_on_debug()
+    outline = outer_outline - inner_outline.color([.4,.9,.4])
+    #return outline.turn_on_debug()
+    return outline
+
 
 
 def generate_thumb_outline(thumb, draft_version=True):
