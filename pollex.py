@@ -193,7 +193,7 @@ def apply_columns_ergo_main(plate):
 
     # Apply horizontal curvature
     h_curve = 2
-    plate.cm[INDEX_SIDE][Y_ROT] += h_curve * 1.2
+    plate.cm[INDEX_SIDE][Y_ROT] += h_curve * 2.2
     plate.cm[INDEX][Y_ROT]      += h_curve
     plate.cm[MIDDLE][Y_ROT]     += 0
     plate.cm[RING][Y_ROT]       += -h_curve * 1.2
@@ -210,7 +210,8 @@ def apply_columns_ergo_main(plate):
     center_row = plate.rows // 2
     # Shifting the entire row does not compensate in the way we want, so we apply the shifting
     # to individual mounts instead, except for the middle finger one.
-    plate.im[center_row][INDEX_SIDE][X_MOV] -= h_curve / 10
+    plate.im[center_row][INDEX_SIDE][X_MOV] -= h_curve / 3.6  # Compensate index_side inward rotation
+    plate.im[BOTTOM_ROW][INDEX_SIDE][X_MOV] -= h_curve / 13
     plate.im[center_row][INDEX][X_MOV] -= h_curve / 10
     plate.im[center_row][RING][X_MOV] += h_curve / 10
     plate.im[center_row][PINKY][X_MOV] += h_curve / 10
@@ -628,7 +629,7 @@ def generate_back(plate, draft_version=True, outline_size=4):
         make_top_hull = True
     else:
         detail = 186
-        interpolation_segments = 448
+        interpolation_segments = 248
         make_top_hull = True
 
     def top_double_bevel(initial_radius=51, first_length=1, first_angle=25, second_length=1, second_angle=50):
