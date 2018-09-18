@@ -78,7 +78,7 @@ def get_coordinates(transformations, origin=[0,0,0]):
 
 
 def get_rotation_angles(transformations):
-    rotation_angles = [0,0,0]
+    rotation_angles = [0.0, 0.0, 0.0]
     for transformation in transformations:
         a, b, c = transformation[3:]
         rotation_angles[0] += a
@@ -529,6 +529,8 @@ def interpolate_cubic_bezier(start, end, bezier_1, bezier_2, segments=10):
     bezier_2 = np.array(bezier_2)  # 2 
 
     curve_points = []
+    # Include the end vector as the last segment
+    segments -= 1
     for seg in range(segments): 
         t = seg / segments
         curve_point = ((1-t)**3 * start + 3*(1-t)**2 * t * bezier_1 + 3*(1-t)*t**2 * bezier_2 + t**3*end)
@@ -615,17 +617,51 @@ def mount_corner(radius, height, key_mount, corner_type, shape, detail, x_offset
 
 
 def get_middle_point(point_a, point_b, key_mount, offset=[0,0,0]):
-        rel_middle = np.array(point_a) / np.array(point_b)
-        rel_middle = (rel_middle + np.array(offset)).tolist()
-        abs_middle = get_coordinates(key_mount.transformations, rel_middle)
-        return abs_middle
+    rel_middle = np.array(point_a) / np.array(point_b)
+    rel_middle = (rel_middle + np.array(offset)).tolist()
+    abs_middle = get_coordinates(key_mount.transformations, rel_middle)
+    return abs_middle
+
+
+def linear_interpolate(vector_a, vector_b, steps, deadband_percentage=10):
+    # deadband_percentage indicates the beginning and end portions of the total steps that will be ignored 
+    # for the interpolation. Nothing will be interpolated in the first and last `deadband_percentage`.
+    # For example, interpolating from 0 to 9 in 14 steps with 10% deadband would
+    # yield:  
+    #   10%       80%       10%
+    # |-----|-------------|-----|
+    # 0                         9 
+    # 0 0 0 1 2 3 4 5 6 7 8 9 9 9
+    # 
+    vector_a = np.array(vector_a)
+    vector_b = np.array(vector_b)
+    interpolated_steps = int(steps - steps * (deadband_percentage * 2)/100)
+    start_deadband = int((steps - interpolated_steps) / 2)
+    end_deadband = steps - interpolated_steps - start_deadband
+
+    delta = (vector_b - vector_a).astype("float64")
+    step = delta / np.array(interpolated_steps, dtype="float64")
+
+    print(vector_a)
+    print(vector_b, "\n")
+    print(start_deadband, interpolated_steps, end_deadband)
+
+    trajectory = [vector_a for _ in range(start_deadband)]
+    intermediate = vector_a.copy().astype("float64")
+    for _ in range(interpolated_steps):
+        intermediate += step
+        trajectory.append(intermediate.copy())
+    trajectory.extend([vector_b for _ in range(end_deadband)])
+    print(trajectory)
+
+    return trajectory
 
 
 def generate_back(plate, draft_version=True, outline_size=4):
     thickness = 2
     if draft_version:
         detail = 36
-        interpolation_segments = 18
+        interpolation_segments = 62
         make_top_hull = True
     else:
         detail = 186
@@ -656,128 +692,189 @@ def generate_back(plate, draft_version=True, outline_size=4):
         large_sub_bevel = large_sub_bevel.translate([0, 0, first_height])
         total_height = first_height + second_height 
         return small_sub_bevel + large_sub_bevel, total_height, final_radius
-    top_cap_r = 38
-    top_bevel, top_height, top_radius = top_double_bevel(initial_radius=top_cap_r, 
-                                                         first_length=.6, 
-                                                         first_angle=32, 
-                                                         second_length=8, 
-                                                         second_angle=50)
-    top_bevel = top_bevel.translate([-20.5, -1, -13.56 - outline_size])
-    top_center_key = plate.sm[CENTER_ROW][INDEX_SIDE]
-    top_bevel = top_center_key.transform(top_bevel.rotate([0,90,0]))
-    top_bevel = top_bevel - top_bevel.translate([thickness,0,-thickness]) 
-    # Remove one corner of the top bevel
-    cube = Cube(50).translate([-20,0,0])
-    cube = cube.rotate([36, 0,0])
-    cube = cube.translate([-top_height-outline_size, top_radius + 6.07, 0])
-    cube = top_center_key.transform(cube).color([.5,.3,.3])
-    # Remove the other corner of the top bevel
-    cube2 = Cube(50).translate([-20,0,0])
-    cube2 = cube2.rotate([65, 0,0])
-    cube2 = cube2.translate([-top_height-outline_size, -top_radius - 1, 0])
-    cube2 = top_center_key.transform(cube2).color([.5,.2,.3])
-    # Remove center fill
-    cylinder = Cylinder(r=top_cap_r + 11, h=40).translate([-58, -3,-30])
-    cylinder = cylinder.rotate([0, 90, 0])
-    cylinder = top_center_key.transform(cylinder).color([.2,.3,.3])
-    
+    def make_top_cap(radius):
+        top_cap_r = radius
+        top_bevel, top_height, top_radius = top_double_bevel(initial_radius=radius, 
+                                                             first_length=.6, 
+                                                             first_angle=32, 
+                                                             second_length=8, 
+                                                             second_angle=50)
+        
+        top_bevel = top_bevel.translate([-20.5, -1, -13.56 - outline_size])
+        top_center_key = plate.sm[CENTER_ROW][INDEX_SIDE]
+        top_bevel = top_center_key.transform(top_bevel.rotate([0,90,0]))
+        top_bevel = top_bevel - top_bevel.translate([thickness,0,-thickness]) 
+        # Remove one corner of the top bevel
+        cube = Cube(50).translate([-20,0,0])
+        cube = cube.rotate([36, 0,0])
+        cube = cube.translate([-top_height-outline_size, top_radius + 6.07, 0])
+        cube = top_center_key.transform(cube).color([.5,.3,.3])
+        # Remove the other corner of the top bevel
+        cube2 = Cube(50).translate([-20,0,0])
+        cube2 = cube2.rotate([65, 0,0])
+        cube2 = cube2.translate([-top_height-outline_size, -top_radius - 1, 0])
+        cube2 = top_center_key.transform(cube2).color([.5,.2,.3])
+        # Remove center fill
+        cylinder = Cylinder(r=top_cap_r + 11, h=40).translate([-58, -3,-30])
+        cylinder = cylinder.rotate([0, 90, 0])
+        cylinder = top_center_key.transform(cylinder).color([.2,.3,.3])
+        
 
-    
-    bottom_key = plate.sm[BOTTOM_ROW][INDEX_SIDE]
-    top_key = plate.sm[TOP_ROW][INDEX_SIDE]
-    point_a = get_corner_pos(radius=4, 
-                             height=3, 
-                             key_mount=bottom_key, 
-                             corner_type="bl")
-    point_b = get_corner_pos(radius=4, 
-                             height=3, 
-                             key_mount=top_key, 
-                             corner_type="tl")
-    bezier_a_offset = [0,25,-40]
-    bezier_b_offset = [0,-25,-40]
-    bezier_a = get_corner_pos(radius=4, 
-                             height=3, 
-                             key_mount=bottom_key, 
-                             corner_type="bl",
-                             origin=bezier_a_offset)
-    bezier_b = get_corner_pos(radius=4, 
-                             height=3, 
-                             key_mount=top_key, 
-                             corner_type="tl",
-                             origin=bezier_b_offset)
-    trajectory = interpolate_cubic_bezier(start=point_a, 
-                                      end=point_b, 
-                                      bezier_1=bezier_a, 
-                                      bezier_2=bezier_b, 
-                                      segments=interpolation_segments)
-    rotation_a = np.array(get_rotation_angles(bottom_key.transformations))
-    rotation_b = np.array(get_rotation_angles(top_key.transformations))
-    key_corners = []
-    for row in range(plate.rows):
-        if row == 0 or row == plate.rows - 1:
-            shape = "cylinder"
-        else:
-            shape = "cube"
-        corner = mount_corner(radius=4, 
-                              height=3, 
-                              key_mount=plate.sm[row][INDEX_SIDE], 
-                              corner_type="bl",
-                              shape=shape,
-                              detail=detail)
-        key_corners.append(corner)
-        corner = mount_corner(radius=4, 
-                              height=3, 
-                              key_mount=plate.sm[row][INDEX_SIDE], 
-                              corner_type="tl",
-                              shape=shape,
-                              detail=detail)
-        key_corners.append(corner)
-    rotation_delta = rotation_b - rotation_a
-    rotation_increment = rotation_delta / (len(trajectory) - 1)
-    current_rotation = rotation_a
-    final_curve = None
-    prev_piece = None
-    for idx, point in enumerate(trajectory):
-        rel_pos = ((np.array(point) - np.array(point_a))).tolist()
-        cyl_r = 4
-        cyl_h = 3
-        cylinder = Cylinder(r=cyl_r, h=cyl_h, center=True, _fn=detail).color([.2,.3,.4])
-        cube = Cube([cyl_r , cyl_r* 2, cyl_h], center=True)
-        cube = cube.translate([cyl_r/2, 0, 0])
-        cyli_cube = cylinder + cube
         
-        if idx < (len(trajectory) / 38) or idx > (len(trajectory) * (37 / 38)):
-            step_shape = cyli_cube
-        else:
-            cube_size = cyl_r * 2
-            bevel_cut = Cube([cube_size, cube_size, cyl_h*2])
-            bevel_cut = bevel_cut.translate([-cube_size/2, -cube_size/2, -cube_size]).rotate([0,45,0])
-            step_shape = cyli_cube - bevel_cut
-        step_shape = step_shape.rotate(current_rotation.tolist()).translate(point)
-        current_rotation += rotation_increment
-        
-        if make_top_hull:
-            progress = idx / len(trajectory)
-            corner_idx = int(progress * len(key_corners))
-            current_corners = key_corners[corner_idx]
-            if idx == 0 or idx == len(trajectory) - 1:
-                prev_piece = current_corners
+        bottom_key = plate.sm[BOTTOM_ROW][INDEX_SIDE]
+        top_key = plate.sm[TOP_ROW][INDEX_SIDE]
+        point_a = get_corner_pos(radius=4, 
+                                 height=3, 
+                                 key_mount=bottom_key, 
+                                 corner_type="bl")
+        point_b = get_corner_pos(radius=4, 
+                                 height=3, 
+                                 key_mount=top_key, 
+                                 corner_type="tl")
+        bezier_a_offset = [0,25,-40]
+        bezier_b_offset = [0,-25,-40]
+        bezier_a = get_corner_pos(radius=4, 
+                                 height=3, 
+                                 key_mount=bottom_key, 
+                                 corner_type="bl",
+                                 origin=bezier_a_offset)
+        bezier_b = get_corner_pos(radius=4, 
+                                 height=3, 
+                                 key_mount=top_key, 
+                                 corner_type="tl",
+                                 origin=bezier_b_offset)
+        trajectory = interpolate_cubic_bezier(start=point_a, 
+                                          end=point_b, 
+                                          bezier_1=bezier_a, 
+                                          bezier_2=bezier_b, 
+                                          segments=interpolation_segments)
+        rotation_a = np.array(get_rotation_angles(bottom_key.transformations))
+        rotation_b = np.array(get_rotation_angles(top_key.transformations))
+        key_corners = []
+        for row in range(plate.rows):
+            if row == 0 or row == plate.rows - 1:
+                shape = "cylinder"
             else:
-                temp = current_corners
-                current_corners += prev_piece
-                prev_piece = (temp + step_shape)
-            step_shape = (current_corners + step_shape).color([.2,.7,.5]).hull()
+                shape = "cube"
+            corner = mount_corner(radius=4, 
+                                  height=3, 
+                                  key_mount=plate.sm[row][INDEX_SIDE], 
+                                  corner_type="bl",
+                                  shape=shape,
+                                  detail=detail)
+            key_corners.append(corner)
+            corner = mount_corner(radius=4, 
+                                  height=3, 
+                                  key_mount=plate.sm[row][INDEX_SIDE], 
+                                  corner_type="tl",
+                                  shape=shape,
+                                  detail=detail)
+            key_corners.append(corner)
+        rotation_delta = rotation_b - rotation_a
+        rotation_increment = rotation_delta / (len(trajectory) - 1)
+        current_rotation = rotation_a
+        final_curve = None
+        prev_piece = None
+        for idx, point in enumerate(trajectory):
+            rel_pos = ((np.array(point) - np.array(point_a))).tolist()
+            cyl_r = 4
+            cyl_h = 3
+            cylinder = Cylinder(r=cyl_r, h=cyl_h, center=True, _fn=detail).color([.2,.3,.4])
+            cube = Cube([cyl_r , cyl_r* 2, cyl_h], center=True)
+            cube = cube.translate([cyl_r/2, 0, 0])
+            cyli_cube = cylinder + cube
             
-        if not final_curve:
-            final_curve = step_shape
-        else:
-            final_curve += step_shape
+            if idx < (len(trajectory) / 38) or idx > (len(trajectory) * (37 / 38)):
+                step_shape = cyli_cube
+            else:
+                cube_size = cyl_r * 2
+                bevel_cut = Cube([cube_size, cube_size, cyl_h*2])
+                bevel_cut = bevel_cut.translate([-cube_size/2, -cube_size/2, -cube_size]).rotate([0,45,0])
+                step_shape = cyli_cube - bevel_cut
+            step_shape = step_shape.rotate(current_rotation.tolist()).translate(point)
+            current_rotation += rotation_increment
+            
+            if make_top_hull:
+                progress = idx / len(trajectory)
+                corner_idx = int(progress * len(key_corners))
+                current_corners = key_corners[corner_idx]
+                if idx == 0 or idx == len(trajectory) - 1:
+                    prev_piece = current_corners
+                else:
+                    temp = current_corners
+                    current_corners += prev_piece
+                    prev_piece = (temp + step_shape)
+                step_shape = (current_corners + step_shape).color([.2,.7,.5]).hull()
+                
+            if not final_curve:
+                final_curve = step_shape
+            else:
+                final_curve += step_shape
+        return final_curve
+
+    def make_back_arc(radius, column_idx, shape, size_x, size_y, height, offset=[0,0,0]):        
+        bottom_key = plate.sm[BOTTOM_ROW][column_idx]
+        top_key = plate.sm[TOP_ROW][column_idx]
+        point_a = get_corner_pos(radius=size_x/2, 
+                                 height=height, 
+                                 key_mount=bottom_key, 
+                                 corner_type="bl",
+                                 origin=[0,-size_x/2, -size_x/2 + 1])
+        point_b = get_corner_pos(radius=size_x/2, 
+                                 height=height, 
+                                 key_mount=top_key, 
+                                 corner_type="tl",
+                                 origin=[0,size_x/2, -size_x/2 + 1])
+        bezier_a_offset = [0,25,-40]
+        bezier_b_offset = [0,-25,-40]
+        bezier_a = get_corner_pos(radius=size_x/2, 
+                                 height=height, 
+                                 key_mount=bottom_key, 
+                                 corner_type="bl",
+                                 origin=bezier_a_offset)
+        bezier_b = get_corner_pos(radius=size_x/2, 
+                                 height=height, 
+                                 key_mount=top_key, 
+                                 corner_type="tl",
+                                 origin=bezier_b_offset)
+        translation_trajectory = interpolate_cubic_bezier(start=point_a, 
+                                          end=point_b, 
+                                          bezier_1=bezier_a, 
+                                          bezier_2=bezier_b, 
+                                          segments=interpolation_segments)
+        rotation_a = np.array(get_rotation_angles(bottom_key.transformations))
+        rotation_b = np.array([180, 0, 0]) + np.array(get_rotation_angles(top_key.transformations))
+        rotation_trajectory = linear_interpolate(rotation_a, rotation_b, interpolation_segments, deadband_percentage=10)
+
+        final_curve = None
+        prev_shape = None
+        for point, rotation in zip(translation_trajectory, rotation_trajectory):
+            rel_pos = ((np.array(point) - np.array(point_a))).tolist()
+            if shape == "cube": 
+                step_shape = Cube([size_x, size_y, height], center=True)
+            else:
+                step_shape = Cylinder(r=size_x/2, h=height, center=True, _fn=detail).color([.2,.3,.4])
+            step_shape = step_shape.rotate(rotation.tolist()).translate(point).translate(offset)
+
+            if prev_shape:
+                # segment = (prev_shape + step_shape).hull()
+                segment = step_shape
+            else:
+                segment = step_shape
+            prev_shape = step_shape 
+
+            if not final_curve:
+                final_curve = segment
+            else:
+                final_curve += segment
+        return final_curve
+    top_cap = make_back_arc(radius=38, column_idx=INDEX, shape="cube", size_x=8, size_y=1, height=3)
 
     #top_bevel = remove_corners(top_bevel, x_offset=0)
     #top_bevel = remove_corners(top_bevel, x_offset=.1)
     #return top_bevel - (cube + cube2 + cylinder)
     #top_bevel = top_bevel - (cube + cube2)
-    return final_curve
+    return top_cap
 
 
 def generate_plate_outline(plate, draft_version=True):
@@ -1462,7 +1559,7 @@ right_hand = sum_shapes(
     plate.get_matrix(),
     conn_hulls,
     generate_back(plate, draft_version=True),
-    generate_plate_outline(plate, draft_version=True),
+    generate_plate_outline(plate, draft_version=True).turn_on_debug(),
     generate_thumb_outline(thumb, draft_version=True)]
 )
 
