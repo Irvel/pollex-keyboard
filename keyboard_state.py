@@ -32,24 +32,25 @@ Z = 2
 dimensions = 3
 
 
-def rotate(point, angle_list):
-    # angle_list is x y z angles
+def rotate(point, rotation):
+    assert len(point) == 3
+    assert len(rotation) == 3
     # Force a column vector
     point = np.array(point).reshape((3, 1))
 
-    theta_x = np.radians(angle_list[0])
+    theta_x = np.radians(rotation[0])
     x_rot_mat = [[1.0,                0.0,                 0.0],
                  [0.0,    np.cos(theta_x),    -np.sin(theta_x)],
                  [0.0,    np.sin(theta_x),     np.cos(theta_x)]]
     x_rot_mat = np.array(x_rot_mat)
 
-    theta_y = np.radians(angle_list[1])
+    theta_y = np.radians(rotation[1])
     y_rot_mat = [[np.cos(theta_y),     0.0,     np.sin(theta_y)],
                  [0.0,                 1.0,                 0.0],
                  [-np.sin(theta_y),    0.0,     np.cos(theta_y)]]
     y_rot_mat = np.array(y_rot_mat)
 
-    theta_z = np.radians(angle_list[2])
+    theta_z = np.radians(rotation[2])
     z_rot_mat = [[np.cos(theta_z),    -np.sin(theta_z),     0.0],
                  [np.sin(theta_z),     np.cos(theta_z),     0.0],
                  [0.0,                             0.0,    1.0]]
@@ -91,6 +92,18 @@ def make_3d_vector(values):
     return np.array(values, dtype=np.float64)
 
 
+def is_matrix_border(*, num_rows, num_columns, row_idx, col_idx):
+    assert num_rows > 0
+    assert num_columns > 0
+    is_row_bottom_border = row_idx == (num_rows - 1)
+    is_row_top_border = row_idx == 0
+    is_col_bottom_border = col_idx == (num_columns - 1)
+    is_col_top_border = col_idx == 0
+    is_row_border = is_row_bottom_border or is_row_top_border
+    is_col_border = is_col_bottom_border or is_col_top_border
+    return is_row_border or is_col_border
+
+
 def get_corner_position(center_position, size, corner_type):
     sign_map = {
         #               X   Y  Z
@@ -117,7 +130,7 @@ def get_side_position(center_position, size, side_type):
     return center_position + corner_translation
 
 
-class SwitchMatrix(object):
+class KeyboardState(object):
     def __init__(self, pykeeb_matrix):
         self.num_rows = pykeeb_matrix.rows
         self.num_columns = pykeeb_matrix.columns
@@ -126,13 +139,13 @@ class SwitchMatrix(object):
         self.wall_thickness = pykeeb_matrix.wall_thickness
         self.pykeeb_matrix = pykeeb_matrix
         self.border_mounts = collections.OrderedDict()
-        self.extract_switch_matrix()
+        self.extract_switch_mounts()
 
     def remove_pykeeb_walls(self):
         pass
 
     def extract_switch_mounts(self):
-        self.mount_matrix = [[] for _ in self.num_rows]
+        self.mount_matrix = [[] for _ in range(self.num_rows)]
         for row_idx, row in enumerate(self.pykeeb_matrix.sm):
             for col_idx, pykeeb_switch_mount in enumerate(row):
                 is_border = self.mount_is_border(row_idx, col_idx)
@@ -142,14 +155,17 @@ class SwitchMatrix(object):
                     row_idx=row_idx,
                     col_idx=col_idx,
                 )
-                self.mount_matrix.append(keymount)
+                self.mount_matrix[row_idx].append(keymount)
                 if is_border:
                     self.border_mounts[(row_idx, col_idx)] = keymount
 
     def mount_is_border(self, row_idx, col_idx):
-        is_row_border = row_idx == (self.num_rows - 1)
-        is_col_border = col_idx == (self.num_columns - 1)
-        return is_row_border or is_col_border
+        return is_matrix_border(
+            num_rows=self.num_rows,
+            num_columns=self.num_columns,
+            col_idx=col_idx,
+            row_idx=row_idx,
+        )
 
     def next_border_mount(self, row_idx, col_idx):
         assert self.mount_is_border(row_idx, col_idx)
@@ -173,6 +189,18 @@ class SwitchMatrix(object):
         previous_mount_key = border_indices[previous_idx]
         return self.border_mounts(previous_mount_key)
 
+    def __repr__(self):
+        return (
+            f"KeyboardState( \n"
+            f"num_rows: {self.num_rows} \n"
+            f"num_columns: {self.num_columns} \n"
+            f"wall_thickness: {self.wall_thickness} \n"
+            f"border_mounts ({len(self.border_mounts.keys())}): "
+            f"{self.border_mounts.keys()} \n\n"
+            f"mount_matrix ({self.num_rows * self.num_columns}):\n"
+            f"{self.mount_matrix}\n"
+        )
+
 
 class KeyMount(object):
     def __init__(self, switch_mount, parent_matrix, row_idx, col_idx):
@@ -187,6 +215,14 @@ class KeyMount(object):
         self.openscad_solid = switch_mount.switch_mount
         self.parent_matrix = parent_matrix
         self.walls = []
+
+    @property
+    def row_idx(self):
+        return self._row_idx
+
+    @property
+    def col_idx(self):
+        return self._col_idx
 
     @property
     def up_left_corner(self):
@@ -225,7 +261,7 @@ class KeyMount(object):
         return get_side_position(
             center_position=self.center,
             size=self.size,
-            side_type="up_side"
+            side_type="up"
         )
 
     @property
@@ -233,7 +269,7 @@ class KeyMount(object):
         return get_side_position(
             center_position=self.center,
             size=self.size,
-            side_type="down_side"
+            side_type="down"
         )
 
     @property
@@ -241,7 +277,7 @@ class KeyMount(object):
         return get_side_position(
             center_position=self.center,
             size=self.size,
-            side_type="left_side"
+            side_type="left"
         )
 
     @property
@@ -249,7 +285,7 @@ class KeyMount(object):
         return get_side_position(
             center=self.center,
             size=self.size,
-            side_type="right_side"
+            side_type="right"
         )
 
     @property
@@ -263,19 +299,29 @@ class KeyMount(object):
     @property
     def is_border(self):
         return self.parent_matrix.mount_is_border(
-            row_idx=self._row_idx, col_idx=self._col_idx
+            row_idx=self.row_idx, col_idx=self.col_idx
         )
 
     @property
     def next_border_mount(self):
         return self.parent_matrix.next_border_mount(
-            row_idx=self._row_idx, col_idx=self._col_idx
+            row_idx=self.row_idx, col_idx=self.col_idx
         )
 
     @property
     def previous_border_mount(self):
         return self.parent_matrix.previous_border_mount(
-            row_idx=self._row_idx, col_idx=self._col_idx
+            row_idx=self.row_idx, col_idx=self.col_idx
+        )
+
+    def __repr__(self):
+        return (
+            f"KeyMount( \n"
+            f"idx: ({self.row_idx}, {self.col_idx})\n"
+            f"position: t:{self.center.rotation.vector.tolist()} "
+            f"r:{self.center.rotation.vector.tolist()}\n"
+            f"size: {self.size.vector.tolist()}\n"
+            f"is_border: {self.is_border}"
         )
 
 
@@ -384,6 +430,12 @@ class Position(object):
         elif len(other) <= 3:
             return self.translation - other
         raise TypeError
+
+    def __repr__(self):
+        return (
+            f"translation: {self.translation.vector}, "
+            f"rotation: {self.rotation.vector}"
+        )
 
     __radd__ = __add__
     __rsub__ = __sub__
