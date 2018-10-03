@@ -22,6 +22,8 @@ Cylinder
 Cube
 Wall
 """
+from utils import rotate, translate
+
 import collections
 import numpy as np
 
@@ -30,43 +32,6 @@ X = 0
 Y = 1
 Z = 2
 dimensions = 3
-
-
-def rotate(point, rotation):
-    assert len(point) == 3
-    assert len(rotation) == 3
-    # Force a column vector
-    point = np.array(point).reshape((3, 1))
-
-    theta_x = np.radians(rotation[0])
-    x_rot_mat = [[1.0,                0.0,                 0.0],
-                 [0.0,    np.cos(theta_x),    -np.sin(theta_x)],
-                 [0.0,    np.sin(theta_x),     np.cos(theta_x)]]
-    x_rot_mat = np.array(x_rot_mat)
-
-    theta_y = np.radians(rotation[1])
-    y_rot_mat = [[np.cos(theta_y),     0.0,     np.sin(theta_y)],
-                 [0.0,                 1.0,                 0.0],
-                 [-np.sin(theta_y),    0.0,     np.cos(theta_y)]]
-    y_rot_mat = np.array(y_rot_mat)
-
-    theta_z = np.radians(rotation[2])
-    z_rot_mat = [[np.cos(theta_z),    -np.sin(theta_z),     0.0],
-                 [np.sin(theta_z),     np.cos(theta_z),     0.0],
-                 [0.0,                             0.0,    1.0]]
-    z_rot_mat = np.array(z_rot_mat)
-
-    rotated_point = np.dot(x_rot_mat, point)
-    rotated_point = np.dot(y_rot_mat, rotated_point)
-    rotated_point = np.dot(z_rot_mat, rotated_point)
-    return [p[0] for p in rotated_point.tolist()]
-
-
-def translate(point, shift_list):
-    translated_x = point[0] + shift_list[0]
-    translated_y = point[1] + shift_list[1]
-    translated_z = point[2] + shift_list[2]
-    return [translated_x, translated_y, translated_z]
 
 
 def fetch_translation(transformations, origin=[0, 0, 0]):
@@ -85,11 +50,6 @@ def fetch_rotation(transformations):
     for transformation in transformations:
         rotation += np.array(transformation[3:])
     return rotation
-
-
-def make_3d_vector(values):
-    assert len(values) == 3
-    return np.array(values, dtype=np.float64)
 
 
 def is_matrix_border(*, num_rows, num_columns, row_idx, col_idx):

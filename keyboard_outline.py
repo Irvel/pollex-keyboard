@@ -3,32 +3,13 @@ from multiprocessing import Pool
 from openpyscad import Cube
 
 import numpy as np
-import keyboard_state as utils
+import utils
 
 
 def points_in_same_plane(point_a, point_b):
     same_x = np.isclose(point_a.translation.x_comp, point_b.translation.x_comp)
     same_y = np.isclose(point_a.translation.y_comp, point_b.translation.y_comp)
     return same_x or same_y
-
-
-def sum_shapes(shapes):
-    # The built-in Python sum() doesn't work with shapes
-    if len(shapes) == 1:
-        return shapes[0]
-    total = shapes[0]
-    for shape in shapes[1:]:
-        total += shape
-    return total
-
-
-def interpolate_cuadratic_bezier(point_a, point_b, control_point, segments=10):
-    curve_points = []
-    for seg in range(segments):
-        t = seg / segments
-        curve_point = ((1-t)**2 * point_a + 2*(1-t)*t*control_point + t**2 * point_b)
-        curve_points.append(curve_point)
-    return curve_points
 
 
 def get_middle_point(point_a, point_b, offset=[0, 0, 0]):
@@ -50,7 +31,7 @@ def generate_simple_solid_outline(keyboard_state):
                 walls.append((corner_shapes[-1] + shape).hull())
             corner_shapes.append(shape)
     walls.append((corner_shapes[0] + corner_shapes[-1]).hull())
-    return sum_shapes(walls).color([.4, .6, .5]), corner_shapes
+    return utils.sum_shapes(walls).color([.4, .6, .5]), corner_shapes
 
 
 def generate_outer_outline(keyboard_state, expand_distance):
@@ -67,7 +48,7 @@ def generate_outer_outline(keyboard_state, expand_distance):
                 walls.append((corner_shapes[-1] + shape).hull())
             corner_shapes.append(shape)
     walls.append((corner_shapes[0] + corner_shapes[-1]).hull())
-    return sum_shapes(walls).turn_on_debug(), corner_shapes
+    return utils.sum_shapes(walls).turn_on_debug(), corner_shapes
 
 
 def join_outlines(shapes_a, shapes_b):
@@ -91,7 +72,7 @@ def join_outlines(shapes_a, shapes_b):
         hulls.append((shape_a + shape_b + shape_d).hull())
         hulls.append((shape_a + shape_c + shape_d).hull())
     print("\nReducing hulls into a single shape...")
-    return sum_shapes(hulls).color([.5, .8, .7])
+    return utils.sum_shapes(hulls).color([.5, .8, .7])
 
 
 def get_corner_normal(key_mount, offset):
@@ -161,7 +142,7 @@ def out_outline(keyboard_state, outer_expand, curvature, height_expand, offset_t
                 point_b=p5,
                 offset=bezier_offset,
             )
-            trajectory = interpolate_cuadratic_bezier(
+            trajectory = utils.interpolate_cuadratic_bezier(
                 point_a=p0,
                 point_b=p5,
                 control_point=bezier_control,
@@ -186,7 +167,7 @@ def out_outline(keyboard_state, outer_expand, curvature, height_expand, offset_t
                 point_b=p2,
                 offset=bezier_offset,
             )
-            trajectory = interpolate_cuadratic_bezier(
+            trajectory = utils.interpolate_cuadratic_bezier(
                 point_a=p1,
                 point_b=p2,
                 control_point=bezier_control,
@@ -206,7 +187,7 @@ def out_outline(keyboard_state, outer_expand, curvature, height_expand, offset_t
                 walls.append((corner_shapes[-1] + shape).hull())
             corner_shapes.append(shape)
     walls.append((corner_shapes[0] + corner_shapes[-1]).hull())
-    return sum_shapes(walls).color([.6, .7, .2]), corner_shapes
+    return utils.sum_shapes(walls).color([.6, .7, .2]), corner_shapes
 
 
 def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height_expand, offset_to_corner, interpolation_segments=18, shrink_sides=False):
@@ -231,7 +212,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 point_b=p1,
                 offset=bezier_offset,
             )
-            trajectory = interpolate_cuadratic_bezier(
+            trajectory = utils.interpolate_cuadratic_bezier(
                 point_a=p0,
                 point_b=p1,
                 control_point=bezier_control,
@@ -251,7 +232,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 point_b=p3,
                 offset=bezier_offset,
             )
-            trajectory_top = interpolate_cuadratic_bezier(
+            trajectory_top = utils.interpolate_cuadratic_bezier(
                 point_a=p2,
                 point_b=p3,
                 control_point=bezier_control,
@@ -262,7 +243,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 point_b=p1,
                 offset=bezier_offset,
             )
-            trajectory_bottom = interpolate_cuadratic_bezier(
+            trajectory_bottom = utils.interpolate_cuadratic_bezier(
                 point_a=p0,
                 point_b=p1,
                 control_point=bezier_control,
@@ -274,7 +255,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 point_b=p2,
                 offset=bezier_offset,
             )
-            trajectory_corner = interpolate_cuadratic_bezier(
+            trajectory_corner = utils.interpolate_cuadratic_bezier(
                 point_a=p1,
                 point_b=p2,
                 control_point=bezier_control,
@@ -327,7 +308,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 point_b=p2,
                 offset=bezier_offset,
             )
-            trajectory = interpolate_cuadratic_bezier(
+            trajectory = utils.interpolate_cuadratic_bezier(
                 point_a=p1,
                 point_b=p2,
                 control_point=bezier_control,
@@ -345,7 +326,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 walls.append((corner_shapes[-1] + shape).hull())
             corner_shapes.append(shape)
     walls.append((corner_shapes[0] + corner_shapes[-1]).hull())
-    return sum_shapes(walls).color([.6, .7, .2]), corner_shapes
+    return utils.sum_shapes(walls).color([.6, .7, .2]), corner_shapes
 
 
 def generate_outline(keyboard_state, draft_version):
@@ -414,7 +395,7 @@ def generate_outline(keyboard_state, draft_version):
     end_time = datetime.now()
     print(f"Finished generating outlines in {end_time - start_time}")
     if draft_version:
-        return sum_shapes(skeleton_outlines)
+        return utils.sum_shapes(skeleton_outlines)
 
     print("\nJoining outlines with hulls...")
     outer_hull = []
@@ -438,4 +419,4 @@ def generate_outline(keyboard_state, draft_version):
         """
     end_time = datetime.now()
     print(f"Finished joining outlines in {end_time - start_time}")
-    return sum_shapes(outer_hull)
+    return utils.sum_shapes(outer_hull)
