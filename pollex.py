@@ -507,7 +507,7 @@ def generate_thumb_cluster(plate):
     thumb.front_wall_hulls = [[] for col in range(thumb.columns - 1)]
 
 
-    thumb.front_right_corner = thumb.sm[thumb.rows-1][2].get_corner("fr", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
+    # thumb.front_right_corner = thumb.sm[thumb.rows-1][2].get_corner("fr", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
     thumb.front_right_corner = []
     thumb.front_right_corner_hulls = []
 
@@ -522,7 +522,7 @@ def generate_thumb_cluster(plate):
 
     #thumb.left_wall[2] = thumb.sm[2][0].get_left(3, 3)
     #thumb.left_wall[1] = thumb.sm[1][0].get_left(3, 3)
-    #thumb.front_left_corner = thumb.sm[thumb.rows-1][0].get_corner("fl", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
+    thumb.front_left_corner = thumb.sm[thumb.rows-1][0].get_corner("fl", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
     return thumb
 
 
@@ -1556,7 +1556,7 @@ conn_hulls += (thumb.sm[0][3].get_front(3, 3) + plate.sm[BOTTOM_ROW][INDEX].get_
 #conn_hulls += (br_corner + plate.back_wall_hulls[RING]).hull()
 #conn_hulls += (fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
 #conn_hulls += (thumb.sm[0][2].get_right(3, 3) + fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
-conn_hulls += (thumb.sm[0][1].get_back(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
 
 
 
@@ -1587,3 +1587,5 @@ right_hand = sum_shapes(
 left_hand = right_hand.mirror([1, 0, 0])
 (left_hand).write("pollex_left.scad")
 (right_hand).write("pollex_right.scad")
+print("Finished!")
+
