@@ -104,6 +104,39 @@ def is_matrix_border(*, num_rows, num_columns, row_idx, col_idx):
     return is_row_border or is_col_border
 
 
+def simulate_clockwise_path(num_rows, num_columns):
+    assert num_rows >= 2
+    assert num_columns >= 2
+
+    def reached_limit(row, col, row_step):
+        row_limit = (row >= num_rows - 1) or (row <= 0)
+        col_limit = (col >= num_columns - 1) or (col <= 0)
+        if row_step:
+            return row_limit
+        else:
+            return col_limit
+
+    row, col = 0, 0
+    row_step, col_step = 0, 1
+    sign = 1
+    path = []
+    limit_flag = False
+    while True:
+        path.append((row, col))
+        row += sign * row_step
+        col += sign * col_step
+        if reached_limit(row, col, row_step=row_step):
+            if limit_flag:
+                sign *= -1
+                limit_flag = False
+            else:
+                limit_flag = True
+            row_step, col_step = col_step, row_step
+        if (row, col) == (0, 0):
+            break
+    return path
+
+
 def get_corner_position(center_position, size, corner_type):
     sign_map = {
         #               X   Y  Z
@@ -143,14 +176,43 @@ class KeyboardState(object):
         assert self.num_columns <= 5
         self.wall_thickness = pykeeb_matrix.wall_thickness
         self.pykeeb_matrix = pykeeb_matrix
-        self.border_mounts = collections.OrderedDict()
+        self._border_mount_map = collections.OrderedDict()
         self.extract_switch_mounts()
+
+    @property
+    def border_mounts(self):
+        return list(self._border_mount_map.values())
+
+    @property
+    def up_left_idx(self):
+        return self.num_rows - 1, 0
+
+    @property
+    def up_right_idx(self):
+        return self.num_rows - 1, self.num_columns - 1
+
+    @property
+    def down_left_idx(self):
+        return 0, 0
+
+    @property
+    def down_right_idx(self):
+        return 0, self.num_columns - 1
+
+    def mount(self, row_idx, col_idx):
+        assert row_idx < self.num_rows
+        assert col_idx < self.num_columns
+        return self.mount_matrix[row_idx][col_idx]
 
     def remove_pykeeb_walls(self):
         pass
 
     def extract_switch_mounts(self):
         self.mount_matrix = [[] for _ in range(self.num_rows)]
+        border_idx_path = simulate_clockwise_path(
+            num_rows=self.num_rows, num_columns=self.num_columns
+        )
+        unordered_mount_map = {}
         for row_idx, row in enumerate(self.pykeeb_matrix.sm):
             for col_idx, pykeeb_switch_mount in enumerate(row):
                 is_border = self.mount_is_border(row_idx, col_idx)
@@ -162,7 +224,10 @@ class KeyboardState(object):
                 )
                 self.mount_matrix[row_idx].append(keymount)
                 if is_border:
-                    self.border_mounts[(row_idx, col_idx)] = keymount
+                    unordered_mount_map[(row_idx, col_idx)] = keymount
+        for mount_idx in border_idx_path:
+            keymount = unordered_mount_map[mount_idx]
+            self._border_mount_map[mount_idx] = keymount
 
     def mount_is_border(self, row_idx, col_idx):
         return is_matrix_border(
@@ -174,25 +239,25 @@ class KeyboardState(object):
 
     def next_border_mount(self, row_idx, col_idx):
         assert self.mount_is_border(row_idx, col_idx)
-        border_indices = list(self.border_mounts.keys())
+        border_indices = list(self._border_mount_map.keys())
         current_idx = border_indices.index((row_idx, col_idx))
         if current_idx == len(border_indices) - 1:
             next_idx = 0
         else:
             next_idx = current_idx + 1
         next_mount_key = border_indices[next_idx]
-        return self.border_mounts(next_mount_key)
+        return self._border_mount_map(next_mount_key)
 
     def previous_border_mount(self, row_idx, col_idx):
         assert self.mount_is_border(row_idx, col_idx)
-        border_indices = list(self.border_mounts.keys())
+        border_indices = list(self._border_mount_map.keys())
         current_idx = border_indices.index((row_idx, col_idx))
         if current_idx == 0:
             previous_idx = len(border_indices) - 1
         else:
             previous_idx = current_idx - 1
         previous_mount_key = border_indices[previous_idx]
-        return self.border_mounts(previous_mount_key)
+        return self._border_mount_map(previous_mount_key)
 
     def __repr__(self):
         return (
@@ -200,8 +265,8 @@ class KeyboardState(object):
             f"num_rows: {self.num_rows} \n"
             f"num_columns: {self.num_columns} \n"
             f"wall_thickness: {self.wall_thickness} \n"
-            f"border_mounts ({len(self.border_mounts.keys())}): "
-            f"{self.border_mounts.keys()} \n\n"
+            f"border_mount_map ({len(self._border_mount_map.keys())}): "
+            f"{self._border_mount_map.keys()} \n\n"
             f"mount_matrix ({self.num_rows * self.num_columns}):\n"
             f"{self.mount_matrix}\n"
         )
@@ -213,13 +278,14 @@ class KeyMount(object):
         self._col_idx = col_idx
         self.center = Position.from_transform(switch_mount.transformations)
         self.size = Size(
-            size_x=switch_mount.mount_length,
-            size_y=switch_mount.mount_width,
+            size_x=switch_mount.mount_width,
+            size_y=switch_mount.mount_length,
             size_z=switch_mount.thickness
         )
         self.openscad_solid = switch_mount.switch_mount
         self.parent_matrix = parent_matrix
         self.walls = []
+        self.side_expand_distance = 0
 
     @property
     def row_idx(self):
@@ -282,16 +348,73 @@ class KeyMount(object):
         return get_side_position(
             center_position=self.center,
             size=self.size,
-            side_type="left"
+            side_type="left",
+            expand_distance=self.side_expand_distance,
         )
 
     @property
     def right_side(self):
         return get_side_position(
-            center=self.center,
+            center_position=self.center,
             size=self.size,
-            side_type="right"
+            side_type="right",
+            expand_distance=self.side_expand_distance,
         )
+
+    @property
+    def outer_sides(self):
+        sides = []
+        types = []
+        if self._col_idx == self.parent_matrix.num_columns - 1:
+            sides.append(self.right_side)
+            types.append("right")
+
+        if self._row_idx == self.parent_matrix.num_rows - 1:
+            sides.append(self.up_side)
+            types.append("up")
+
+        if self._col_idx == 0:
+            sides.append(self.left_side)
+            types.append("left")
+
+        if self._row_idx == 0:
+            sides.append(self.down_side)
+            types.append("down")
+
+        # Make sure the outer sides order matches clockwise rotation.
+        if (self._col_idx == self.parent_matrix.num_columns - 1
+                and self._row_idx == 0):
+            sides.reverse()
+            types.reverse()
+        return sides, types
+
+    def fetch_double_outer_sides(self, offset_to_corner):
+        sides, types = self.outer_sides
+        if len(sides) <= 1:
+            # One side means we're in the middle of either a row or column.
+            offset_to_corner = 0
+        doubled_sides = []
+        for side, side_type in zip(sides, types):
+            if side_type is "left":
+                axis_mask = np.array([0, 1, 0])
+            elif side_type is "right":
+                axis_mask = np.array([0, -1, 0])
+            elif side_type is "up":
+                axis_mask = np.array([1, 0, 0])
+            else:
+                axis_mask = np.array([-1, 0, 0])
+            center_to_corner = self.size / 2
+            shift_amount = (center_to_corner - offset_to_corner) * axis_mask
+            side_translation = rotate(
+                point=shift_amount,
+                rotation=self.center.rotation,
+            )
+            doubled_sides.append(side + side_translation)
+            doubled_sides.append(side - side_translation)
+        return doubled_sides
+
+    def fetch_outer_corners(self):
+        return self.fetch_double_outer_sides(offset_to_corner=0)
 
     @property
     def translation(self):
