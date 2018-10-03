@@ -168,6 +168,10 @@ def get_side_position(center_position, size, side_type, expand_distance=0):
     return center_position + side_translation
 
 
+def are_indices_equal(row_a, col_a, row_b, col_b):
+    return row_a == row_b and col_a == col_b
+
+
 class KeyboardState(object):
     def __init__(self, pykeeb_matrix):
         self.num_rows = pykeeb_matrix.rows
@@ -294,6 +298,46 @@ class KeyMount(object):
     @property
     def col_idx(self):
         return self._col_idx
+
+    @property
+    def is_up_left_corner(self):
+        corner_row, corner_col = self.parent_matrix.up_left_idx
+        return are_indices_equal(row_a=corner_row, col_a=corner_col,
+                                 row_b=self.row_idx, col_b=self.col_idx)
+
+    @property
+    def is_up_right_corner(self):
+        corner_row, corner_col = self.parent_matrix.up_right_idx
+        return are_indices_equal(row_a=corner_row, col_a=corner_col,
+                                 row_b=self.row_idx, col_b=self.col_idx)
+
+    @property
+    def is_down_left_corner(self):
+        corner_row, corner_col = self.parent_matrix.down_left_idx
+        return are_indices_equal(row_a=corner_row, col_a=corner_col,
+                                 row_b=self.row_idx, col_b=self.col_idx)
+
+    @property
+    def is_down_right_corner(self):
+        corner_row, corner_col = self.parent_matrix.down_right_idx
+        return are_indices_equal(row_a=corner_row, col_a=corner_col,
+                                 row_b=self.row_idx, col_b=self.col_idx)
+
+    @property
+    def is_top(self):
+        return self.row_idx == self.parent_matrix.num_rows - 1
+
+    @property
+    def is_bottom(self):
+        return self.row_idx == 0
+
+    @property
+    def is_right(self):
+        return self.col_idx == self.parent_matrix.num_columns - 1
+
+    @property
+    def is_left(self):
+        return self.col_idx == 0
 
     @property
     def up_left_corner(self):
