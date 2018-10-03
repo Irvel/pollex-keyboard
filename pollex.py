@@ -193,28 +193,27 @@ def apply_columns_ergo_main(plate):
 
     # Apply horizontal curvature
     h_curve = 2
-    plate.cm[INDEX_SIDE][Y_ROT] += h_curve * 2.2
+    plate.cm[INDEX_SIDE][Y_ROT] += h_curve
     plate.cm[INDEX][Y_ROT]      += h_curve
     plate.cm[MIDDLE][Y_ROT]     += 0
     plate.cm[RING][Y_ROT]       += -h_curve * 1.2
     plate.cm[PINKY][Y_ROT]      += -h_curve
 
     # Compensate mount heights for the horizontal curvature
-    plate.cm[INDEX_SIDE][Z_MOV] += h_curve * .05
+    plate.cm[INDEX_SIDE][Z_MOV] += -h_curve * .05
     plate.cm[INDEX][Z_MOV]      += -h_curve * .4
     plate.cm[MIDDLE][Z_MOV]     += -h_curve * .6
     plate.cm[RING][Z_MOV]       += -h_curve * .4
     plate.cm[PINKY][Z_MOV]      += h_curve * .05
 
     # Get rid of x shift to the right in the center row because of the horizontal curvature
-    center_row = plate.rows // 2
     # Shifting the entire row does not compensate in the way we want, so we apply the shifting
     # to individual mounts instead, except for the middle finger one.
-    plate.im[center_row][INDEX_SIDE][X_MOV] -= h_curve / 3.6  # Compensate index_side inward rotation
-    plate.im[BOTTOM_ROW][INDEX_SIDE][X_MOV] -= h_curve / 13
-    plate.im[center_row][INDEX][X_MOV] -= h_curve / 10
-    plate.im[center_row][RING][X_MOV] += h_curve / 10
-    plate.im[center_row][PINKY][X_MOV] += h_curve / 10
+    # plate.im[center_row][INDEX_SIDE][X_MOV] -= h_curve / 3.6  # Compensate index_side inward rotation
+    plate.im[BOTTOM_ROW][INDEX_SIDE][X_MOV] -= h_curve / 10
+    plate.im[CENTER_ROW][INDEX][X_MOV] -= h_curve / 10
+    plate.im[CENTER_ROW][RING][X_MOV] += h_curve / 10
+    plate.im[CENTER_ROW][PINKY][X_MOV] += h_curve / 10
 
     # Create column cavities to account for different finger lengths
     plate.cm[INDEX_SIDE][Z_MOV] += -3
