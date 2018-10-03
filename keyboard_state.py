@@ -366,7 +366,7 @@ class KeyMount(object):
     @property
     def down_right_corner(self):
         return get_corner_position(
-            center=self.center,
+            center_position=self.center,
             size=self.size,
             corner_type="down_right"
         )
@@ -376,7 +376,8 @@ class KeyMount(object):
         return get_side_position(
             center_position=self.center,
             size=self.size,
-            side_type="up"
+            side_type="up",
+            expand_distance=self.side_expand_distance,
         )
 
     @property
@@ -384,7 +385,8 @@ class KeyMount(object):
         return get_side_position(
             center_position=self.center,
             size=self.size,
-            side_type="down"
+            side_type="down",
+            expand_distance=self.side_expand_distance,
         )
 
     @property
@@ -518,31 +520,45 @@ class XYZVector(object):
     def z_comp(self):
         return self.vector[Z]
 
+    def tolist(self):
+        return self.vector.tolist()
+
     def __add__(self, other):
-        assert len(other) <= 3
-        return self.vector + other.vector
+        if isinstance(other, XYZVector):
+            return self.vector + other.vector
+        return self.vector + other
 
     def __sub__(self, other):
-        assert len(other) <= 3
-        return self.vector - other.vector
+        if isinstance(other, XYZVector):
+            return self.vector - other.vector
+        return self.vector - other
 
     def __mul__(self, other):
-        assert len(other) <= 3
-        return self.vector * other.vector
+        if isinstance(other, XYZVector):
+            return self.vector * other.vector
+        return self.vector * other
 
     def __truediv__(self, other):
-        assert len(other) <= 3
-        return self.vector / other.vector
+        if isinstance(other, XYZVector):
+            return self.vector / other.vector
+        return self.vector / other
 
     def __pow__(self, other):
-        assert len(other) <= 3
-        return self.vector ** other.vector
+        if isinstance(other, XYZVector):
+            return self.vector ** other.vector
+        return self.vector ** other
+
+    def __getitem__(self, key):
+        return self.vector[key]
+
+    def __setitem__(self, key, value):
+        self.vector[key] = value
 
     def __len__(self):
         return len(self.vector)
 
     def __repr__(self):
-        return f"x: {self.x_comp}, y: {self.y_comp}, z: {self.z_comp}"
+        return f"x: {self.x_comp:.4f}, y: {self.y_comp:.4f}, z: {self.z_comp:.4f}"
 
     __radd__ = __add__
     __rsub__ = __sub__
@@ -591,17 +607,63 @@ class Position(object):
 
     def __add__(self, other):
         if isinstance(other, Position):
-            return self.translation + other.translation
-        elif len(other) <= 3:
-            return self.translation + other
-        raise TypeError
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation + other.translation
+            )
+        else:
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation + other
+            )
 
     def __sub__(self, other):
         if isinstance(other, Position):
-            return self.translation - other.translation
-        elif len(other) <= 3:
-            return self.translation - other
-        raise TypeError
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation - other.translation
+            )
+        else:
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation - other
+            )
+
+    def __truediv__(self, other):
+        if isinstance(other, Position):
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation / other.translation
+            )
+        else:
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation / other
+            )
+
+    def __mul__(self, other):
+        if isinstance(other, Position):
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation * other.translation
+            )
+        else:
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation * other
+            )
+
+    def __pow__(self, other):
+        if isinstance(other, Position):
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation ** other.translation
+            )
+        else:
+            return Position(
+                rotation=self.rotation,
+                translation=self.translation ** other
+            )
 
     def __repr__(self):
         return (
@@ -611,6 +673,11 @@ class Position(object):
 
     __radd__ = __add__
     __rsub__ = __sub__
+    __rtruediv__ = __truediv__
+    __rmul__ = __mul__
+    __rpow__ = __pow__
+
+
 
 
 class JoinMethod(object):
