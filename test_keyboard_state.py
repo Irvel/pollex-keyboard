@@ -196,6 +196,38 @@ def test_right_size():
     )
 
 
+def test_side_unrotated_plane():
+    unrotated_plane = np.array([0, 0, 0])
+    expected_z = 40.24
+    center = np.array([231, 131, expected_z])
+    position = keyboard_state.Position(rotation=unrotated_plane,
+                                       translation=center)
+    size = np.array([362, 362, 0])
+    actual_position = keyboard_state.get_side_position(
+        center_position=position,
+        size=size,
+        side_type="right"
+    )
+    assert expected_z == actual_position.translation.z_comp
+
+
+def test_side_rotated_plane():
+    vertical_rotation = np.array([0, 90, 0])
+    x = .5
+    y = .5
+    center = np.array([x, y, 10])
+    position = keyboard_state.Position(rotation=vertical_rotation,
+                                       translation=center)
+    size = np.array([1, 1, 0])
+    actual_position = keyboard_state.get_side_position(
+        center_position=position,
+        size=size,
+        side_type="right"
+    )
+    assert x == actual_position.translation.x_comp
+    assert y == actual_position.translation.y_comp
+
+
 def test_is_top_left_border():
     # rows = 4
     # columns 6
@@ -254,3 +286,41 @@ def test_is_bottom_right_border():
         row_idx=row_idx,
         col_idx=col_idx,
     )
+
+
+def test_simulate_clockwise_path():
+    num_rows = 4
+    num_columns = 4
+    expected_path = [
+        (0, 0), (0, 1), (0, 2), (0, 3),
+        (1, 3), (2, 3), (3, 3), (3, 2),
+        (3, 1), (3, 0), (2, 0), (1, 0),
+    ]
+    actual_path = keyboard_state.simulate_clockwise_path(
+        num_rows=num_rows, num_columns=num_columns
+    )
+    print(actual_path)
+    assert actual_path == expected_path
+
+
+def test_simulate_small_clockwise_path():
+    num_rows = 2
+    num_columns = 2
+    expected_path = [
+        (0, 0), (0, 1), (1, 1), (1, 0)
+    ]
+    actual_path = keyboard_state.simulate_clockwise_path(
+        num_rows=num_rows, num_columns=num_columns
+    )
+    print(actual_path)
+    assert actual_path == expected_path
+
+
+def test_refuses_no_grid_clockwise_path():
+    num_rows = 1
+    num_columns = 2
+
+    with pytest.raises(AssertionError):
+        keyboard_state.simulate_clockwise_path(
+            num_rows=num_rows, num_columns=num_columns
+        )
