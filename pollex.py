@@ -185,7 +185,7 @@ def apply_columns_ergo_main(plate):
     Z_ROT = 5
 
     # Shift columns back towards the base of the hand
-    plate.cm[INDEX_SIDE][Y_MOV] += -3
+    plate.cm[INDEX_SIDE][Y_MOV] += -.4
     plate.cm[INDEX][Y_MOV]      += -3
     plate.cm[MIDDLE][Y_MOV]     += -3
     plate.cm[RING][Y_MOV]       += -8
@@ -226,7 +226,7 @@ def apply_columns_ergo_main(plate):
     plate.cm[PINKY][X_MOV]      += .4
 
     # Shift index side column towards the index
-    plate.cm[INDEX_SIDE][X_MOV]      += 1.2
+    plate.cm[INDEX_SIDE][X_MOV]      += 1.4
 
 
     # Variable arc length for each finger
@@ -240,6 +240,8 @@ def apply_columns_ergo_main(plate):
         for column in range(plate.columns):
             # Make the arc length longer for longer fingers
             row_spacing = plate.row_spacing
+            if column == INDEX_SIDE:
+                row_spacing -= 2.6
             if column == MIDDLE:
                 row_spacing += 2.0
             if column == RING:
