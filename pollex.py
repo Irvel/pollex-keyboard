@@ -420,11 +420,11 @@ def generate_thumb_cluster(plate):
                             mx_notches=False)
     plate.side_wall_thickness = 1
     h_curve = 36
-    thumb.cm[0] = [ 17, -34,   h_curve * 1.14,  -22,  h_curve * 2.7,  -20]
-    thumb.cm[1] = [ -1,  -18,   h_curve * .52,  7,  h_curve * 1.6,  8]
+    thumb.cm[0] = [ 15, -29,   h_curve * 1.14,  -22,  h_curve * 2.3,  -20]
+    thumb.cm[1] = [ -1,  -16,   h_curve * .52,  7,  h_curve * 1.3,  8]
     thumb.cm[2] = [  0,   0,   h_curve * .16,  0,              0,  0]
-    thumb.cm[3] = [  1,  -21,   h_curve * .52,  7, -h_curve * 1.6,  -8]
-    thumb.cm[4] = [-20, -34,   h_curve * 1.2,  -26, -h_curve * 2.95,  23]  # Top key
+    thumb.cm[3] = [  1,  -14,   h_curve * .52,  7, -h_curve * 1.3,  -8]
+    thumb.cm[4] = [-13, -29,   h_curve * 1.14,  -26, -h_curve * 2.45,  23]  # Top key
 
 
 
