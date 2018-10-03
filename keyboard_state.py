@@ -117,7 +117,7 @@ def get_corner_position(center_position, size, corner_type):
     return center_position + corner_translation
 
 
-def get_side_position(center_position, size, side_type):
+def get_side_position(center_position, size, side_type, expand_distance=0):
     sign_map = {
         #         X   Y  Z
         "up":    [0,  1, 0],
@@ -126,8 +126,13 @@ def get_side_position(center_position, size, side_type):
         "right": [1,  0, 0],
     }
     side_sign = np.array(sign_map[side_type])
-    corner_translation = (size / 2) * side_sign
-    return center_position + corner_translation
+    side_translation = ((size / 2) + expand_distance) * side_sign
+    if isinstance(center_position, Position):
+        side_translation = rotate(
+            point=side_translation,
+            rotation=center_position.rotation,
+        )
+    return center_position + side_translation
 
 
 class KeyboardState(object):
