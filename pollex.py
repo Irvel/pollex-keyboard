@@ -220,7 +220,7 @@ def apply_columns_ergo_main(plate):
     plate.cm[INDEX][Z_MOV]      += -3
     plate.cm[MIDDLE][Z_MOV]     += -8
     plate.cm[RING][Z_MOV]       += -6
-    plate.cm[PINKY][Z_MOV]      += -4
+    plate.cm[PINKY][Z_MOV]      += -5
 
     # Shift the pinky finger column away from the other columns
     plate.cm[PINKY][X_MOV]      += .4
@@ -247,7 +247,7 @@ def apply_columns_ergo_main(plate):
             if column == RING:
                 row_spacing += 0.8
             if column == PINKY:
-                row_spacing -= 2.6
+                row_spacing -= 3.4
             switch = Keyswitch_mount([list(map(sum, zip(modifiers[row][column][:3], [column * (plate.mount_width + plate.column_spacing), row * (plate.mount_length + row_spacing), 0]))) + modifiers[row][column][3:6], [plate.origin[0], plate.origin[1], plate.origin[2], plate.x_tent, plate.y_tent, plate.z_tent]], modifiers[row][column][6], plate.switch_type, plate.mount_length, plate.mount_width, plate.mx_notches)
             switch_row.append(switch)
         switch_matrix.append(switch_row)
