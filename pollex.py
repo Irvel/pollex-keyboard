@@ -1,7 +1,11 @@
+from datetime import datetime
 from pykeeb import DSA_KEY_WIDTH, Keyboard_matrix, project, Keyswitch_mount
 from openpyscad import Cube, Sphere, Cylinder, Minkowski, Circle, Polygon
 
+import keyboard_state
+import keyboard_outline
 import numpy as np
+
 
 # Magic numbers are harder to deal with directly
 INDEX_SIDE = 0
@@ -24,7 +28,7 @@ def sum_shapes(shapes):
     # The built-in Python sum() doesn't work with shapes
     if len(shapes) == 1:
         return shapes[0]
-    total = shapes[0] 
+    total = shapes[0]
     for shape in shapes[1:]:
         total += shape
     return total
@@ -532,7 +536,7 @@ def interpolate_cuadratic_bezier(point_a, point_b, control_point, segments=10):
     control_point = np.array(control_point)
 
     curve_points = []
-    for seg in range(segments): 
+    for seg in range(segments):
         t = seg / segments
         curve_point = ((1-t)**2 * point_a + 2*(1-t)*t*control_point + t**2 * point_b)
         curve_points.append(curve_point.tolist())
@@ -543,12 +547,12 @@ def interpolate_cubic_bezier(start, end, bezier_1, bezier_2, segments=10):
     start = np.array(start) # 0
     end = np.array(end) # 3
     bezier_1 = np.array(bezier_1) # 1
-    bezier_2 = np.array(bezier_2)  # 2 
+    bezier_2 = np.array(bezier_2)  # 2
 
     curve_points = []
     # Include the end vector as the last segment
     segments -= 1
-    for seg in range(segments): 
+    for seg in range(segments):
         t = seg / segments
         curve_point = ((1-t)**3 * start + 3*(1-t)**2 * t * bezier_1 + 3*(1-t)*t**2 * bezier_2 + t**3*end)
         curve_points.append(curve_point.tolist())
@@ -1571,8 +1575,15 @@ conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + p
 
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() - plate.left_wall
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
-right_hand = sum_shapes(
-    [thumb.get_matrix(), 
+
+plate_state = keyboard_state.KeyboardState(pykeeb_matrix=plate)
+new_outline = keyboard_outline.generate_outline(plate_state,
+                                                draft_version=True)
+back = generate_back(plate, new_outline, plate_state, draft_version=True)
+# back = back - new_outline - plate.get_matrix()
+
+right_hand = sum_shapes([
+    thumb.get_matrix(),
     plate.get_matrix(),
     conn_hulls,
     generate_back(plate, draft_version=True),
