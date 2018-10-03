@@ -220,24 +220,24 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             progress = (point_idx / len(bottom_points)) * 0.5
             bowling = (point_a.translation.y_comp - start_y) + progress
             if point_idx == 0:
-                bottom_anchor_offset = [0, 0, -15]
-                top_anchor_offset = [0, 0, -15]
+                bottom_anchor_offset = [0, -1, -2]
+                top_anchor_offset = [0, 1, -2]
             elif point_idx == 1:
-                bottom_anchor_offset = [0, -5, -34]
-                top_anchor_offset = [0, 5, -34]
-            elif point_idx == 2 and False:
-                bottom_anchor_offset = [0, -9, -54]
-                top_anchor_offset = [0, 9, -54]
+                bottom_anchor_offset = [0, -6, -17]
+                top_anchor_offset = [0, 6, -17]
+            elif point_idx == len(bottom_points) - 1:
+                bottom_anchor_offset = [0, -13, -25.5 + bowling]
+                top_anchor_offset = [0, 13, -25.5 + bowling]
             else:
                 bottom_anchor_offset = [
                     -accum_delta,
-                    -12,
-                    -44 + bowling
+                    -13,
+                    -27 + bowling
                 ]
                 top_anchor_offset = [
                     -accum_delta,
-                    12,
-                    -44 + bowling
+                    13,
+                    -27 + bowling
                 ]
             bottom_anchor_offset = keyboard_state.rotate(
                 bottom_anchor_offset,
@@ -524,24 +524,24 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     shapes.extend(
         make_back_arc_3(
             column_idx=INDEX,
-            offset_a=[0, -5, 79],
-            offset_b=[0, 16, 72],
+            offset_a=[0, -5, 61],
+            offset_b=[0, 16, 55],
         )
     )
     print("Generating MIDDLE back segments...")
     shapes.extend(
         make_back_arc_3(
             column_idx=MIDDLE,
-            offset_a=[0, 6, 70],
-            offset_b=[0, 6, 67],
+            offset_a=[0, 3, 53],
+            offset_b=[0, 3, 50],
         )
     )
     print("Generating RING back segments...")
     shapes.extend(
         make_back_arc_3(
             column_idx=RING,
-            offset_a=[0, 6, 67],
-            offset_b=[0, 6, 67],
+            offset_a=[0, 6, 57],
+            offset_b=[0, 6, 57],
         )
     )
     # shapes.extend(make_back_arc_3(column_idx=MIDDLE, offset=[0, 12, 63]))
