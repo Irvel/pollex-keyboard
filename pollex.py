@@ -215,6 +215,18 @@ def apply_columns_ergo_main(plate):
     plate.im[CENTER_ROW][RING][X_MOV] += h_curve / 10
     plate.im[CENTER_ROW][PINKY][X_MOV] += h_curve / 10
 
+    # Reduce curvature of the PINKY column
+    plate.im[TOP_ROW][PINKY][X_ROT] -= 4
+    plate.im[BOTTOM_ROW][PINKY][X_ROT] += 4
+    plate.im[TOP_ROW][PINKY][Z_MOV] -= 1
+    plate.im[BOTTOM_ROW][PINKY][Z_MOV] -= 1
+
+    # Reduce curvature of the INDEX_SIDE column
+    plate.im[TOP_ROW][INDEX_SIDE][X_ROT] -= 4
+    plate.im[BOTTOM_ROW][INDEX_SIDE][X_ROT] += 4
+    plate.im[TOP_ROW][INDEX_SIDE][Z_MOV] -= 1.5
+    plate.im[BOTTOM_ROW][INDEX_SIDE][Z_MOV] -= 1.5
+
     # Create column cavities to account for different finger lengths
     plate.cm[INDEX_SIDE][Z_MOV] += -3
     plate.cm[INDEX][Z_MOV]      += -3
