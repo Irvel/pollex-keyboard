@@ -391,7 +391,11 @@ def generate_main_plate():
                             switch_type="mx",
                             mx_notches=False)
     plate.side_wall_thickness = plate_thickness
-    plate.side_extrude = 3
+    plate.side_extrude = plate_thickness
+    plate.wall_thickness = plate_thickness  #front/back walls
+    plate.wall_extrude = plate_thickness
+    plate.side_wall_thickness = plate_thickness
+    plate.side_extrude = plate_thickness
     plate = apply_rows_ergo_main(plate)
     plate = apply_columns_ergo_main(plate)
     plate = apply_walls_main(plate)
