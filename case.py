@@ -77,7 +77,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
 
             prev_point = point_a
-            progress = (point_idx / len(bottom_points)) * 2.8
+            progress = (point_idx / len(bottom_points)) * .3
             bowling = (point_a.translation.y_comp - start_y) + progress
             if point_idx == 0:
                 bottom_anchor_offset = [0, -1, -2]
@@ -90,12 +90,12 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                 top_anchor_offset = [0, 13, -24 + bowling]
             else:
                 bottom_anchor_offset = [
-                    -accum_delta,
+                    0,
                     -13,
                     -25 + bowling
                 ]
                 top_anchor_offset = [
-                    -accum_delta,
+                    0,
                     13,
                     -25 + bowling
                 ]
@@ -581,4 +581,4 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             top_cap3 += utils.sum_shapes(vert_join)
     end_time = datetime.now()
     print(f"Finished stitching back in {end_time - start_time}")
-    return top_cap3.turn_on_debug()
+    return top_cap3
