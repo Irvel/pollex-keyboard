@@ -18,151 +18,10 @@ TOP_ROW = 2
 
 
 def generate_back(plate, outline, plate_state, draft_version=True, outline_size=3.6):
-    thickness = 2
     if draft_version:
-        detail = 26
         interpolation_segments = 16
-        make_top_hull = True
     else:
-        detail = 186
         interpolation_segments = 148
-        make_top_hull = True
-
-    def top_double_bevel(initial_radius=51, first_length=1, first_angle=25, second_length=1, second_angle=50):
-        # 90° Amounts to a fully vertical transition while 0° is no transition.
-        first_radians = ((90 - first_angle) * np.pi) / 180
-
-        # Vertical distance from bevel 1 to bevel 2.
-        first_height = np.cos(first_radians) * first_length
-        first_radius_delta = np.sin(first_radians) * first_length
-
-        # Radius of the intermediate cylinder.
-        middle_radius = initial_radius + first_radius_delta
-        small_sub_bevel = Cylinder(r1=initial_radius, r2=middle_radius,
-                                   h=first_height, _center=False, _fn=detail)
-
-        second_radians = ((90 - second_angle) * np.pi) / 180
-        second_height = np.cos(second_radians) * second_length
-        second_radius_delta = np.sin(second_radians) * second_length
-        final_radius = middle_radius + second_radius_delta
-        large_sub_bevel = Cylinder(r1=middle_radius, r2=final_radius,
-                                   h=second_height, _center=False, _fn=detail)
-
-        # Start the transition from where the middle cylinder ends vertically.
-        large_sub_bevel = large_sub_bevel.translate([0, 0, first_height])
-        total_height = first_height + second_height
-        return small_sub_bevel + large_sub_bevel, total_height, final_radius
-
-    def make_back_arc_2(column_idx, offset=[0, 0, 0], visualize_anchors=False):
-        center_mount = plate_state.mount_matrix[CENTER_ROW][INDEX_SIDE]
-        center_points = center_mount.fetch_double_outer_sides(offset_to_corner=0)
-        bottom_mount = plate_state.mount_matrix[BOTTOM_ROW][column_idx]
-        bottom_points = [center_points[1]] + bottom_mount.points
-        top_mount = plate_state.mount_matrix[TOP_ROW][column_idx]
-        top_points = [center_points[0]] + top_mount.points[::-1]
-
-        final_curve = None
-        start_y = bottom_mount.points[0].translation.y_comp
-        arcs = []
-        for idx, (point_a, point_b) in enumerate(zip(bottom_points,
-                                                     top_points)):
-            bowling = (idx * 1) / len(bottom_points)
-            bowling = -(point_a.translation.y_comp - start_y)
-            if idx == 0:
-                bottom_anchor_offset = [0, 0, -10]
-                top_anchor_offset = [0, 0, -10]
-            elif idx == 1:
-                bottom_anchor_offset = [0, -20, -52]
-                top_anchor_offset = [0, 20, -52]
-            elif idx == len(top_points)-1:
-                bottom_anchor_offset = [
-                    0,
-                    -25 + bowling / 2,
-                    -43 - bowling
-                ]
-                top_anchor_offset = [
-                    0,
-                    25 - bowling / 2,
-                    -43 - bowling
-                ]
-            else:
-                bottom_anchor_offset = [
-                    25 - (idx * 3.6),
-                    -19 + bowling / 2,
-                    -43 - bowling
-                ]
-                top_anchor_offset = [
-                    25 - (idx * 3.6),
-                    19 - bowling / 2,
-                    -43 - bowling
-                ]
-            bottom_anchor_offset = keyboard_state.rotate(
-                bottom_anchor_offset,
-                bottom_mount.rotation
-            )
-            top_anchor_offset = keyboard_state.rotate(
-                top_anchor_offset,
-                top_mount.rotation
-            )
-
-            bottom_anchor = keyboard_outline.get_middle_point(
-                point_a=point_a,
-                point_b=point_b,
-                offset=bottom_anchor_offset,
-            )
-            top_anchor = keyboard_outline.get_middle_point(
-                point_a=point_a,
-                point_b=point_b,
-                offset=top_anchor_offset,
-            )
-            print(
-                f"idx: {idx} bottom_anchor_offset:",
-                f"[{bottom_anchor_offset[0]:.3f}, ",
-                f"{bottom_anchor_offset[1]:.3f}, ",
-                f"{bottom_anchor_offset[2]:.3f}]",
-            )
-
-            if visualize_anchors:
-                anchor_a = Cube(3, center=True).rotate(top_anchor.rotation.tolist())
-                anchor_a = anchor_a.translate(top_anchor.translation.tolist())
-                anchor_a = anchor_a.color([.6, .7, .84])
-                if not final_curve:
-                    final_curve = anchor_a
-                else:
-                    final_curve += anchor_a
-                anchor_b = Cube(3, center=True).rotate(bottom_anchor.rotation.tolist())
-                anchor_b = anchor_b.translate(bottom_anchor.translation.tolist())
-                anchor_b = anchor_b.color([.8, .7, .84])
-                final_curve += anchor_b
-
-            translation_trajectory = utils.interpolate_cubic_bezier(
-                start=point_a.translation,
-                end=point_b.translation,
-                bezier_1=bottom_anchor.translation,
-                bezier_2=top_anchor.translation,
-                segments=interpolation_segments
-            )
-            rotation_a = point_a.rotation
-            rotation_b = np.array([180, 0, 0]) + point_b.rotation
-            rotation_trajectory = utils.linear_interpolate(
-                rotation_a,
-                rotation_b,
-                interpolation_segments,
-                deadband_percentage=4
-            )
-
-            arc = []
-            for point, rotation in zip(translation_trajectory, rotation_trajectory):
-                step_shape = Cube([.1, .1, .1], center=True)
-                step_shape = step_shape.rotate(rotation.tolist()).translate(point)
-                arc.append(step_shape)
-            if not final_curve:
-                final_curve = utils.sum_shapes(arc)
-            else:
-                final_curve += utils.sum_shapes(arc)
-            arcs.append(arc)
-
-        return final_curve.hull(), arcs
 
     def make_back_arc_2_5(column_idx, offset=[0, 0, 0], visualize_anchors=False):
         center_mount = plate_state.mount_matrix[CENTER_ROW][INDEX_SIDE]
@@ -174,8 +33,6 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
         final_curve = None
         start_y = bottom_mount.points[0].translation.y_comp
-        start_z = bottom_mount.points[1].translation.z_comp
-        start_x = bottom_mount.points[1].translation.x_comp
 
         for idx, (point_a, point_b) in enumerate(zip(bottom_points, top_points)):
             away_outline = [1.45, 1.45, -1.5]
@@ -223,8 +80,8 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                 bottom_anchor_offset = [0, -1, -2]
                 top_anchor_offset = [0, 1, -2]
             elif point_idx == 1:
-                bottom_anchor_offset = [0, -6, -17]
-                top_anchor_offset = [0, 6, -17]
+                bottom_anchor_offset = [-1, -6, -17]
+                top_anchor_offset = [-1, 6, -17]
             elif point_idx == len(bottom_points) - 1:
                 bottom_anchor_offset = [0, -13, -25.5 + bowling]
                 top_anchor_offset = [0, 13, -25.5 + bowling]
@@ -314,8 +171,6 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
         final_curve = None
         start_y = bottom_mount.points[0].translation.y_comp
-        start_z = bottom_mount.points[1].translation.z_comp
-        start_x = bottom_mount.points[1].translation.x_comp
 
         for idx, (point_a, point_b) in enumerate(zip(bottom_points,
                                                      top_points)):
@@ -499,20 +354,6 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             final_curves.append(arc)
         return final_curves
 
-    def cut_front(top_cap, outline):
-        half_cutter = Cube(160, center=True)
-        half_cutter = half_cutter.rotate(
-            plate_state.mount_matrix[CENTER_ROW][INDEX_SIDE]
-                       .center
-                       .rotation
-                       .tolist()
-        )
-        half_cutter = half_cutter.translate([20, 36, 0])
-        # return half_cutter
-        half_outline = (outline - half_cutter).hull()
-        shifted_half = half_outline.translate([0, 0, 3])
-        return top_cap - half_outline - half_cutter - shifted_half
-
     print(f"\n===== Generating back with {interpolation_segments} segments =====")
     start_time = datetime.now()
     # top_cap2, top_arcs = make_back_arc_2(column_idx=INDEX_SIDE)
@@ -544,13 +385,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             offset_b=[0, 6, 57],
         )
     )
-    # shapes.extend(make_back_arc_3(column_idx=MIDDLE, offset=[0, 12, 63]))
-    # shapes.extend(make_back_arc_3(column_idx=RING, offset=[0, 12, 62]))
-    # print("Generating RING back segments...")
-    # _, pinky_arcs = make_back_arc_3(column_idx=RING)
-    # shapes.extend(pinky_arcs)
-    # _, pinky_arcs = make_back_arc_2_6(column_idx=PINKY)
-    # shapes.extend(pinky_arcs)
+
     print(f"Stitching {len(shapes) * len(shapes[0])} back segments with hulls...")
     for shape_idx in range(len(shapes)):
         current_shape = shapes[shape_idx]
@@ -567,17 +402,4 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             top_cap3 += utils.sum_shapes(vert_join)
     end_time = datetime.now()
     print(f"Finished stitching back in {end_time - start_time}")
-    # top_cap3 = sum_shapes(shapes)
-    # top_cap3 += make_back_arc_3(column_idx=PINKY)
-
     return top_cap3
-    return top_cap3 + top_cap2
-    # top_cap = make_back_arc(radius=38, column_idx=INDEX, shape="cube", size_x=8, size_y=1, height=3)
-
-    # top_bevel = remove_corners(top_bevel, x_offset=0)
-    # top_bevel = remove_corners(top_bevel, x_offset=.1)
-    # return top_bevel - (cube + cube2 + cylinder)
-    # top_bevel = top_bevel - (cube + cube2)
-    # return make_top_cap(radius=38)
-    # return top_cap2 - (outline.hull())
-    return cut_front(top_cap2, outline)
