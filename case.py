@@ -285,6 +285,8 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
         # We need points from top to bottom, so we reverse the list
         top_curve_points = plate_state.mount_matrix[TOP_ROW][RING].points[::-1]
         ring_bottom_points = plate_state.mount_matrix[BOTTOM_ROW][RING].points
+        pinky_center_points = plate_state.mount_matrix[CENTER_ROW][PINKY].points
+        top_curve_points.append(pinky_center_points[-1])
 
         ring_points_count = int(len(top_curve_points) * .4)
         top_ring_points = top_curve_points[:ring_points_count]
@@ -306,8 +308,8 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             if len(expanded_bottom_ring) < ring_points_count:
                 expanded_bottom_ring.append(expanded_bottom_ring[-1])
 
-        pinky_bottom_mount = plate_state.mount_matrix[BOTTOM_ROW][PINKY]
-        pinky_bottom_points = pinky_bottom_mount.points
+        pinky_bottom_points = plate_state.mount_matrix[BOTTOM_ROW][PINKY].points
+        pinky_bottom_points.append(pinky_center_points[0])
         pinky_points_count = len(top_curve_points) - ring_points_count
         top_pinky_points = top_curve_points[pinky_points_count:]
         count_equalizer = int(pinky_points_count / len(pinky_bottom_points))
@@ -381,6 +383,9 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                     2,
                     -48 + bowling
                 ]
+            elif point_idx == len(bottom_points) - 1:
+                bottom_anchor_offset = [0, 0, 0]
+                top_anchor_offset = [0, 0, 0]
             elif point_idx > ring_points_count:
                 bowling = (point_a.translation.y_comp - start_y) + progress
                 bottom_anchor_offset = [
