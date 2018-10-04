@@ -54,7 +54,8 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
         for point_idx, (point_a, point_b) in enumerate(zip(bottom_points,
                                                            top_points)):
             delta = 0
-            if prev_point and point_idx > 2 and point_idx < len(top_points) - 1:
+            # 7 fixes the uneven surface in the top cap.
+            if prev_point and point_idx > 7 and point_idx < len(top_points) - 1:
                 prev_x = prev_point.translation.x_comp
                 prev_y = prev_point.translation.y_comp
                 prev_z = prev_point.translation.z_comp
@@ -68,13 +69,15 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
                 delta = (prev_x - curr_x)**2 + (prev_z - curr_z)**2
                 delta = np.sqrt(delta)
-                delta += delta * .2
+                delta += delta * .0001
                 accum_delta += delta
             if point_idx == len(top_points) - 1:
                 accum_delta = 0
+            accum_delta = 0
+
 
             prev_point = point_a
-            progress = (point_idx / len(bottom_points)) * 0.5
+            progress = (point_idx / len(bottom_points)) * 2.8
             bowling = (point_a.translation.y_comp - start_y) + progress
             if point_idx == 0:
                 bottom_anchor_offset = [0, -1, -2]
@@ -385,6 +388,9 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             offset_b=[0, 6, 57],
         )
     )
+
+    if draft_version:
+        return top_cap3 + utils.sum_shapes(shapes)
 
     print(f"Stitching {len(shapes) * len(shapes[0])} back segments with hulls...")
     for shape_idx in range(len(shapes)):
