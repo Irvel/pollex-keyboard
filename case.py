@@ -19,7 +19,7 @@ TOP_ROW = 2
 
 def generate_back(plate, outline, plate_state, draft_version=True, outline_size=3.6):
     if draft_version:
-        interpolation_segments = 16
+        interpolation_segments = 18
     else:
         interpolation_segments = 148
 
@@ -83,21 +83,21 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                 bottom_anchor_offset = [0, -1, -2]
                 top_anchor_offset = [0, 1, -2]
             elif point_idx == 1:
-                bottom_anchor_offset = [-1, -6, -17]
-                top_anchor_offset = [-1, 6, -17]
+                bottom_anchor_offset = [0, -6, -17]
+                top_anchor_offset = [0, 6, -17]
             elif point_idx == len(bottom_points) - 1:
-                bottom_anchor_offset = [0, -13, -25.5 + bowling]
-                top_anchor_offset = [0, 13, -25.5 + bowling]
+                bottom_anchor_offset = [0, -13, -24 + bowling]
+                top_anchor_offset = [0, 13, -24 + bowling]
             else:
                 bottom_anchor_offset = [
                     -accum_delta,
                     -13,
-                    -27 + bowling
+                    -25 + bowling
                 ]
                 top_anchor_offset = [
                     -accum_delta,
                     13,
-                    -27 + bowling
+                    -25 + bowling
                 ]
             bottom_anchor_offset = keyboard_state.rotate(
                 bottom_anchor_offset,
@@ -281,6 +281,175 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
         return final_curve.hull(), arcs
 
+    def make_back_arc_2_7():
+        # We need points from top to bottom, so we reverse the list
+        top_curve_points = plate_state.mount_matrix[TOP_ROW][RING].points[::-1]
+        ring_bottom_points = plate_state.mount_matrix[BOTTOM_ROW][RING].points
+
+        ring_points_count = int(len(top_curve_points) * .4)
+        top_ring_points = top_curve_points[:ring_points_count]
+        count_equalizer = int(ring_points_count / len(ring_bottom_points))
+        expanded_bottom_ring = []
+        if count_equalizer > 0:
+            for point in ring_bottom_points:
+                expanded_bottom_ring.extend([point for _ in range(count_equalizer)])
+            if len(expanded_bottom_ring) < ring_points_count:
+                expanded_bottom_ring.append(expanded_bottom_ring[-1])
+            elif len(expanded_bottom_ring) > ring_points_count:
+                print(f"top_curve_points = {len(top_curve_points)}")
+                print(f"top_ring_points = {len(top_ring_points)}")
+                print(f"ring_bottom_points = {len(ring_bottom_points)}")
+                print(f"expanded_bottom_ring = {len(expanded_bottom_ring)}")
+                assert False
+        else:
+            expanded_bottom_ring = ring_bottom_points
+            if len(expanded_bottom_ring) < ring_points_count:
+                expanded_bottom_ring.append(expanded_bottom_ring[-1])
+
+        pinky_bottom_mount = plate_state.mount_matrix[BOTTOM_ROW][PINKY]
+        pinky_bottom_points = pinky_bottom_mount.points
+        pinky_points_count = len(top_curve_points) - ring_points_count
+        top_pinky_points = top_curve_points[pinky_points_count:]
+        count_equalizer = int(pinky_points_count / len(pinky_bottom_points))
+        expanded_bottom_pinky = []
+        if count_equalizer > 0:
+            for point in pinky_bottom_points:
+                expanded_bottom_pinky.extend([point for _ in range(count_equalizer)])
+            if len(expanded_bottom_pinky) < pinky_points_count:
+                expanded_bottom_pinky.append(expanded_bottom_pinky[-1])
+            elif len(expanded_bottom_pinky) > pinky_points_count:
+                print(f"top_curve_points = {len(top_curve_points)}")
+                print(f"top_pinky_points = {len(top_pinky_points)}")
+                print(f"pinky_bottom_points = {len(pinky_bottom_points)}")
+                print(f"expanded_bottom_pinky = {len(expanded_bottom_pinky)}")
+                assert False
+        else:
+            expanded_bottom_pinky = pinky_bottom_points
+            if len(expanded_bottom_pinky) < pinky_points_count:
+                expanded_bottom_pinky.append(expanded_bottom_pinky[-1])
+
+        bottom_points = expanded_bottom_ring + expanded_bottom_pinky
+        top_points = top_curve_points
+
+        for idx, (point_a, point_b) in enumerate(zip(bottom_points,
+                                                     top_points)):
+            if idx == 0:
+                away_outline = [.05, 1.95, -1.5]
+            else:
+                away_outline = [-.05, 1.95, -1.5]
+            away_outline_a = keyboard_state.rotate(
+                away_outline,
+                point_a.rotation
+            )
+            bottom_points[idx] += away_outline_a
+            if idx == 0:
+                away_outline = [-.05, -1.95, -1.5]
+            else:
+                away_outline = [.05, -1.95, -1.5]
+            away_outline_b = keyboard_state.rotate(
+                away_outline,
+                point_b.rotation
+            )
+            top_curve_points[idx] += away_outline_b
+
+        start_y = bottom_points[ring_points_count].translation.y_comp
+        arcs = []
+        for point_idx, (point_a, point_b) in enumerate(zip(bottom_points,
+                                                           top_points)):
+            progress = (point_idx / len(bottom_points)) * 20.8
+            if point_idx == ring_points_count:
+                bowling = (point_a.translation.y_comp - start_y) + progress
+                bottom_anchor_offset = [
+                    0,
+                    -2,
+                    -52 + bowling
+                ]
+                top_anchor_offset = [
+                    0,
+                    2,
+                    -52 + bowling
+                ]
+            elif point_idx == ring_points_count + 1:
+                bowling = (point_a.translation.y_comp - start_y) + progress
+                bottom_anchor_offset = [
+                    0,
+                    -2,
+                    -48 + bowling
+                ]
+                top_anchor_offset = [
+                    0,
+                    2,
+                    -48 + bowling
+                ]
+            elif point_idx > ring_points_count:
+                bowling = (point_a.translation.y_comp - start_y) + progress
+                bottom_anchor_offset = [
+                    0,
+                    -6,
+                    -42 + bowling
+                ]
+                top_anchor_offset = [
+                    0,
+                    6,
+                    -42 + bowling
+                ]
+            else:
+                bottom_anchor_offset = [
+                    0,
+                    -6,
+                    -52
+                ]
+                top_anchor_offset = [
+                    0,
+                    6,
+                    -52
+                ]
+
+            bottom_anchor_offset = keyboard_state.rotate(
+                bottom_anchor_offset,
+                point_a.rotation
+            )
+            top_anchor_offset = keyboard_state.rotate(
+                top_anchor_offset,
+                point_b.rotation
+            )
+
+            bottom_anchor = keyboard_outline.get_middle_point(
+                point_a=point_a,
+                point_b=point_b,
+                offset=bottom_anchor_offset,
+            )
+            top_anchor = keyboard_outline.get_middle_point(
+                point_a=point_a,
+                point_b=point_b,
+                offset=top_anchor_offset,
+            )
+
+            translation_trajectory = utils.interpolate_cubic_bezier(
+                start=point_a.translation,
+                end=point_b.translation,
+                bezier_1=bottom_anchor.translation,
+                bezier_2=top_anchor.translation,
+                segments=interpolation_segments
+            )
+            rotation_a = point_a.rotation
+            rotation_b = np.array([180, 0, 0]) + point_b.rotation
+            rotation_trajectory = utils.linear_interpolate(
+                rotation_a,
+                rotation_b,
+                interpolation_segments,
+                deadband_percentage=4
+            )
+            arc = []
+            for idx, (point, rotation) in enumerate(zip(translation_trajectory,
+                                                        rotation_trajectory)):
+                step_shape = Cube([.1, 4, .1], center=True)
+                # step_shape = step_shape.translate([0, 0, 0])
+                step_shape = step_shape.rotate(rotation.tolist()).translate(point)
+                arc.append(step_shape)
+            arcs.append(arc)
+        return arcs
+
     def make_back_arc_3(column_idx, offset_a=[0, 0, 0], offset_b=[0, 0, 0], visualize_anchors=False):
         bottom_mount = plate_state.mount_matrix[BOTTOM_ROW][column_idx]
         bottom_points = bottom_mount.points
@@ -359,37 +528,41 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
     print(f"\n===== Generating back with {interpolation_segments} segments =====")
     start_time = datetime.now()
-    # top_cap2, top_arcs = make_back_arc_2(column_idx=INDEX_SIDE)
     print("Generating INDEX_SIDE back segments...")
     top_cap2, top_arcs = make_back_arc_2_5(column_idx=INDEX_SIDE)
     shapes = top_arcs
+    # Close the top case cap.
     top_cap3 = utils.sum_shapes(top_arcs[0]).hull()
     print("Generating INDEX back segments...")
     shapes.extend(
         make_back_arc_3(
             column_idx=INDEX,
-            offset_a=[0, -5, 61],
-            offset_b=[0, 16, 55],
+            offset_a=[0, -5, 57],
+            offset_b=[0, 19, 51],
         )
     )
     print("Generating MIDDLE back segments...")
     shapes.extend(
         make_back_arc_3(
             column_idx=MIDDLE,
-            offset_a=[0, 3, 53],
-            offset_b=[0, 3, 50],
+            offset_a=[0, 3, 49],
+            offset_b=[0, 3, 46],
         )
     )
-    print("Generating RING back segments...")
-    shapes.extend(
-        make_back_arc_3(
-            column_idx=RING,
-            offset_a=[0, 6, 57],
-            offset_b=[0, 6, 57],
-        )
-    )
+    # print("Generating RING back segments...")
+    # shapes.extend(
+    #     make_back_arc_3(
+    #         column_idx=RING,
+    #         offset_a=[0, 6, 57],
+    #         offset_b=[0, 6, 57],
+    #     )
+    # )
+    shapes.extend(make_back_arc_2_7())
 
-    if draft_version:
+    # Close the bottom case cap.
+    # top_cap3.append(utils.sum_shapes(shapes[-1]).hull())
+
+    if draft_version and False:
         return top_cap3 + utils.sum_shapes(shapes)
 
     print(f"Stitching {len(shapes) * len(shapes[0])} back segments with hulls...")
@@ -408,4 +581,4 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             top_cap3 += utils.sum_shapes(vert_join)
     end_time = datetime.now()
     print(f"Finished stitching back in {end_time - start_time}")
-    return top_cap3
+    return top_cap3.turn_on_debug()

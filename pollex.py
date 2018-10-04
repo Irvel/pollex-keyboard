@@ -1319,5 +1319,7 @@ right_hand = utils.sum_shapes([
 left_hand = right_hand.mirror([1, 0, 0])
 (left_hand).write("pollex_left.scad")
 (right_hand).write("pollex_right.scad")
+# (back).write("case_right.scad")
+
 print("Finished!")
 
