@@ -157,7 +157,7 @@ def out_outline(keyboard_state, outer_expand, curvature, height_expand, offset_t
             if key_mount.col_idx == INDEX_SIDE and (key_mount.row_idx == TOP_ROW):
                 key_mount.side_expand_distance = outer_expand + 1.6
                 p0, _, _, _ = key_mount.fetch_double_outer_sides(offset_to_corner=0)
-                _, p1, _, _ = key_mount.fetch_double_outer_sides(offset_to_corner=offset_to_corner+6)
+                _, p1, _, _ = key_mount.fetch_double_outer_sides(offset_to_corner=offset_to_corner)
                 bezier_offset = get_corner_normal(key_mount, offset=curvature+1)
             else:
                 bezier_offset = get_corner_normal(key_mount, offset=curvature)
@@ -350,7 +350,7 @@ def generate_outline(keyboard_state, draft_version):
         keyboard_state,
         outer_expand=0,
         curvature=0,
-        height_expand=3,
+        height_expand=2,
         offset_to_corner=0,
         interpolation_segments=interpolation_segments,
     )
@@ -359,7 +359,7 @@ def generate_outline(keyboard_state, draft_version):
         keyboard_state,
         outer_expand=3,
         curvature=1,
-        height_expand=3,
+        height_expand=2,
         offset_to_corner=0,
         interpolation_segments=interpolation_segments,
     )
@@ -368,7 +368,7 @@ def generate_outline(keyboard_state, draft_version):
         keyboard_state,
         outer_expand=3,
         curvature=1,
-        height_expand=6,
+        height_expand=3,
         offset_to_corner=0,
         interpolation_segments=interpolation_segments,
     )
@@ -377,9 +377,9 @@ def generate_outline(keyboard_state, draft_version):
     outer_outline, outer_shapes = out_outline(
         keyboard_state,
         outer_expand=12,
-        curvature=6,
-        height_expand=6,
-        offset_to_corner=6,
+        curvature=10,
+        height_expand=3,
+        offset_to_corner=5,
         interpolation_segments=interpolation_segments,
         shrink_sides=True,
     )
