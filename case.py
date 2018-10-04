@@ -335,19 +335,20 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
         for idx, (point_a, point_b) in enumerate(zip(bottom_points,
                                                      top_points)):
-            if idx == 0:
-                away_outline = [.05, 1.95, -1.5]
+            if idx > ring_points_count:
+                away_outline = [-1.95, 1.95, -1.5]
             else:
-                away_outline = [-.05, 1.95, -1.5]
+                away_outline = [1.95, 1.95, -1.5]
             away_outline_a = keyboard_state.rotate(
                 away_outline,
                 point_a.rotation
             )
             bottom_points[idx] += away_outline_a
-            if idx == 0:
-                away_outline = [-.05, -1.95, -1.5]
+            if idx > ring_points_count:
+                away_outline = [-1.95, -1.95, -1.5]
+
             else:
-                away_outline = [.05, -1.95, -1.5]
+                away_outline = [-1.95, -1.95, -1.5]
             away_outline_b = keyboard_state.rotate(
                 away_outline,
                 point_b.rotation
@@ -448,7 +449,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             arc = []
             for idx, (point, rotation) in enumerate(zip(translation_trajectory,
                                                         rotation_trajectory)):
-                step_shape = Cube([.1, 4, .1], center=True)
+                step_shape = Cube([4, 4, .1], center=True)
                 # step_shape = step_shape.translate([0, 0, 0])
                 step_shape = step_shape.rotate(rotation.tolist()).translate(point)
                 arc.append(step_shape)
