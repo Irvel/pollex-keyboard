@@ -65,8 +65,14 @@ def is_matrix_border(*, num_rows, num_columns, row_idx, col_idx):
 
 
 def simulate_clockwise_path(num_rows, num_columns):
-    assert num_rows >= 2
+    assert num_rows > 0
     assert num_columns >= 2
+
+    if num_rows < 2:
+        row = 0
+        path = [(row, i) for i in range(num_columns)]
+        # path.extend(path[::-1])
+        return path
 
     def reached_limit(row, col, row_step):
         row_limit = (row >= num_rows - 1) or (row <= 0)
