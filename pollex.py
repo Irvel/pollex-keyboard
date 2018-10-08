@@ -1297,19 +1297,42 @@ conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + p
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
 
 plate_state = keyboard_state.KeyboardState(pykeeb_matrix=plate)
-new_outline = keyboard_outline.generate_outline(plate_state,
-                                                draft_version=True)
-back = case.generate_back(plate, new_outline, plate_state, draft_version=True)
-# back = back - new_outline - plate.get_matrix()
+plate_outline = keyboard_outline.generate_plate_outline(plate_state,
+                                                        draft_version=False)
+# back = case.generate_back(plate, plate_outline, plate_state, draft_version=False)
+# back -= plate_outline
+
+thumb_state = keyboard_state.KeyboardState(pykeeb_matrix=thumb)
+thumb_outline = keyboard_outline.generate_thumb_outline(thumb_state,
+                                                        draft_version=False)
+
+
+# keys = []
+# for row in plate.sm:
+#     for mount in row:
+#         keys.append(mount.get_keycap(True))
+# for row in thumb.sm:
+#     for mount in row:
+#         keys.append(mount.get_keycap(True))
+
+switches = []
+for row in plate.sm:
+    for mount in row:
+        switches.append(mount.get_keyswitch())
+for row in thumb.sm:
+    for mount in row:
+        switches.append(mount.get_keyswitch())
 
 right_hand = utils.sum_shapes([
-    thumb.get_matrix(),
+    # thumb.get_matrix(),
     plate.get_matrix(),
-    conn_hulls,
-    new_outline,
-    back,
+    # conn_hulls,
+    plate_outline,
+    # thumb_outline,
+    # back.turn_on_debug(),
+    # utils.sum_shapes(switches),
     # generate_plate_outline(plate, draft_version=True).turn_on_debug(),
-    generate_thumb_outline(thumb, draft_version=False),
+    # generate_thumb_outline(thumb, draft_version=False),
 ])
 
 #right_hand = plate.sm[0][0].transform(make_arc())

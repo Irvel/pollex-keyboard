@@ -21,7 +21,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     if draft_version:
         interpolation_segments = 18
     else:
-        interpolation_segments = 148
+        interpolation_segments = 38
 
     def make_back_arc_2_5(column_idx, offset=[0, 0, 0], visualize_anchors=False):
         center_mount = plate_state.mount_matrix[CENTER_ROW][INDEX_SIDE]
@@ -357,47 +357,50 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
         start_y = bottom_points[ring_points_count].translation.y_comp
         arcs = []
+        accum = 0
         for point_idx, (point_a, point_b) in enumerate(zip(bottom_points,
                                                            top_points)):
-            progress = (point_idx / len(bottom_points)) * 20.8
+            progress = (point_idx / len(bottom_points)) * 20
+            accum -= progress * .14
             if point_idx == ring_points_count:
-                bowling = (point_a.translation.y_comp - start_y) + progress
                 bottom_anchor_offset = [
                     0,
                     -2,
-                    -52 + bowling
+                    -44
                 ]
                 top_anchor_offset = [
                     0,
                     2,
-                    -52 + bowling
+                    -44
                 ]
             elif point_idx == ring_points_count + 1:
-                bowling = (point_a.translation.y_comp - start_y) + progress
+                accum = 23
+                start_y = bottom_points[ring_points_count].translation.y_comp
+                bowling = (point_a.translation.y_comp - start_y) + progress * 1.4
                 bottom_anchor_offset = [
                     0,
                     -2,
-                    -48 + bowling
+                    -53 + bowling
                 ]
                 top_anchor_offset = [
                     0,
                     2,
-                    -48 + bowling
+                    -53 + bowling
                 ]
             elif point_idx == len(bottom_points) - 1:
                 bottom_anchor_offset = [0, 0, 0]
                 top_anchor_offset = [0, 0, 0]
             elif point_idx > ring_points_count:
-                bowling = (point_a.translation.y_comp - start_y) + progress
+                bowling = (point_a.translation.y_comp - start_y) + progress * 1.4
                 bottom_anchor_offset = [
                     0,
                     -6,
-                    -42 + bowling
+                    -53 + bowling
                 ]
                 top_anchor_offset = [
                     0,
                     6,
-                    -42 + bowling
+                    -53 + bowling
                 ]
             else:
                 bottom_anchor_offset = [
@@ -568,7 +571,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     # Close the bottom case cap.
     # top_cap3.append(utils.sum_shapes(shapes[-1]).hull())
 
-    if draft_version and False:
+    if draft_version:
         return top_cap3 + utils.sum_shapes(shapes)
 
     print(f"Stitching {len(shapes) * len(shapes[0])} back segments with hulls...")

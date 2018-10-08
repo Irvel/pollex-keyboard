@@ -146,7 +146,7 @@ def out_outline(keyboard_state, outer_expand, curvature, height_expand, offset_t
                 point_a=p0,
                 point_b=p5,
                 control_point=bezier_control,
-                segments=int(interpolation_segments * 1.6) + 3  # All outlines must have same amount of segments
+                segments=int(interpolation_segments * 1.7) # All outlines must have same amount of segments
             )
             corner_points = [p5] + trajectory[::-1] + [p0, p1]
             ring.points = trajectory[::-1]
@@ -247,7 +247,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 point_a=p0,
                 point_b=p1,
                 control_point=bezier_control,
-                segments=interpolation_segments//3 + 1
+                segments=interpolation_segments//3
             )
             bezier_offset = get_corner_normal(key_mount, offset=curvature)
             bezier_control = get_middle_point(
@@ -259,7 +259,7 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
                 point_a=p1,
                 point_b=p2,
                 control_point=bezier_control,
-                segments=interpolation_segments//3 + 1
+                segments=interpolation_segments//3
             )
             corner_points = []
             corner_points.extend([p0])
@@ -329,11 +329,11 @@ def generate_outer_curve_outline(keyboard_state, outer_expand, curvature, height
     return utils.sum_shapes(walls).color([.6, .7, .2]), corner_shapes
 
 
-def generate_outline(keyboard_state, draft_version):
+def generate_plate_outline(keyboard_state, draft_version):
     if draft_version:
         interpolation_segments = 10
     else:
-        interpolation_segments = 42
+        interpolation_segments = 22
     start_time = datetime.now()
     print(f"==== Generating outline with {interpolation_segments} segments ====")
     print("Generating thin_outline...")
@@ -345,39 +345,21 @@ def generate_outline(keyboard_state, draft_version):
         offset_to_corner=0,
         interpolation_segments=interpolation_segments,
     )
-    print("Generating thin_outline_up...")
+    print("Generating thin_outline_up...", end=" ")
     thin_outline_up, thin_shapes_up = generate_outer_curve_outline(
         keyboard_state,
         outer_expand=0,
         curvature=0,
-        height_expand=2,
-        offset_to_corner=0,
-        interpolation_segments=interpolation_segments,
-    )
-    print("Generating thin_outline_up_out...")
-    thin_outline_up_out, thin_shapes_up_out = generate_outer_curve_outline(
-        keyboard_state,
-        outer_expand=3,
-        curvature=1,
-        height_expand=2,
-        offset_to_corner=0,
-        interpolation_segments=interpolation_segments,
-    )
-    print("Generating thin_outline_up_up_out...", end=" ")
-    thin_outline_up_up_out, thin_shapes_up_up_out = generate_outer_curve_outline(
-        keyboard_state,
-        outer_expand=3,
-        curvature=1,
         height_expand=3,
         offset_to_corner=0,
         interpolation_segments=interpolation_segments,
     )
-    print(len(thin_shapes_up_up_out), "shapes.")
+    print(len(thin_shapes_up), "shapes.")
     print("Generating outer_outline...", end=" ")
     outer_outline, outer_shapes = out_outline(
         keyboard_state,
         outer_expand=12,
-        curvature=10,
+        curvature=8,
         height_expand=3,
         offset_to_corner=5,
         interpolation_segments=interpolation_segments,
@@ -387,9 +369,7 @@ def generate_outline(keyboard_state, draft_version):
 
     skeleton_outlines = [
         thin_outline,
-        thin_outline_up,
-        thin_outline_up_out,
-        thin_outline_up_up_out.color([.7, .3, .5]),
+        thin_outline_up.color([.7, .3, .5]),
         outer_outline,
     ]
     end_time = datetime.now()
@@ -399,24 +379,133 @@ def generate_outline(keyboard_state, draft_version):
 
     print("\nJoining outlines with hulls...")
     outer_hull = []
-    with Pool(6) as pool:
+    with Pool(4) as pool:
         print("Joining thin_shapes with thin_shapes_up...")
         join_path = [
             (thin_shapes, thin_shapes_up),
-            (thin_shapes_up, thin_shapes_up_out),
-            (thin_shapes_up_out, thin_shapes_up_up_out),
-            (thin_shapes_up_up_out, outer_shapes),
+            (thin_shapes_up, outer_shapes),
         ]
         outer_hull = pool.starmap(join_outlines, join_path)
-        """
-        join_outlines(thin_shapes, thin_shapes_up))
-        print("\nJoining thin_shapes_up with thin_shapes_up_out...")
-        outer_hull.append(join_outlines(thin_shapes_up, thin_shapes_up_out))
-        print("\nJoining thin_shapes_up_out with thin_shapes_up_up_out...")
-        outer_hull.append(join_outlines(thin_shapes_up_out, thin_shapes_up_up_out))
-        print("\nJoining thin_shapes_up_up_out with outer_shapes...")
-        outer_hull.append(join_outlines(thin_shapes_up_up_out, outer_shapes))
-        """
     end_time = datetime.now()
     print(f"Finished joining outlines in {end_time - start_time}")
     return utils.sum_shapes(outer_hull)
+
+
+def generate_thumb_outer_curve_outline(keyboard_state, outer_expand, curvature, height_expand, offset_to_corner, interpolation_segments=18, shrink_sides=False):
+    walls = []
+    corner_shapes = []
+    side_map = {}
+    # Top corners
+    for key_mount in keyboard_state.border_mounts:
+        sides, types = key_mount.outer_sides
+        for side, side_type in zip(sides, types):
+            if side_type in sides:
+                side_map[side_type].append(side)
+            else:
+                side_map[side_type] = [side]
+    outline_points = []
+    for side in side_map["down"]:
+        outline_points.append(side)
+    for side in side_map["left"]:
+        outline_points.append(side)
+    for side in side_map["up"]:
+        outline_points.append(side)
+    for side in side_map["right"]:
+        outline_points.append(side)
+    print(len(outline_points))
+
+    for point in outline_points:
+        # key_mount.points = []
+        # key_mount.side_expand_distance = outer_expand
+        # corner_points = key_mount.fetch_double_outer_sides(offset_to_corner=offset_to_corner)
+        # print(f"Mount: ({key_mount.row_idx}, {key_mount.col_idx}), corner_points: {len(corner_points)}")
+        # if len(corner_points) == 4:
+            # corner_points = corner_points[2:]
+        # if len(corner_points) == 6:
+        #     corner_points = corner_points[:4]
+        #     _, p1, p2, _ = corner_points
+        #     p0, _, _, p3 = key_mount.fetch_double_outer_sides(offset_to_corner=0)[:4]
+        #     bezier_offset = get_corner_normal(key_mount, offset=curvature)
+        #     bezier_control = get_middle_point(
+        #         point_a=p1,
+        #         point_b=p2,
+        #         offset=bezier_offset,
+        #     )
+        #     trajectory = utils.interpolate_cuadratic_bezier(
+        #         point_a=p1,
+        #         point_b=p2,
+        #         control_point=bezier_control,
+        #         segments=interpolation_segments
+        #     )
+        #     corner_points = [p0] + trajectory + [p3]
+
+        # key_mount.points.extend(corner_points)
+        # shape = Cube([.1, .1, keyboard_state.wall_thickness], center=True)
+        # shape = shape.rotate(key_mount.center.rotation.tolist())
+        # shape = shape.translate(key_mount.center.translation.tolist())
+        # if corner_shapes:
+        #     walls.append((corner_shapes[-1] + shape).hull())
+        # corner_shapes.append(shape)
+
+        for corner_point in outline_points:
+            shape = Cube([.1, .1, keyboard_state.wall_thickness], center=True)
+            # shape = shape + shape.translate([0, 0, 0])
+            shape = shape.rotate(corner_point.rotation.tolist())
+            print(corner_point.rotation.tolist())
+            shape = shape.translate(corner_point.translation.tolist())
+            if corner_shapes:
+                walls.append((corner_shapes[-1] + shape).hull())
+            corner_shapes.append(shape)
+    # Bottom corners
+    # for key_mount in keyboard_state.border_mounts:
+    #     key_mount.points = []
+    #     key_mount.side_expand_distance = outer_expand
+    #     corner_points = key_mount.fetch_double_outer_sides(offset_to_corner=offset_to_corner)
+    #     print(f"Mount: ({key_mount.row_idx}, {key_mount.col_idx}), corner_points: {len(corner_points)}")
+    #     if len(corner_points) == 4:
+    #         _, p1, p2, _ = corner_points
+    #         p0, _, _, p3 = key_mount.fetch_double_outer_sides(offset_to_corner=0)
+    #         bezier_offset = get_corner_normal(key_mount, offset=curvature)
+    #         bezier_control = get_middle_point(
+    #             point_a=p1,
+    #             point_b=p2,
+    #             offset=bezier_offset,
+    #         )
+    #         trajectory = utils.interpolate_cuadratic_bezier(
+    #             point_a=p1,
+    #             point_b=p2,
+    #             control_point=bezier_control,
+    #             segments=interpolation_segments
+    #         )
+    #         corner_points = [p0] + trajectory + [p3]
+
+    #     key_mount.points.extend(corner_points)
+    #     for corner_point in corner_points:
+    #         shape = Cube([.1, .1, keyboard_state.wall_thickness], center=True)
+    #         shape = shape + shape.translate([0, 0, height_expand])
+    #         shape = shape.rotate(corner_point.rotation.tolist())
+    #         shape = shape.translate(corner_point.translation.tolist())
+    #         if corner_shapes:
+    #             walls.append((corner_shapes[-1] + shape).hull())
+    #         corner_shapes.append(shape)
+    walls.append((corner_shapes[0] + corner_shapes[-1]).hull())
+    return utils.sum_shapes(walls).color([.6, .7, .2]), corner_shapes
+
+
+def generate_thumb_outline(state, draft_version):
+    if draft_version:
+        interpolation_segments = 10
+    else:
+        interpolation_segments = 62
+    thin_outline, thin_shapes = generate_thumb_outer_curve_outline(
+        state,
+        outer_expand=0,
+        curvature=0,
+        height_expand=0,
+        offset_to_corner=0,
+        interpolation_segments=interpolation_segments,
+    )
+    thin_outline = thin_outline.color([.7, .3, .5]),
+    return utils.sum_shapes(thin_outline)
+    return thin_shapes
+
