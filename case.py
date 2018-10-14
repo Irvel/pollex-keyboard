@@ -84,12 +84,12 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             if point_idx < len(bottom_points) / 3 and point_idx >= 0:
                 bottom_anchor_offset = [
                     0,
-                    15,
+                    32,
                     0
                 ]
                 top_anchor_offset = [
                     0,
-                    -15,
+                    -32,
                     0
                 ]
             else:
@@ -153,7 +153,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                     outline_align = 0
                 else:
                     outline_align = 1
-                if point_idx == 11 and (idx < len(translation_trajectory) - len(translation_trajectory) * .25 and idx > len(translation_trajectory) * .25):
+                if point_idx == int(len(top_points) * .45) and (idx < len(translation_trajectory) - len(translation_trajectory) * .25 and idx > len(translation_trajectory) * .25):
                     cut_cube = Cube([8, 8, 3], center=True)
                     cut_cube = cut_cube.rotate([0, 105, 40])
                     cut_cube = cut_cube.translate([-2, -.5, 0])
@@ -366,12 +366,12 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                 bottom_anchor_offset = [
                     0,
                     -6,
-                    -77 + bowling
+                    -73 + bowling
                 ]
                 top_anchor_offset = [
                     0,
                     6,
-                    -81 + bowling
+                    -78.5 + bowling
                 ]
             else:
                 bottom_anchor_offset = [

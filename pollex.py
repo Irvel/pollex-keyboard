@@ -1025,19 +1025,19 @@ def generate_thumb_outline(thumb, draft_version=True):
         for row_idx in range(thumb.rows):
             # Only round first and last corners.
             if row_idx == 0:
-                shape="cylinder"
+                shape = "cylinder"
             else:
-                shape="cube"
+                shape = "cube"
             corner1 = mount_corner(radius=corner_radius,
                                    height=corner_height,
                                    key_mount=thumb.sm[row_idx][col_idx],
-                                   corner_type="b" + corner_pos,
+                                   corner_type = "b" + corner_pos,
                                    shape=shape,
                                    detail=detail)
             if row_idx == (thumb.rows - 1):
-                shape="cylinder"
+                shape = "cylinder"
             else:
-                shape="cube"
+                shape = "cube"
             corner2 = mount_corner(radius=corner_radius,
                                    height=corner_height,
                                    key_mount=thumb.sm[row_idx][col_idx],
@@ -1061,9 +1061,9 @@ def generate_thumb_outline(thumb, draft_version=True):
         for col_idx in range(thumb.columns):
             # Only round first and last corners.
             if col_idx == 0:
-                shape="cylinder"
+                shape = "cylinder"
             else:
-                shape="cylinder"
+                shape = "cylinder"
             offset = 0
             corner1 = mount_corner(radius=corner_radius,
                                    height=corner_height,
@@ -1073,15 +1073,15 @@ def generate_thumb_outline(thumb, draft_version=True):
                                    detail=detail,
                                    x_offset=offset)
             if col_idx == (thumb.columns - 1):
-                shape="cylinder"
+                shape = "cylinder"
             else:
-                shape="cylinder"
+                shape = "cylinder"
 
-            if col_idx == 2:
-                if side == "bottom":
-                    #offset = -7.99
-                    shape = "cyli_cube_3"
             offset = 0
+            if col_idx == 1:
+                if side == "bottom":
+                    #offset = -1
+                    shape = "cyli_cube_3"
             corner2 = mount_corner(radius=corner_radius,
                                    height=corner_height,
                                    key_mount=thumb.sm[0][col_idx],
@@ -1299,10 +1299,11 @@ conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + p
 plate_state = keyboard_state.KeyboardState(pykeeb_matrix=plate)
 plate_outline = keyboard_outline.generate_plate_outline(plate_state,
                                                         draft_version=True)
-back = case.generate_back(plate, plate_outline, plate_state, draft_version=True)
-#back -= plate_outline
+# back = case.generate_back(plate, plate_outline, plate_state, draft_version=True)
+# back -= plate_outline
 
 thumb_state = keyboard_state.KeyboardState(pykeeb_matrix=thumb)
+# thumb_outline = generate_thumb_outline(thumb, draft_version=True)
 thumb_outline = keyboard_outline.generate_thumb_outline(thumb_state,
                                                         draft_version=True)
 
@@ -1322,6 +1323,8 @@ top_cutter = top_cutter.translate([40, 25, 4.8])
 top_cutter = top_cutter.rotate(left_plane.rotation.tolist())
 top_cutter = top_cutter.translate(left_plane.translation.tolist())
 
+print(thumb.sm[0][1].transformations)
+
 # keys = []
 # for row in plate.sm:
 #     for mount in row:
@@ -1338,12 +1341,45 @@ for row in thumb.sm:
     for mount in row:
         switches.append(mount.get_keyswitch())
 
+
+cuby = Cube([30, 30, 3], center=True)
+cuby = cuby.translate([0, 0, 120])
+cuby = cuby.rotate(a=[10, 0, 0], v=[0, 120, 120])
+# cuby = cuby.translate([0, 0, -120])
+# cuby = cuby.rotate([10, 0, 0])
+# cuby = cuby.translate([0, 0, 120])
+
+# cuby = cuby.translate([-10, -10, -10])
+# angle=-20;
+#     x = 20;
+#     y = 0;
+#     z = 220;
+#     z_rot = [[cos(angle), -sin(angle), 0, x],
+#              [sin(angle),  cos(angle), 0, y],
+#              [         0,           0, 1, z],
+#              [         0,           0, 0,  1]];
+#     angle_2=90;
+
+#     y_rot = [[cos(angle_2),  0, sin(angle_2), 0],
+#              [         0,           1, 0, 0],
+#              [-sin(angle_2),  0, cos(angle_2), 0],
+#              [         0,           0, 0,  1]];
+#     x_rot = [[1,          0,          0,  x],
+#              [0, cos(angle), -sin(angle), y],
+#              [0, sin(angle), cos(angle), z],
+#              [0,          0,          0,  1]];
+#     multmatrix(m = z_rot) {
+#             cube(size=[30, 30, 3], center=true);
+#     };
+
+
 right_hand = utils.sum_shapes([
-    # thumb.get_matrix(),
+    thumb.get_matrix(),
     plate.get_matrix(),
     # conn_hulls,
     plate_outline,
-    # thumb_outline,
+    thumb_outline,
+    cuby,
     # back,
     # utils.sum_shapes(switches),
     # generate_plate_outline(plate, draft_version=True).turn_on_debug(),
@@ -1359,7 +1395,7 @@ right_hand = utils.sum_shapes([
 left_hand = right_hand.mirror([1, 0, 0])
 (left_hand).write("pollex_left.scad")
 (right_hand).write("pollex_right.scad")
-(back).write("case_right.scad")
+# (back).write("case_right.scad")
 
 print("Finished!")
 

@@ -1,7 +1,8 @@
+from collections import defaultdict
 from datetime import datetime
 from multiprocessing import Pool
 from openpyscad import Cube
-from keyboard_state import Position
+from keyboard_state import Position, XYZVector
 
 import numpy as np
 import utils
@@ -380,7 +381,7 @@ def out_outline(keyboard_state, outer_expand, curvature, height_expand, offset_t
                 segments=interpolation_segments//2
             )
             side_points = [p6] + trajectory_side + [p7]
-            corner_points = side_points + [p5] + trajectory
+            corner_points = side_points + [p5] + trajectory + trajectory_index
             ring.points = corner_points
             key_mount.points = corner_points
 
@@ -784,101 +785,54 @@ def generate_plate_outline(keyboard_state, draft_version):
 def generate_thumb_outer_curve_outline(keyboard_state, outer_expand, curvature, height_expand, offset_to_corner, interpolation_segments=18, shrink_sides=False):
     walls = []
     corner_shapes = []
-    side_map = {}
-    # Top corners
-    for key_mount in keyboard_state.border_mounts:
-        sides, types = key_mount.outer_sides
-        for side, side_type in zip(sides, types):
-            if side_type in sides:
-                side_map[side_type].append(side)
-            else:
-                side_map[side_type] = [side]
+    side_map = defaultdict(list)
+    rotations = [
+        [0, 0, 4]
+    ]
     outline_points = []
-    for side in side_map["down"]:
-        outline_points.append(side)
-    for side in side_map["left"]:
-        outline_points.append(side)
-    for side in side_map["up"]:
-        outline_points.append(side)
-    for side in side_map["right"]:
-        outline_points.append(side)
-    print(len(outline_points))
+    for idx, mount in enumerate(keyboard_state.mount_matrix[0]):
+        # Discard the mount's rotation and only use its translation.
+        transform = utils.translate_mat(np.identity(4), mount.translation)
+        rotation = [0, 0, 0]
+        if idx == 0:
+            rotation = [-6, 31, 5]
+        elif idx == 1:
+            rotation = [0, -5, 10.5]
+        elif idx == 2:
+            rotation = [6, -52, 9]
+        elif idx == 3:
+            rotation = [-36, -101, -41]
+        elif idx == 4:
+            rotation = [-1, -140.5, -3]
+        transform = utils.rotate_mat(transform, rotation)
+
+        outline_points.append(
+            Position(rotation=[0, 0, 0],
+                     translation=[0, 0, 0],
+                     rot_mat=transform)
+        )
+    # outline_points = []
+    # for idx, mount in enumerate(keyboard_state.mount_matrix[0]):
+    #     outline_points.append(mount.center)
 
     for point in outline_points:
-        # key_mount.points = []
-        # key_mount.side_expand_distance = outer_expand
-        # corner_points = key_mount.fetch_double_outer_sides(offset_to_corner=offset_to_corner)
-        # print(f"Mount: ({key_mount.row_idx}, {key_mount.col_idx}), corner_points: {len(corner_points)}")
-        # if len(corner_points) == 4:
-            # corner_points = corner_points[2:]
-        # if len(corner_points) == 6:
-        #     corner_points = corner_points[:4]
-        #     _, p1, p2, _ = corner_points
-        #     p0, _, _, p3 = key_mount.fetch_double_outer_sides(offset_to_corner=0)[:4]
-        #     bezier_offset = get_corner_normal(key_mount, offset=curvature)
-        #     bezier_control = get_middle_point(
-        #         point_a=p1,
-        #         point_b=p2,
-        #         offset=bezier_offset,
-        #     )
-        #     trajectory = utils.interpolate_cuadratic_bezier(
-        #         point_a=p1,
-        #         point_b=p2,
-        #         control_point=bezier_control,
-        #         segments=interpolation_segments
-        #     )
-        #     corner_points = [p0] + trajectory + [p3]
+        shape = Cube([10, 10, keyboard_state.wall_thickness], center=True)
+        # shape = shape.translate([0, 20, 0])
+        # shape = shape.rotate(point.rotation.tolist(), origin=point.translation.tolist())
+        # shape = shape.translate(point.translation.tolist())
+        # no_rot = np.identity(4)
+        # location = utils.translate_mat(no_rot, point.translation)
+        # location = utils.rotate_mat(location, [0, 0, 0])
+        # print(location)
+        shape = shape.translate([-13, -14, 0])
+        shape = shape.multmatrix(m=point.rot_mat.tolist())
 
-        # key_mount.points.extend(corner_points)
-        # shape = Cube([.1, .1, keyboard_state.wall_thickness], center=True)
-        # shape = shape.rotate(key_mount.center.rotation.tolist())
-        # shape = shape.translate(key_mount.center.translation.tolist())
-        # if corner_shapes:
-        #     walls.append((corner_shapes[-1] + shape).hull())
-        # corner_shapes.append(shape)
-
-        for corner_point in outline_points:
-            shape = Cube([.1, .1, keyboard_state.wall_thickness], center=True)
-            # shape = shape + shape.translate([0, 0, 0])
-            shape = shape.rotate(corner_point.rotation.tolist())
-            shape = shape.translate(corner_point.translation.tolist())
-            if corner_shapes:
-                walls.append((corner_shapes[-1] + shape).hull())
-            corner_shapes.append(shape)
-    # Bottom corners
-    # for key_mount in keyboard_state.border_mounts:
-    #     key_mount.points = []
-    #     key_mount.side_expand_distance = outer_expand
-    #     corner_points = key_mount.fetch_double_outer_sides(offset_to_corner=offset_to_corner)
-    #     print(f"Mount: ({key_mount.row_idx}, {key_mount.col_idx}), corner_points: {len(corner_points)}")
-    #     if len(corner_points) == 4:
-    #         _, p1, p2, _ = corner_points
-    #         p0, _, _, p3 = key_mount.fetch_double_outer_sides(offset_to_corner=0)
-    #         bezier_offset = get_corner_normal(key_mount, offset=curvature)
-    #         bezier_control = get_middle_point(
-    #             point_a=p1,
-    #             point_b=p2,
-    #             offset=bezier_offset,
-    #         )
-    #         trajectory = utils.interpolate_cuadratic_bezier(
-    #             point_a=p1,
-    #             point_b=p2,
-    #             control_point=bezier_control,
-    #             segments=interpolation_segments
-    #         )
-    #         corner_points = [p0] + trajectory + [p3]
-
-    #     key_mount.points.extend(corner_points)
-    #     for corner_point in corner_points:
-    #         shape = Cube([.1, .1, keyboard_state.wall_thickness], center=True)
-    #         shape = shape + shape.translate([0, 0, height_expand])
-    #         shape = shape.rotate(corner_point.rotation.tolist())
-    #         shape = shape.translate(corner_point.translation.tolist())
-    #         if corner_shapes:
-    #             walls.append((corner_shapes[-1] + shape).hull())
-    #         corner_shapes.append(shape)
+        if corner_shapes:
+            walls.append((corner_shapes[-1] + shape).hull())
+        corner_shapes.append(shape)
     walls.append((corner_shapes[0] + corner_shapes[-1]).hull())
-    return utils.sum_shapes(walls).color([.6, .7, .2]), corner_shapes
+    walls = utils.sum_shapes(walls).color([.6, .7, .2])
+    return walls, corner_shapes
 
 
 def generate_thumb_outline(state, draft_version):
@@ -894,7 +848,7 @@ def generate_thumb_outline(state, draft_version):
         offset_to_corner=0,
         interpolation_segments=interpolation_segments,
     )
-    thin_outline = thin_outline.color([.7, .3, .5]),
-    return utils.sum_shapes(thin_outline)
-    return thin_shapes
+    # thin_outline = thin_outline.color([.7, .3, .5]),
+    # return utils.sum_shapes(thin_outline)
+    return utils.sum_shapes(thin_shapes).color([.7, .3, .5])
 

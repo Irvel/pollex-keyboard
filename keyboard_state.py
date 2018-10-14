@@ -26,6 +26,7 @@ from utils import rotate, translate
 
 import collections
 import numpy as np
+import utils
 
 
 X = 0
@@ -47,9 +48,17 @@ def fetch_translation(transformations, origin=[0, 0, 0]):
 
 def fetch_rotation(transformations):
     rotation = np.zeros(shape=(dimensions,), dtype=np.float64)
-    for transformation in transformations:
+    rotation += transformations[0][3:]
+    init_x, init_y, init_z = transformations[0][3:]
+    rot_mat = np.matmul(utils.x_rot_matrix(init_x), utils.y_rot_matrix(init_y))
+    rot_mat = np.matmul(rot_mat, utils.z_rot_matrix(init_z))
+    for transformation in transformations[1:]:
+        x, y, z = transformation[3:]
+        rot_mat = np.matmul(rot_mat, utils.x_rot_matrix(x))
+        rot_mat = np.matmul(rot_mat, utils.y_rot_matrix(y))
+        rot_mat = np.matmul(rot_mat, utils.z_rot_matrix(z))
         rotation += np.array(transformation[3:])
-    return rotation
+    return rotation, rot_mat
 
 
 def is_matrix_border(*, num_rows, num_columns, row_idx, col_idx):
@@ -571,7 +580,7 @@ class Size(XYZVector):
 
 
 class Position(object):
-    def __init__(self, rotation, translation):
+    def __init__(self, rotation, translation, rot_mat=None):
         if rotation is None:
             self.rotation = XYZVector(0, 0, 0)
         else:
@@ -580,12 +589,13 @@ class Position(object):
             self.translation = XYZVector(0, 0, 0)
         else:
             self.translation = XYZVector.from_vector(translation)
+        self.rot_mat = rot_mat
 
     @classmethod
     def from_transform(cls, transformations):
         translation = fetch_translation(transformations)
-        rotation = fetch_rotation(transformations)
-        return cls(rotation=rotation, translation=translation)
+        rotation, rot_mat = fetch_rotation(transformations)
+        return cls(rotation=rotation, translation=translation, rot_mat=rot_mat)
 
     def __add__(self, other):
         if isinstance(other, Position):

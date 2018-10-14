@@ -1,4 +1,4 @@
-from functools import reduce
+from openpyscad import Union
 
 import numpy as np
 
@@ -40,11 +40,56 @@ def translate(point, shift_list):
     return [translated_x, translated_y, translated_z]
 
 
+def rotate_mat(mat, rotation):
+    x, y, z = rotation
+    x_rot, y_rot, z_rot = x_rot_matrix(x), y_rot_matrix(y), z_rot_matrix(z)
+    return np.linalg.multi_dot([mat, x_rot, y_rot, z_rot])
+
+
+def translate_mat(mat, translation):
+    x, y, z = translation
+    translation_mat = [[1, 0, 0, x],
+                       [0, 1, 0, y],
+                       [0, 0, 1, z],
+                       [0, 0, 0, 1]]
+    return mat @ translation_mat
+
+
+def x_rot_matrix(angle):
+    angle = np.radians(angle)
+    rot_mat = [[1,             0,              0, 0],
+               [0, np.cos(angle), -np.sin(angle), 0],
+               [0, np.sin(angle),  np.cos(angle), 0],
+               [0,             0,              0, 1]]
+    return np.array(rot_mat)
+
+
+def y_rot_matrix(angle):
+    angle = np.radians(angle)
+    rot_mat = [[ np.cos(angle),  0, np.sin(angle), 0],  # noqa: E201
+               [             0,  1,             0, 0],  # noqa: E201
+               [-np.sin(angle),  0, np.cos(angle), 0],  # noqa: E201
+               [             0,  0,             0, 1]]  # noqa: E201
+    return np.array(rot_mat)
+
+
+def z_rot_matrix(angle):
+    angle = np.radians(angle)
+    rot_mat = [[np.cos(angle), -np.sin(angle), 0, 0],
+               [np.sin(angle),  np.cos(angle), 0, 0],
+               [            0,              0, 1, 0],  # noqa: E201
+               [            0,              0, 0, 1]]  # noqa: E201
+    return np.array(rot_mat)
+
+
 def sum_shapes(shapes):
     # The built-in Python sum() doesn't work with shapes
     if len(shapes) == 1:
         return shapes[0]
-    return reduce((lambda a, b: a + b), shapes)
+    final_shape = Union()
+    for shape in shapes:
+        final_shape.append(shape)
+    return final_shape
 
 
 def linear_interpolate(vector_a, vector_b, steps, deadband_percentage=10):
