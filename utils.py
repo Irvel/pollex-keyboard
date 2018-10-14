@@ -1,3 +1,5 @@
+from functools import reduce
+
 import numpy as np
 
 
@@ -42,10 +44,7 @@ def sum_shapes(shapes):
     # The built-in Python sum() doesn't work with shapes
     if len(shapes) == 1:
         return shapes[0]
-    total = shapes[0]
-    for shape in shapes[1:]:
-        total += shape
-    return total
+    return reduce((lambda a, b: a + b), shapes)
 
 
 def linear_interpolate(vector_a, vector_b, steps, deadband_percentage=10):
@@ -87,6 +86,16 @@ def interpolate_cuadratic_bezier(point_a, point_b, control_point, segments=10):
         curve_point = ((1-t)**2 * point_a + 2*(1-t)*t*control_point + t**2 * point_b)
         curve_points.append(curve_point)
     return curve_points
+
+
+def interpolate_linear(point_a, point_b, segments=10):
+    delta = (point_b - point_a)
+    step = delta / segments
+    trajectory = [point_a]
+    for _ in range(segments):
+        trajectory.append(trajectory[-1] + step)
+    trajectory.append(point_b)
+    return trajectory
 
 
 def interpolate_cubic_bezier(start, end, bezier_1, bezier_2, segments=10):

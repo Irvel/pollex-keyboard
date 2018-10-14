@@ -174,6 +174,17 @@ class KeyboardState(object):
         assert col_idx < self.num_columns
         return self.mount_matrix[row_idx][col_idx]
 
+    @property
+    def center(self):
+        center = Position(rotation=[0, 0, 0], translation=[0, 0, 0])
+        for row in range(self.num_rows):
+            for col in range(self.num_columns):
+                center.translation += self.mount(row, col).translation
+                center.rotation += self.mount(row, col).rotation
+        center.translation /= (self.num_rows * self.num_columns)
+        center.rotation /= (self.num_rows * self.num_columns)
+        return center
+
     def remove_pykeeb_walls(self):
         pass
 
@@ -288,6 +299,11 @@ class KeyMount(object):
         corner_row, corner_col = self.parent_matrix.down_right_idx
         return are_indices_equal(row_a=corner_row, col_a=corner_col,
                                  row_b=self.row_idx, col_b=self.col_idx)
+
+    @property
+    def is_corner(self):
+        return (self.is_up_right_corner or self.is_down_right_corner or
+                self.is_up_left_corner or self.is_down_left_corner)
 
     @property
     def is_top(self):
@@ -642,8 +658,6 @@ class Position(object):
     __rtruediv__ = __truediv__
     __rmul__ = __mul__
     __rpow__ = __pow__
-
-
 
 
 class JoinMethod(object):

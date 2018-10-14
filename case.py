@@ -21,11 +21,11 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     if draft_version:
         interpolation_segments = 18
     else:
-        interpolation_segments = 38
+        interpolation_segments = 48
 
     def make_back_arc_2_5(column_idx, offset=[0, 0, 0], visualize_anchors=False):
         center_mount = plate_state.mount_matrix[CENTER_ROW][INDEX_SIDE]
-        center_points = center_mount.fetch_double_outer_sides(offset_to_corner=0)
+        center_points = center_mount.points
         bottom_mount = plate_state.mount_matrix[BOTTOM_ROW][column_idx]
         bottom_points = [center_points[1]] + bottom_mount.points
         top_mount = plate_state.mount_matrix[TOP_ROW][column_idx]
@@ -48,13 +48,15 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             )
             top_points[idx] += away_outline_b
         arcs = []
-        prev_point = 0
-        baseline_z_down = 0
-        accum_delta = baseline_z_down
+        cutter = []
+        # prev_point = 0
+        # baseline_z_down = 0
+        # accum_delta = baseline_z_down
         for point_idx, (point_a, point_b) in enumerate(zip(bottom_points,
                                                            top_points)):
-            delta = 0
+            # delta = 0
             # 7 fixes the uneven surface in the top cap.
+            """
             if prev_point and point_idx > 7 and point_idx < len(top_points) - 1:
                 prev_x = prev_point.translation.x_comp
                 prev_y = prev_point.translation.y_comp
@@ -71,33 +73,35 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                 delta = np.sqrt(delta)
                 delta += delta * .0001
                 accum_delta += delta
-            if point_idx == len(top_points) - 1:
-                accum_delta = 0
-            accum_delta = 0
+            """
+            # if point_idx == len(top_points) - 1:
+            #     accum_delta = 0
+            # accum_delta = 0
 
-
-            prev_point = point_a
+            # prev_point = point_a
             progress = (point_idx / len(bottom_points)) * .3
-            bowling = (point_a.translation.y_comp - start_y) + progress
-            if point_idx == 0:
-                bottom_anchor_offset = [0, -1, -2]
-                top_anchor_offset = [0, 1, -2]
-            elif point_idx == 1:
-                bottom_anchor_offset = [0, -6, -17]
-                top_anchor_offset = [0, 6, -17]
-            elif point_idx == len(bottom_points) - 1:
-                bottom_anchor_offset = [0, -13, -24 + bowling]
-                top_anchor_offset = [0, 13, -24 + bowling]
+            bowling = ((point_a.translation.y_comp - start_y) + progress) *.6
+            if point_idx < len(bottom_points) / 3 and point_idx >= 0:
+                bottom_anchor_offset = [
+                    0,
+                    15,
+                    0
+                ]
+                top_anchor_offset = [
+                    0,
+                    -15,
+                    0
+                ]
             else:
                 bottom_anchor_offset = [
                     0,
                     -13,
-                    -25 + bowling
+                    -40 + bowling
                 ]
                 top_anchor_offset = [
                     0,
                     13,
-                    -25 + bowling
+                    -40 + bowling
                 ]
             bottom_anchor_offset = keyboard_state.rotate(
                 bottom_anchor_offset,
@@ -149,7 +153,13 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
                     outline_align = 0
                 else:
                     outline_align = 1
-
+                if point_idx == 11 and (idx < len(translation_trajectory) - len(translation_trajectory) * .25 and idx > len(translation_trajectory) * .25):
+                    cut_cube = Cube([8, 8, 3], center=True)
+                    cut_cube = cut_cube.rotate([0, 105, 40])
+                    cut_cube = cut_cube.translate([-2, -.5, 0])
+                    cut_cube = cut_cube.translate([0, align_offset * outline_align, 0])
+                    cut_cube = cut_cube.rotate(rotation.tolist()).translate(point)
+                    cutter.append(cut_cube)
                 step_shape = Cube([3, 3, .1], center=True)
                 step_shape = step_shape.translate([0, align_offset * outline_align, 0])
                 step_shape = step_shape.rotate(rotation.tolist()).translate(point)
@@ -159,8 +169,14 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             else:
                 final_curve += utils.sum_shapes(arc)
             arcs.append(arc)
-
-        return final_curve.hull(), arcs
+        # cutter = utils.sum_shapes(cutter)
+        # beveled_arcs = []
+        # for arc in arcs:
+        #     beveled_shapes = []
+        #     for shape in arc:
+        #         beveled_shapes.append(shape - cutter)
+        #     beveled_arcs.append(beveled_shapes)
+        return final_curve.hull(), arcs, utils.sum_shapes(cutter)
 
     def make_back_arc_2_6(column_idx, offset=[0, 0, 0], visualize_anchors=False):
         center_mount = plate_state.mount_matrix[CENTER_ROW][PINKY]
@@ -283,12 +299,14 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
 
     def make_back_arc_2_7():
         # We need points from top to bottom, so we reverse the list
-        top_curve_points = plate_state.mount_matrix[TOP_ROW][RING].points[::-1]
-        ring_bottom_points = plate_state.mount_matrix[BOTTOM_ROW][RING].points
+        top_curve_points = plate_state.mount_matrix[TOP_ROW][INDEX].points[::-1]
+        ring_bottom_points = plate_state.mount_matrix[BOTTOM_ROW][INDEX].points
         pinky_center_points = plate_state.mount_matrix[CENTER_ROW][PINKY].points
         top_curve_points.append(pinky_center_points[-1])
+        # print(len(ring_bottom_points))
+        # print(len(top_curve_points))
 
-        ring_points_count = int(len(top_curve_points) * .4)
+        ring_points_count = int(len(top_curve_points) * .25)
         top_ring_points = top_curve_points[:ring_points_count]
         count_equalizer = int(ring_points_count / len(ring_bottom_points))
         expanded_bottom_ring = []
@@ -308,29 +326,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             if len(expanded_bottom_ring) < ring_points_count:
                 expanded_bottom_ring.append(expanded_bottom_ring[-1])
 
-        pinky_bottom_points = plate_state.mount_matrix[BOTTOM_ROW][PINKY].points
-        pinky_bottom_points.append(pinky_center_points[0])
-        pinky_points_count = len(top_curve_points) - ring_points_count
-        top_pinky_points = top_curve_points[pinky_points_count:]
-        count_equalizer = int(pinky_points_count / len(pinky_bottom_points))
-        expanded_bottom_pinky = []
-        if count_equalizer > 0:
-            for point in pinky_bottom_points:
-                expanded_bottom_pinky.extend([point for _ in range(count_equalizer)])
-            if len(expanded_bottom_pinky) < pinky_points_count:
-                expanded_bottom_pinky.append(expanded_bottom_pinky[-1])
-            elif len(expanded_bottom_pinky) > pinky_points_count:
-                print(f"top_curve_points = {len(top_curve_points)}")
-                print(f"top_pinky_points = {len(top_pinky_points)}")
-                print(f"pinky_bottom_points = {len(pinky_bottom_points)}")
-                print(f"expanded_bottom_pinky = {len(expanded_bottom_pinky)}")
-                assert False
-        else:
-            expanded_bottom_pinky = pinky_bottom_points
-            if len(expanded_bottom_pinky) < pinky_points_count:
-                expanded_bottom_pinky.append(expanded_bottom_pinky[-1])
-
-        bottom_points = expanded_bottom_ring + expanded_bottom_pinky
+        bottom_points = expanded_bottom_ring
         top_points = top_curve_points
 
         for idx, (point_a, point_b) in enumerate(zip(bottom_points,
@@ -360,58 +356,33 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
         accum = 0
         for point_idx, (point_a, point_b) in enumerate(zip(bottom_points,
                                                            top_points)):
-            progress = (point_idx / len(bottom_points)) * 20
+            progress = (point_idx / len(bottom_points)) * 42
             accum -= progress * .14
-            if point_idx == ring_points_count:
-                bottom_anchor_offset = [
-                    0,
-                    -2,
-                    -44
-                ]
-                top_anchor_offset = [
-                    0,
-                    2,
-                    -44
-                ]
-            elif point_idx == ring_points_count + 1:
-                accum = 23
-                start_y = bottom_points[ring_points_count].translation.y_comp
-                bowling = (point_a.translation.y_comp - start_y) + progress * 1.4
-                bottom_anchor_offset = [
-                    0,
-                    -2,
-                    -53 + bowling
-                ]
-                top_anchor_offset = [
-                    0,
-                    2,
-                    -53 + bowling
-                ]
-            elif point_idx == len(bottom_points) - 1:
-                bottom_anchor_offset = [0, 0, 0]
-                top_anchor_offset = [0, 0, 0]
+            if point_idx == len(bottom_points) - 1:
+                bottom_anchor_offset = [1, 0, -10]
+                top_anchor_offset = [1, 0, -10]
             elif point_idx > ring_points_count:
                 bowling = (point_a.translation.y_comp - start_y) + progress * 1.4
                 bottom_anchor_offset = [
                     0,
                     -6,
-                    -53 + bowling
+                    -77 + bowling
                 ]
                 top_anchor_offset = [
                     0,
                     6,
-                    -53 + bowling
+                    -81 + bowling
                 ]
             else:
                 bottom_anchor_offset = [
-                    0,
-                    -6,
-                    -52
+                    9,
+                    -8,
+                    -58
                 ]
                 top_anchor_offset = [
-                    0,
-                    6,
-                    -52
+                    9,
+                    8,
+                    -58
                 ]
 
             bottom_anchor_offset = keyboard_state.rotate(
@@ -538,26 +509,26 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     print(f"\n===== Generating back with {interpolation_segments} segments =====")
     start_time = datetime.now()
     print("Generating INDEX_SIDE back segments...")
-    top_cap2, top_arcs = make_back_arc_2_5(column_idx=INDEX_SIDE)
+    top_cap2, top_arcs, cutter = make_back_arc_2_5(column_idx=INDEX_SIDE)
     shapes = top_arcs
     # Close the top case cap.
-    top_cap3 = utils.sum_shapes(top_arcs[0]).hull()
-    print("Generating INDEX back segments...")
-    shapes.extend(
-        make_back_arc_3(
-            column_idx=INDEX,
-            offset_a=[0, -5, 57],
-            offset_b=[0, 19, 51],
-        )
-    )
-    print("Generating MIDDLE back segments...")
-    shapes.extend(
-        make_back_arc_3(
-            column_idx=MIDDLE,
-            offset_a=[0, 3, 49],
-            offset_b=[0, 3, 46],
-        )
-    )
+    top_cap3 = utils.sum_shapes(top_arcs[0]).hull() + cutter
+    # print("Generating INDEX back segments...")
+    # shapes.extend(
+    #     make_back_arc_3(
+    #         column_idx=INDEX,
+    #         offset_a=[0, -5, 57],
+    #         offset_b=[0, 19, 51],
+    #     )
+    # )
+    # print("Generating MIDDLE back segments...")
+    # shapes.extend(
+    #     make_back_arc_3(
+    #         column_idx=MIDDLE,
+    #         offset_a=[0, 3, 49],
+    #         offset_b=[0, 3, 46],
+    #     )
+    # )
     # print("Generating RING back segments...")
     # shapes.extend(
     #     make_back_arc_3(

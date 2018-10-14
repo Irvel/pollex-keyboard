@@ -1298,14 +1298,29 @@ conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + p
 
 plate_state = keyboard_state.KeyboardState(pykeeb_matrix=plate)
 plate_outline = keyboard_outline.generate_plate_outline(plate_state,
-                                                        draft_version=False)
-# back = case.generate_back(plate, plate_outline, plate_state, draft_version=False)
-# back -= plate_outline
+                                                        draft_version=True)
+back = case.generate_back(plate, plate_outline, plate_state, draft_version=True)
+#back -= plate_outline
 
 thumb_state = keyboard_state.KeyboardState(pykeeb_matrix=thumb)
 thumb_outline = keyboard_outline.generate_thumb_outline(thumb_state,
-                                                        draft_version=False)
+                                                        draft_version=True)
 
+# Create an even top surface
+plate_plane = keyboard_state.Position(
+    rotation=plate_state.center.rotation,
+    translation=plate_state.center.translation + [0, 0, 20],
+)
+left_plane = keyboard_state.Position(
+    # BUG: We should be able to just rotate the plane by 90 degrees but the
+    # result is not quite right. The -3.5 compensation in X is a HACK.
+    rotation=plate_plane.rotation + [-3.5, -90, 0],
+    translation=plate_plane.translation + [-80, 0, 0],
+)
+top_cutter = Cube([90, 110, 10], center=True)
+top_cutter = top_cutter.translate([40, 25, 4.8])
+top_cutter = top_cutter.rotate(left_plane.rotation.tolist())
+top_cutter = top_cutter.translate(left_plane.translation.tolist())
 
 # keys = []
 # for row in plate.sm:
@@ -1329,11 +1344,13 @@ right_hand = utils.sum_shapes([
     # conn_hulls,
     plate_outline,
     # thumb_outline,
-    # back.turn_on_debug(),
+    # back,
     # utils.sum_shapes(switches),
     # generate_plate_outline(plate, draft_version=True).turn_on_debug(),
     # generate_thumb_outline(thumb, draft_version=False),
 ])
+
+# right_hand -= top_cutter
 
 #right_hand = plate.sm[0][0].transform(make_arc())
 
@@ -1342,7 +1359,7 @@ right_hand = utils.sum_shapes([
 left_hand = right_hand.mirror([1, 0, 0])
 (left_hand).write("pollex_left.scad")
 (right_hand).write("pollex_right.scad")
-# (back).write("case_right.scad")
+(back).write("case_right.scad")
 
 print("Finished!")
 
