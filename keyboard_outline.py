@@ -786,11 +786,11 @@ def generate_thumb_outer_curve_outline(thumb_state, interpolation_segments=18):
     corner_shapes = []
     center_points = []
     mount_rotations = {
-        0: [-6, 31, 5],
+        0: [-10, 28, 12],
         1: [0, -5, 10.5],
         2: [6, -52, 9],
         3: [-36, -101, -41],
-        4: [-1, -140.5, -3],
+        4: [-7, -142, -12],
     }
     for idx, mount in enumerate(thumb_state.mount_matrix[0]):
         # Discard the mount's rotation and only use its translation.
@@ -844,12 +844,12 @@ def generate_thumb_outer_curve_outline(thumb_state, interpolation_segments=18):
     # back_right_corner = (center_points[4].rot_mat @ [8.5, -8.8, -.5, 1])[:3]
     arcs = []
     middles = []
-    exp = .6
+    exp = 1.4
     for idx in range(thumb_state.num_columns):
-        top_right_corner = (center_points[idx].rot_mat @ [9+exp, -8.75-exp, -1.5-exp, 1])[:3]
-        top_left_corner = (center_points[idx].rot_mat @ [9.21+exp, 8.55+exp, -1.5-exp, 1])[:3]
-        bottom_right_corner = (center_points[idx].rot_mat @ [-9-exp, -8.55-exp, -1.5-exp, 1])[:3]
-        bottom_left_corner = (center_points[idx].rot_mat @ [-9-.21-exp, 8.55+exp, -1.5-exp, 1])[:3]
+        top_right_corner = (center_points[idx].rot_mat @ [9+exp, -8.75-exp, -1.5, 1])[:3]
+        top_left_corner = (center_points[idx].rot_mat @ [9.21+exp, 8.55+exp, -1.5, 1])[:3]
+        bottom_right_corner = (center_points[idx].rot_mat @ [-9-exp, -8.55-exp, -1.5, 1])[:3]
+        bottom_left_corner = (center_points[idx].rot_mat @ [-9-.21-exp, 8.55+exp, -1.5, 1])[:3]
 
         arc, middle = make_arc(top_left_corner, bottom_right_corner, idx)
         arcs.append(arc)
@@ -866,24 +866,26 @@ def generate_thumb_outer_curve_outline(thumb_state, interpolation_segments=18):
             shape_a = shape_a.translate(point_a)
             shape_b = Cube([2, 2, 2], center=True)
             shape_b = shape_b.translate(point_b)
-            stripes.append((shape_a + shape_b).hull())
+            # stripes.append((shape_a + shape_b).hull())
+            stripes.append((shape_a + shape_b))
         prev_stripe = stripes[0]
         for stripe in stripes[1:]:
-            final_shapes.append((prev_stripe + stripe).hull())
+            # final_shapes.append((prev_stripe + stripe).hull())
+            final_shapes.append((prev_stripe + stripe))
             prev_stripe = stripe
 
-    for arc_1, arc_2 in zip(arcs[0::2], arcs[2::2]):
-        stripes = []
-        for point_a, point_b in zip(arc_1[:len(arc_1)//2], arc_2[:len(arc_2)//2:-1]):
-            shape_a = Cube([2, 2, 2], center=True)
-            shape_a = shape_a.translate(point_a)
-            shape_b = Cube([2, 2, 2], center=True)
-            shape_b = shape_b.translate(point_b)
-            stripes.append((shape_a + shape_b).hull())
-        prev_stripe = stripes[0]
-        for stripe in stripes[1:]:
-            final_shapes.append((prev_stripe + stripe).hull())
-            prev_stripe = stripe
+    # for arc_1, arc_2 in zip(arcs[0::2], arcs[2::2]):
+    #     stripes = []
+    #     for point_a, point_b in zip(arc_1[:len(arc_1)//2], arc_2[:len(arc_2)//2:-1]):
+    #         shape_a = Cube([2, 2, 2], center=True)
+    #         shape_a = shape_a.translate(point_a)
+    #         shape_b = Cube([2, 2, 2], center=True)
+    #         shape_b = shape_b.translate(point_b)
+    #         stripes.append((shape_a + shape_b).hull())
+    #     prev_stripe = stripes[0]
+    #     for stripe in stripes[1:]:
+    #         final_shapes.append((prev_stripe + stripe).hull())
+    #         prev_stripe = stripe
 
     origin_plane = Position(rotation=[0, 0, 0], translation=[0, 0, 0])
     for arc in arcs[1:6:2]:
@@ -920,7 +922,6 @@ def generate_thumb_outer_curve_outline(thumb_state, interpolation_segments=18):
     # Bridge to main plate
     top_left_corner = (center_points[3].rot_mat @ [9.21, 8.85, -1.5, 1])[:3]
     bottom_left_corner = (center_points[3].rot_mat @ [-9.21, 8.85, -1.5, 1])[:3]
-
 
     cube_1 = Cube([2, .2, 3], center=True).translate(top_left_corner.tolist())
     cube_1 = cube_1.translate([-1.5, 0, -1.5])
