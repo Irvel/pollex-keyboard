@@ -249,13 +249,13 @@ def apply_columns_ergo_main(plate):
             # Make the arc length longer for longer fingers
             row_spacing = plate.row_spacing
             if column == INDEX_SIDE:
-                row_spacing -= 2.6
+                row_spacing -= 3.0
             if column == MIDDLE:
                 row_spacing += 2.0
             if column == RING:
                 row_spacing += 0.8
             if column == PINKY:
-                row_spacing -= 3.4
+                row_spacing -= 3.5
             switch = Keyswitch_mount([list(map(sum, zip(modifiers[row][column][:3], [column * (plate.mount_width + plate.column_spacing), row * (plate.mount_length + row_spacing), 0]))) + modifiers[row][column][3:6], [plate.origin[0], plate.origin[1], plate.origin[2], plate.x_tent, plate.y_tent, plate.z_tent]], modifiers[row][column][6], plate.switch_type, plate.mount_length, plate.mount_width, plate.mx_notches)
             switch_row.append(switch)
         switch_matrix.append(switch_row)
