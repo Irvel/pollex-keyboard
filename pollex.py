@@ -465,6 +465,8 @@ def generate_thumb_cluster(plate):
     thumb.back_wall_hulls = [[] for col in range(thumb.columns)]
     thumb.back_right_corner = []
     thumb.back_right_corner_hulls = []
+    thumb.back_left_corner = []
+    thumb.back_left_corner_hulls = []
     back_wall_hulls = []
     # Complete the gap that gets left from removing the corners
     for column in range(thumb.columns - 1):
@@ -518,7 +520,7 @@ def generate_thumb_cluster(plate):
 
     #thumb.left_wall[2] = thumb.sm[2][0].get_left(3, 3)
     #thumb.left_wall[1] = thumb.sm[1][0].get_left(3, 3)
-    thumb.front_left_corner = thumb.sm[thumb.rows-1][0].get_corner("fl", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
+    # thumb.front_left_corner = thumb.sm[thumb.rows-1][0].get_corner("fl", thumb.side_extrude, thumb.side_extrude, thumb.side_extrude, thumb.side_extrude).turn_on_debug()
     return thumb
 
 
@@ -1385,14 +1387,14 @@ conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + p
 
 plate_state = keyboard_state.KeyboardState(pykeeb_matrix=plate)
 plate_outline = keyboard_outline.generate_plate_outline(plate_state,
-                                                        draft_version=True)
+                                                        draft_version=False)
 # back = case.generate_back(plate, plate_outline, plate_state, draft_version=True)
 # back -= plate_outline
 
 thumb_state = keyboard_state.KeyboardState(pykeeb_matrix=thumb)
 # thumb_outline = generate_thumb_outline(thumb, draft_version=True)
 thumb_outline = keyboard_outline.generate_thumb_outline(thumb_state,
-                                                        draft_version=True)
+                                                        draft_version=False)
 
 # Create an even top surface
 plate_plane = keyboard_state.Position(
@@ -1410,7 +1412,6 @@ top_cutter = top_cutter.translate([40, 25, 4.8])
 top_cutter = top_cutter.rotate(left_plane.rotation.tolist())
 top_cutter = top_cutter.translate(left_plane.translation.tolist())
 
-print(thumb.sm[0][1].transformations)
 
 # keys = []
 # for row in plate.sm:
@@ -1466,7 +1467,7 @@ right_hand = utils.sum_shapes([
     generate_handle(plate_state, thumb_state),
     # utils.sum_shapes(switches),
     # generate_plate_outline(plate, draft_version=True).turn_on_debug(),
-    # generate_thumb_outline(thumb, draft_version=False),
+    generate_thumb_outline(thumb, draft_version=False),
 ])
 
 # back -= top_cutter

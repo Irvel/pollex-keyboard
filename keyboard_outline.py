@@ -715,7 +715,7 @@ def draw_outline(shapes):
 
 def generate_plate_outline(keyboard_state, draft_version):
     if draft_version:
-        interpolation_segments = 18
+        interpolation_segments = 28
     else:
         interpolation_segments = 42
     start_time = datetime.now()
@@ -782,73 +782,170 @@ def generate_plate_outline(keyboard_state, draft_version):
     return utils.sum_shapes(outer_hull)
 
 
-def generate_thumb_outer_curve_outline(keyboard_state, outer_expand, curvature, height_expand, offset_to_corner, interpolation_segments=18, shrink_sides=False):
-    walls = []
+def generate_thumb_outer_curve_outline(thumb_state, interpolation_segments=18):
     corner_shapes = []
-    side_map = defaultdict(list)
-    rotations = [
-        [0, 0, 4]
-    ]
-    outline_points = []
-    for idx, mount in enumerate(keyboard_state.mount_matrix[0]):
+    center_points = []
+    mount_rotations = {
+        0: [-6, 31, 5],
+        1: [0, -5, 10.5],
+        2: [6, -52, 9],
+        3: [-36, -101, -41],
+        4: [-1, -140.5, -3],
+    }
+    for idx, mount in enumerate(thumb_state.mount_matrix[0]):
         # Discard the mount's rotation and only use its translation.
         transform = utils.translate_mat(np.identity(4), mount.translation)
-        rotation = [0, 0, 0]
-        if idx == 0:
-            rotation = [-6, 31, 5]
-        elif idx == 1:
-            rotation = [0, -5, 10.5]
-        elif idx == 2:
-            rotation = [6, -52, 9]
-        elif idx == 3:
-            rotation = [-36, -101, -41]
-        elif idx == 4:
-            rotation = [-1, -140.5, -3]
+        rotation = mount_rotations[idx]
         transform = utils.rotate_mat(transform, rotation)
-
-        outline_points.append(
+        center_points.append(
             Position(rotation=[0, 0, 0],
                      translation=[0, 0, 0],
                      rot_mat=transform)
         )
-    # outline_points = []
-    # for idx, mount in enumerate(keyboard_state.mount_matrix[0]):
-    #     outline_points.append(mount.center)
 
-    for point in outline_points:
-        shape = Cube([10, 10, keyboard_state.wall_thickness], center=True)
-        # shape = shape.translate([0, 20, 0])
-        # shape = shape.rotate(point.rotation.tolist(), origin=point.translation.tolist())
-        # shape = shape.translate(point.translation.tolist())
-        # no_rot = np.identity(4)
-        # location = utils.translate_mat(no_rot, point.translation)
-        # location = utils.rotate_mat(location, [0, 0, 0])
-        # print(location)
-        shape = shape.translate([-13, -14, 0])
-        shape = shape.multmatrix(m=point.rot_mat.tolist())
+    # for point in center_points:
+    #     shape = Cube([.1, .1, thumb_state.wall_thickness], center=True)
+    #     shape = shape.translate([0, -9.5, 0])
+    #     shape = shape.multmatrix(m=point.rot_mat.tolist())
+    #     corner_shapes.append(shape)
+    def make_arc(start, end, idx, rev=False):
+        if idx == 3:
+            bezier_offset_1 = utils.rotate([4, 16, 0], mount_rotations[idx])
+            bezier_offset_2 = utils.rotate([-4, 16, 0], mount_rotations[idx])
 
-        if corner_shapes:
-            walls.append((corner_shapes[-1] + shape).hull())
-        corner_shapes.append(shape)
-    walls.append((corner_shapes[0] + corner_shapes[-1]).hull())
-    walls = utils.sum_shapes(walls).color([.6, .7, .2])
-    return walls, corner_shapes
+        else:
+            bezier_offset_1 = utils.rotate([0, 13, -16], mount_rotations[idx])
+            bezier_offset_2 = utils.rotate([0, -13, -16], mount_rotations[idx])
+            if rev:
+                bezier_offset_1 *= np.array([1, -1, 1])
+                bezier_offset_2 *= np.array([1, -1, 1])
+
+        bezier_1 = get_middle_point(
+            point_a=start,
+            point_b=end,
+            offset=bezier_offset_1,
+        )
+        bezier_2 = get_middle_point(
+            point_a=start,
+            point_b=end,
+            offset=bezier_offset_2,
+        )
+        trajectory = utils.interpolate_cubic_bezier(
+            start=start,
+            end=end,
+            bezier_1=bezier_1,
+            bezier_2=bezier_2,
+            segments=interpolation_segments
+        )
+
+        return trajectory, trajectory[len(trajectory)//2]
+
+    # back_left_corner = (center_points[0].rot_mat @ [-8.5, -8.8, -.5, 1])[:3]
+    # back_right_corner = (center_points[4].rot_mat @ [8.5, -8.8, -.5, 1])[:3]
+    arcs = []
+    middles = []
+    exp = .6
+    for idx in range(thumb_state.num_columns):
+        top_right_corner = (center_points[idx].rot_mat @ [9+exp, -8.75-exp, -1.5-exp, 1])[:3]
+        top_left_corner = (center_points[idx].rot_mat @ [9.21+exp, 8.55+exp, -1.5-exp, 1])[:3]
+        bottom_right_corner = (center_points[idx].rot_mat @ [-9-exp, -8.55-exp, -1.5-exp, 1])[:3]
+        bottom_left_corner = (center_points[idx].rot_mat @ [-9-.21-exp, 8.55+exp, -1.5-exp, 1])[:3]
+
+        arc, middle = make_arc(top_left_corner, bottom_right_corner, idx)
+        arcs.append(arc)
+        middles.append(middle)
+        arc, middle = make_arc(top_right_corner, bottom_left_corner, idx, rev=True)
+        arcs.append(arc)
+        middles.append(middle)
+
+    final_shapes = []
+    for arc_1, arc_2 in zip(arcs[0::2], arcs[1::2]):
+        stripes = []
+        for point_a, point_b in zip(arc_1, arc_2):
+            shape_a = Cube([2, 2, 2], center=True)
+            shape_a = shape_a.translate(point_a)
+            shape_b = Cube([2, 2, 2], center=True)
+            shape_b = shape_b.translate(point_b)
+            stripes.append((shape_a + shape_b).hull())
+        prev_stripe = stripes[0]
+        for stripe in stripes[1:]:
+            final_shapes.append((prev_stripe + stripe).hull())
+            prev_stripe = stripe
+
+    for arc_1, arc_2 in zip(arcs[0::2], arcs[2::2]):
+        stripes = []
+        for point_a, point_b in zip(arc_1[:len(arc_1)//2], arc_2[:len(arc_2)//2:-1]):
+            shape_a = Cube([2, 2, 2], center=True)
+            shape_a = shape_a.translate(point_a)
+            shape_b = Cube([2, 2, 2], center=True)
+            shape_b = shape_b.translate(point_b)
+            stripes.append((shape_a + shape_b).hull())
+        prev_stripe = stripes[0]
+        for stripe in stripes[1:]:
+            final_shapes.append((prev_stripe + stripe).hull())
+            prev_stripe = stripe
+
+    origin_plane = Position(rotation=[0, 0, 0], translation=[0, 0, 0])
+    for arc in arcs[1:6:2]:
+        stripes = []
+        for point_a in arc[:-(interpolation_segments//5)]:
+            shape_a = Cube([2, 2, 2], center=True)
+            shape_a = shape_a.translate(point_a)
+
+            point_b = project(point_a, origin_plane)
+            # print(point_b, "hdsatnu")
+            shape_b = Cube([2, 2, 2], center=True)
+            # mat_b = utils.translate_mat(np.identity(4), point_b.tolist())
+            # mat_b = utils.rotate_mat(mat_b, [90, 0, 90])
+
+            cutter = Cube([505, 505, 100], center=True).translate([0, 0, -50])
+            shape_b = shape_b.translate(point_a)
+            shape_b = shape_b.translate([0, 0, -100])
+            # shape_b = shape_b.multmatrix(mat_b.tolist())
+
+            stripes.append((shape_a + shape_b).hull() - cutter)
+        prev_stripe = stripes[0]
+        for stripe in stripes[1:]:
+            final_shapes.append((prev_stripe + stripe).hull())
+            prev_stripe = stripe
+
+    top_right_corner = (center_points[idx].rot_mat @ [9, -9.05, -1.5, 1])[:3]
+    top_left_corner = (center_points[idx].rot_mat @ [9.21, 8.85, -1.5, 1])[:3]
+    bottom_right_corner = (center_points[idx].rot_mat @ [-9, -9.05, -1.5, 1])[:3]
+    bottom_left_corner = (center_points[idx].rot_mat @ [-9.21, 8.85, -1.5, 1])[:3]
+
+    top_right_corner = (center_points[2].rot_mat @ [9, -9.05, -1.5, 1])[:3]
+    bottom_right_corner = (center_points[2].rot_mat @ [-9, -9.05, -1.5, 1])[:3]
+
+    # Bridge to main plate
+    top_left_corner = (center_points[3].rot_mat @ [9.21, 8.85, -1.5, 1])[:3]
+    bottom_left_corner = (center_points[3].rot_mat @ [-9.21, 8.85, -1.5, 1])[:3]
+
+
+    cube_1 = Cube([2, .2, 3], center=True).translate(top_left_corner.tolist())
+    cube_1 = cube_1.translate([-1.5, 0, -1.5])
+    cube_2 = Cube([2, .5, 3], center=True).translate(bottom_left_corner.tolist())
+    cube_2 = cube_2.translate([-1.7, 0, 1])
+    cube_3 = cube_1.translate([4, 7, 0])
+    cube_4 = cube_2.translate([12, 4, 0])
+    # cube_3 = Cube([.5, .5, .5], center=True).translate(bottom_right_corner.tolist())
+    # cube_4 = Cube([.5, .5, .5], center=True).translate(bottom_right_ground.tolist())
+    final_shapes.append((cube_1 + cube_2 + cube_3 + cube_4).hull())
+
+    shapes = utils.sum_shapes(final_shapes)
+    return shapes.color([.7, .3, .5])
 
 
 def generate_thumb_outline(state, draft_version):
     if draft_version:
-        interpolation_segments = 10
+        interpolation_segments = 29
     else:
-        interpolation_segments = 62
-    thin_outline, thin_shapes = generate_thumb_outer_curve_outline(
+        interpolation_segments = 48
+    thin_shapes = generate_thumb_outer_curve_outline(
         state,
-        outer_expand=0,
-        curvature=0,
-        height_expand=0,
-        offset_to_corner=0,
         interpolation_segments=interpolation_segments,
     )
     # thin_outline = thin_outline.color([.7, .3, .5]),
     # return utils.sum_shapes(thin_outline)
-    return utils.sum_shapes(thin_shapes).color([.7, .3, .5])
+    return thin_shapes
 
