@@ -1256,6 +1256,93 @@ def generate_supports(plate, thumb):
     return supports.color("Cyan")
 
 
+def generate_handle(plate_state, thumb_state, detail=70):
+    center_thumb = thumb_state.mount(0, 2)
+    start_pos = (center_thumb.center + [30, -60, 5])
+    cyl_1 = Cylinder(r=6, h=4, _fn=detail, center=True)
+    cyl_2 = Cylinder(r=6, h=4, _fn=detail, center=True).translate([0, -15, 0])
+    handle = (cyl_1 + cyl_2).hull()
+    handle = handle.rotate([90, -20, 180])
+    handle = handle.rotate(start_pos.rotation.tolist())
+    handle = handle.translate(start_pos.translation.tolist())
+    handle = round_edges(handle, xy_radius=1, detail=detail, z_radius=1)
+
+    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([5, 0, 6])
+    cyl_1 = cyl_1.rotate([0, 140, 180])
+    cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
+    cyl_1 = cyl_1.translate(start_pos.translation.tolist())
+
+    pinky_anchor = plate_state.mount(BOTTOM_ROW, PINKY).center + [2.5, -10, 6]
+    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
+    cyl_2 = cyl_2.rotate([120, 60, 0])
+    cyl_2 = cyl_2.rotate(pinky_anchor.rotation.tolist())
+    cyl_2 = cyl_2.translate((pinky_anchor.translation).tolist())
+    plate_pipe = (cyl_1 + cyl_2).hull()
+
+    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([2, 0, 2])
+    cyl_1 = cyl_1.rotate([-50, 0, 30])
+    cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
+    cyl_1 = cyl_1.translate(start_pos.translation.tolist())
+    thumb_anchor = thumb_state.mount(0, 1).center + [0, 0, -13]
+    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
+    cyl_2 = cyl_2.rotate([50, 60, 0])
+    cyl_2 = cyl_2.rotate(thumb_anchor.rotation.tolist())
+    cyl_2 = cyl_2.translate((thumb_anchor.translation).tolist())
+    thumb_pipe = (cyl_1 + cyl_2).hull()
+
+    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([-2, 0, 2])
+    # cyl_1 = cyl_1.rotate([0, 140, 90])
+    # cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
+    cyl_1 = cyl_1.translate(start_pos.translation.tolist())
+    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
+    cyl_2 = cyl_2.translate([5, -74, 1])
+    floor_pipe = (cyl_1 + cyl_2).hull()
+    return handle + plate_pipe + thumb_pipe + floor_pipe
+
+
+def make_tube_support(plate_state, detail=70):
+    center = plate_state.center
+    cyl_1 = Cylinder(r=5, h=80, _fn=detail, center=True)
+    cyl_1 = cyl_1.rotate(center.rotation.tolist())
+    cyl_1 = cyl_1.rotate([-10, 94, -0])
+    cyl_1 = cyl_1.translate(center.translation.tolist())
+    cyl_1 = cyl_1.translate([-23, 30, -15])
+
+    connect_rod_1 = Cylinder(r=2, h=11, _fn=detail, center=True)
+    connect_rod_1 = connect_rod_1.translate([0, 0, 9])
+    connect_rod_1 = connect_rod_1.rotate(center.rotation.tolist())
+    connect_rod_1 = connect_rod_1.rotate([-10, 4, -0])
+    connect_rod_1 = connect_rod_1.translate(center.translation.tolist())
+    connect_rod_1 = connect_rod_1.translate([-23, 30, -15])
+
+    connect_rod_2 = Cylinder(r=2, h=18, _fn=detail, center=True)
+    connect_rod_2 = connect_rod_2.translate([30, 4, 14])
+    connect_rod_2 = connect_rod_2.rotate(center.rotation.tolist())
+    connect_rod_2 = connect_rod_2.rotate([-10, 4, -0])
+    connect_rod_2 = connect_rod_2.translate(center.translation.tolist())
+    connect_rod_2 = connect_rod_2.translate([-23, 30, -15])
+
+    connect_rod_3 = Cylinder(r=2, h=12, _fn=detail, center=True)
+    connect_rod_3 = connect_rod_3.translate([-30, -5, 8])
+    connect_rod_3 = connect_rod_3.rotate(center.rotation.tolist())
+    connect_rod_3 = connect_rod_3.rotate([-10, 4, -0])
+    connect_rod_3 = connect_rod_3.translate(center.translation.tolist())
+    connect_rod_3 = connect_rod_3.translate([-23, 30, -15])
+    connect_rods = connect_rod_1 + connect_rod_2 + connect_rod_3
+    support_1 = cyl_1 + connect_rods
+    support_2 = support_1.translate([-8, -45, 0])
+    supports = support_1 + support_2
+
+    cleaner = Cube([30, 30, 30], center=True).translate([0, 0, 35.5])
+    cleaner = cleaner.rotate(center.rotation.tolist()).rotate([0, 0, 0])
+    supports = supports - cleaner
+
+    base = Cube([72, 72, 8], center=True)
+    base = base.translate([-27, 24, 4]).rotate([0, 0, -10])
+    base = round_edges(base, xy_radius=10, detail=detail, z_radius=.1)
+    return supports + base
+
+
 plate = generate_main_plate()
 thumb = generate_thumb_cluster(plate)
 #supports = generate_supports(plate, thumb)
@@ -1341,10 +1428,6 @@ for row in thumb.sm:
     for mount in row:
         switches.append(mount.get_keyswitch())
 
-
-cuby = Cube([30, 30, 3], center=True)
-cuby = cuby.translate([0, 0, 120])
-cuby = cuby.rotate(a=[10, 0, 0], v=[0, 120, 120])
 # cuby = cuby.translate([0, 0, -120])
 # cuby = cuby.rotate([10, 0, 0])
 # cuby = cuby.translate([0, 0, 120])
@@ -1372,6 +1455,7 @@ cuby = cuby.rotate(a=[10, 0, 0], v=[0, 120, 120])
 #             cube(size=[30, 30, 3], center=true);
 #     };
 
+# back += make_tube_support(plate_state),
 
 right_hand = utils.sum_shapes([
     thumb.get_matrix(),
@@ -1379,14 +1463,15 @@ right_hand = utils.sum_shapes([
     # conn_hulls,
     plate_outline,
     thumb_outline,
-    cuby,
-    # back,
+    generate_handle(plate_state, thumb_state),
     # utils.sum_shapes(switches),
     # generate_plate_outline(plate, draft_version=True).turn_on_debug(),
     # generate_thumb_outline(thumb, draft_version=False),
 ])
 
-# right_hand -= top_cutter
+# back -= top_cutter
+floor_cutter = Cube([805, 805, 100], center=True).translate([0, 0, -50])
+# back -= floor_cutter
 
 #right_hand = plate.sm[0][0].transform(make_arc())
 
