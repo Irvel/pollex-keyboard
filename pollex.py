@@ -150,12 +150,12 @@ def make_round(shape):
     return pos_shape
 
 
-def round_edges(shape, xy_radius=5, z_curve=5, z_radius=1):
+def round_edges(shape, xy_radius=5, detail=5, z_radius=1):
     shape = shape.minkowski()
     # Round x and y corners
-    shape.append(Cylinder(r=xy_radius, h=.001))
+    shape.append(Cylinder(r=xy_radius, h=.001, _fn=detail))
     # Round z edges
-    shape.append(Sphere(r=z_radius, fn=z_curve))
+    shape.append(Sphere(r=z_radius, _fn=detail))
     return shape
 
 
