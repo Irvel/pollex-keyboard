@@ -937,16 +937,58 @@ def generate_thumb_outer_curve_outline(thumb_state, interpolation_segments=18):
     return shapes.color([.7, .3, .5])
 
 
+def generate_thumb_outer_curve_outline2(thumb_state, interpolation_segments=18):
+    outline_points = []
+    mount_rotations = {
+        0: [18.66, .3584, 16],
+        1: [-5.9305, .3569, -3.3],
+        2: [.0014, -.004, 0],
+        3: [-32.8275, -1.494, 35.678],
+        4: [25.237, -.168, -25],
+    }
+    for idx, mount in enumerate(thumb_state.mount_matrix[0]):
+        # Discard the mount's rotation and only use its translation.
+        transform = utils.translate_mat(np.identity(4), mount.translation)
+        rotation = np.array(mount_rotations[idx]) + mount.rotation
+        transform = utils.rotate_mat(transform, rotation)
+        outline_points.append(
+            Position(rotation=rotation,
+                     translation=mount.translation)
+        )
+
+    outline_shapes = []
+    # Make crosses
+    for point in outline_points:
+        shape_1 = Cube([19, 1, 3], center=True)
+        shape_2 = Cube([1, 18.5, 3], center=True)
+        shape = shape_1 + shape_2
+        shape = shape.rotate(point.rotation.tolist())
+        shape = shape.translate(point.translation.tolist())
+        outline_shapes.append(shape)
+
+    # Make corners
+    for point in outline_points:
+        shape = Cube([3, 3, 3], center=True)
+        shape = utils.sum_shapes([
+            shape.translate([7.98, -7.68, 0]),
+            shape.translate([-7.98, 7.68, 0]),
+            shape.translate([7.98, 7.68, 0]),
+            shape.translate([-7.98, -7.68, 0]),
+        ])
+        shape = shape.rotate(point.rotation.tolist())
+        shape = shape.translate(point.translation.tolist())
+        outline_shapes.append(shape)
+    return utils.sum_shapes(outline_shapes).turn_on_debug()
+
+
 def generate_thumb_outline(state, draft_version):
     if draft_version:
         interpolation_segments = 29
     else:
         interpolation_segments = 48
-    thin_shapes = generate_thumb_outer_curve_outline(
+    thin_shapes = generate_thumb_outer_curve_outline2(
         state,
         interpolation_segments=interpolation_segments,
     )
-    # thin_outline = thin_outline.color([.7, .3, .5]),
-    # return utils.sum_shapes(thin_outline)
     return thin_shapes
 
