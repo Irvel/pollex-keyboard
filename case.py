@@ -21,7 +21,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     if draft_version:
         interpolation_segments = 18
     else:
-        interpolation_segments = 48
+        interpolation_segments = 124
 
     def make_back_arc_2_5(column_idx, offset=[0, 0, 0], visualize_anchors=False):
         center_mount = plate_state.mount_matrix[CENTER_ROW][INDEX_SIDE]
@@ -512,7 +512,7 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     top_cap2, top_arcs, cutter = make_back_arc_2_5(column_idx=INDEX_SIDE)
     shapes = top_arcs
     # Close the top case cap.
-    top_cap3 = utils.sum_shapes(top_arcs[0]).hull() + cutter
+    top_cap3 = utils.sum_shapes(top_arcs[0]).hull()
     # print("Generating INDEX back segments...")
     # shapes.extend(
     #     make_back_arc_3(
@@ -542,7 +542,8 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
     # Close the bottom case cap.
     # top_cap3.append(utils.sum_shapes(shapes[-1]).hull())
 
-    if draft_version:
+    if draft_version and False:
+        top_cap3 += cutter
         return top_cap3 + utils.sum_shapes(shapes)
 
     print(f"Stitching {len(shapes) * len(shapes[0])} back segments with hulls...")
@@ -561,4 +562,5 @@ def generate_back(plate, outline, plate_state, draft_version=True, outline_size=
             top_cap3 += utils.sum_shapes(vert_join)
     end_time = datetime.now()
     print(f"Finished stitching back in {end_time - start_time}")
+    top_cap3 -= cutter
     return top_cap3
