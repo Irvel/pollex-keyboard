@@ -938,7 +938,7 @@ def generate_thumb_outer_curve_outline(thumb_state, interpolation_segments=18):
 
 
 def generate_thumb_outer_curve_outline2(thumb_state, interpolation_segments=18):
-    outline_points = []
+    mount_centers = []
     mount_rotations = {
         0: [18.66, .3584, 16],
         1: [-5.9305, .3569, -3.3],
@@ -951,33 +951,270 @@ def generate_thumb_outer_curve_outline2(thumb_state, interpolation_segments=18):
         transform = utils.translate_mat(np.identity(4), mount.translation)
         rotation = np.array(mount_rotations[idx]) + mount.rotation
         transform = utils.rotate_mat(transform, rotation)
-        outline_points.append(
+        mount_centers.append(
             Position(rotation=rotation,
                      translation=mount.translation)
         )
 
+    def place_cube(mount, offset, height=3):
+        shape = Cube([.1, .1, height], center=True)
+        shape = shape.translate(offset)
+        shape = shape.rotate(mount.rotation.tolist())
+        shape = shape.translate(mount.translation.tolist())
+        return shape
+
+    def interpolate_curve(mount, start, end, curvature):
+        bezier_control = get_middle_point(
+            point_a=start,
+            point_b=end,
+            offset=curvature,
+        )
+        trajectory = utils.interpolate_cuadratic_bezier(
+            point_a=start,
+            point_b=end,
+            control_point=bezier_control,
+            segments=interpolation_segments
+        )
+        trajectory.append(end)
+        return trajectory
+
+    def place_curve(mount, start, end, curvature, height=3):
+        trajectory = interpolate_curve(mount, start, end, curvature)
+        curve_shapes = []
+        for point in trajectory:
+            shape = Cube([.1, .1, height], center=True)
+            shape = shape.translate(point.tolist())
+            shape = shape.rotate(mount.rotation.tolist())
+            shape = shape.translate(mount.translation.tolist())
+            curve_shapes.append(shape)
+        return curve_shapes
+
+    mount_0 = mount_centers[0]
+    mount_1 = mount_centers[1]
+    mount_2 = mount_centers[2]
+    mount_3 = mount_centers[3]
+    mount_4 = mount_centers[4]
+
     outline_shapes = []
+    # Distance to corner in both the x or y axis
+    y_corner = 9.13
+    x_corner = 9.41
+    # Flat inner outline
+    # ============= Bottom outline =============
+    bl_0 = place_cube(mount_0, offset=[-x_corner, -y_corner, 0])
+    br_0 = place_cube(mount_0, offset=[x_corner, -y_corner, 0])
+    bottom_0_in = (bl_0 + br_0).hull()
+    outline_shapes.append(bottom_0_in)
+
+    bl_1 = place_cube(mount_1, offset=[-x_corner, -y_corner, 0])
+    br_1 = place_cube(mount_1, offset=[x_corner, -y_corner, 0])
+    bottom_1_in = (bl_1 + br_1).hull()
+    conn_0_1_in = (br_0 + bl_1).hull()
+    outline_shapes.append(conn_0_1_in)
+    outline_shapes.append(bottom_1_in)
+
+    bl_2 = place_cube(mount_2, offset=[-x_corner, -y_corner, 0])
+    br_2 = place_cube(mount_2, offset=[x_corner, -y_corner, 0])
+    bottom_2_in = (bl_2 + br_2).hull()
+    conn_1_2_in = (br_1 + bl_2).hull()
+    outline_shapes.append(conn_1_2_in)
+    outline_shapes.append(bottom_2_in)
+
+    bl_3 = place_cube(mount_3, offset=[-x_corner, -y_corner, 0])
+    br_3 = place_cube(mount_3, offset=[x_corner, -y_corner, 0])
+    bottom_3_in = (bl_3 + br_3).hull()
+    conn_2_3_in = (br_2 + bl_3).hull()
+    outline_shapes.append(conn_2_3_in)
+    outline_shapes.append(bottom_3_in)
+
+    bl_4 = place_cube(mount_4, offset=[-x_corner, -y_corner, 0])
+    br_4 = place_cube(mount_4, offset=[x_corner, -y_corner, 0])
+    bottom_4_in = (bl_4 + br_4).hull()
+    conn_3_4_in = (br_3 + bl_4).hull()
+    outline_shapes.append(conn_3_4_in)
+    outline_shapes.append(bottom_4_in)
+
+    # ============= Right outline =============
+    tr_4 = place_cube(mount_4, offset=[x_corner, y_corner, 0])
+    right = (br_4 + tr_4).hull()
+    outline_shapes.append(right)
+
+    # ============= Top outline =============
+    tl_4 = place_cube(mount_4, offset=[-x_corner, y_corner, 0])
+    top_4_in = (tr_4 + tl_4).hull()
+    outline_shapes.append(top_4_in)
+
+    tr_3 = place_cube(mount_3, offset=[x_corner, y_corner, 0])
+    tl_3 = place_cube(mount_3, offset=[-x_corner, y_corner, 0])
+    top_3_in = (tl_3 + tr_3).hull()
+    conn_4_3_in = (tl_4 + tr_3).hull()
+    outline_shapes.append(conn_4_3_in)
+    outline_shapes.append(top_3_in)
+
+    tr_2 = place_cube(mount_2, offset=[x_corner, y_corner, 0])
+    tl_2 = place_cube(mount_2, offset=[-x_corner, y_corner, 0])
+    top_2_in = (tl_2 + tr_2).hull()
+    conn_3_2_in = (tl_3 + tr_2).hull()
+    outline_shapes.append(conn_3_2_in)
+    outline_shapes.append(top_2_in)
+
+    tr_1 = place_cube(mount_1, offset=[x_corner, y_corner, 0])
+    tl_1 = place_cube(mount_1, offset=[-x_corner, y_corner, 0])
+    top_1_in = (tl_1 + tr_1).hull()
+    conn_2_1_in = (tl_2 + tr_1).hull()
+    outline_shapes.append(conn_2_1_in)
+    outline_shapes.append(top_1_in)
+
+    tr_0 = place_cube(mount_0, offset=[x_corner, y_corner, 0])
+    tl_0 = place_cube(mount_0, offset=[-x_corner, y_corner, 0])
+    top_0_in = (tl_0 + tr_0).hull()
+    conn_1_0_in = (tl_1 + tr_0).hull()
+    outline_shapes.append(conn_1_0_in)
+    outline_shapes.append(top_0_in)
+
+    # ============= Left outline =============
+    left = (bl_0 + tl_0).hull()
+    outline_shapes.append(left)
+
+    y_out_corner = y_corner + 4.5
+    x_out_corner = x_corner + 4.5
+
+    # Curved bottom left corner
+    corner_offset = 5.5
+    curvature = 4.2
+    height = 3
+    # Bl 0 corner
+    l_0_anchor = np.array([-x_out_corner, -corner_offset, 0])
+    bl_0_off = np.array([-corner_offset, -y_out_corner, 0])
+    bl_0_curve = utils.sum_shapes(place_curve(
+        mount_0,
+        start=l_0_anchor,
+        end=bl_0_off,
+        curvature=[-curvature, -curvature, 0],
+        height=height,
+    ))
+    outline_shapes.append((bl_0_curve + bl_0).hull())
+
+    br_0_off = np.array([corner_offset, -y_out_corner, 0])
+    r_0_off = np.array([x_out_corner+3, -corner_offset, 0])
+    br_0_curve = utils.sum_shapes(place_curve(
+        mount_0,
+        start=br_0_off,
+        end=r_0_off,
+        curvature=[curvature, -curvature, 0],
+        height=height,
+    ))
+    bl_0_off_shape = place_cube(mount_0, offset=bl_0_off.tolist())
+    br_0_off_shape = place_cube(mount_0, offset=br_0_off.tolist())
+    conn_bottom_0 = (bl_0_off_shape + br_0_off_shape).hull()
+    outline_shapes.append(conn_bottom_0)
+    # Join inner and outer faces of bottom 0 outline
+    outline_shapes.append((conn_bottom_0 + bottom_0_in).hull())
+    # 0 br corner
+    outline_shapes.append((br_0_curve + br_0).hull())
+
+    l_1_anchor = np.array([-x_out_corner+5., -corner_offset - 16, .22])
+    bl_1_off = np.array([-corner_offset+6, -y_out_corner - 2, 0])
+    in_curve = 1.4
+    bl_1_curve_shapes = place_curve(
+        mount_1,
+        start=l_1_anchor,
+        end=bl_1_off,
+        curvature=[-in_curve, in_curve, 0],
+        height=height,
+    )
+    r_0_off_shape = place_cube(mount_0, offset=r_0_off.tolist())
+    l_1_anchor_shape = place_cube(mount_1, offset=l_1_anchor.tolist())
+    conn_0_1_curve = (r_0_off_shape + l_1_anchor_shape + conn_0_1_in).hull()
+    outline_shapes.append(conn_0_1_curve)
+    conn_0_1_stripes = []
+    # Inner curve between bottom 0 and 1
+    for shape in bl_1_curve_shapes:
+        conn_0_1_stripes.append((shape + bl_1).hull())
+    for stripe_idx in range(1, len(conn_0_1_stripes)):
+        outline_shapes.append((conn_0_1_stripes[stripe_idx-1] + conn_0_1_stripes[stripe_idx]).hull())
+    # outline_shapes.append((conn_0_1_in + br_0_curve + conn_0_1_stripes[6]).hull())
+    curve = 2.4
+    br_1_off = np.array([corner_offset, -y_out_corner - 1.5, 0])
+    r_1_anchor = np.array([x_out_corner, -corner_offset-4, 0])
+    br_1_curve = place_curve(
+        mount_1,
+        start=br_1_off,
+        end=r_1_anchor,
+        curvature=[curve, -curve, 0],
+        height=height,
+    )
+    bl_1_off_shape = place_cube(mount_1, offset=bl_1_off.tolist())
+    br_1_off_shape = place_cube(mount_1, offset=br_1_off.tolist())
+    conn_bottom_1 = (bl_1_off_shape + br_1_off_shape).hull()
+    outline_shapes.append(conn_bottom_1)
+    # 1 Br corner
+    outline_shapes.append((utils.sum_shapes(br_1_curve) + br_1).hull())
+    # Join inner and outer faces of bottom 1 outline
+    outline_shapes.append((conn_bottom_1 + bottom_1_in).hull())
+    # Join inner and outer faces of 1_2 conn with 1 br corner
+    # r_1_anchor_shape = place_cube(mount_1, offset=r_1_anchor.tolist())
+    # outline_shapes.append((r_1_anchor_shape + conn_1_2_in).hull())
+
+    # Center (2) corners
+    l_2_anchor = np.array([-x_out_corner+3., -corner_offset - 16, .22])
+    bl_2_off = np.array([-corner_offset+6, -y_out_corner - 2, 0])
+    in_curve = 1.4
+    bl_2_curve_shapes = place_curve(
+        mount_2,
+        start=l_2_anchor,
+        end=bl_2_off,
+        curvature=[-in_curve, in_curve, 0],
+        height=height,
+    )
+    # r_1_off_shape = place_cube(mount_1, offset=r_1_off.tolist())
+    # l_1_anchor_shape = place_cube(mount_1, offset=l_1_anchor.tolist())
+    # conn_0_1_curve = (r_0_off_shape + l_1_anchor_shape + conn_0_1_in).hull()
+    # outline_shapes.append(conn_0_1_curve)
+    conn_1_2_stripes = []
+    # Inner curve between bottom 1 and 2
+    for shape in bl_2_curve_shapes:
+        conn_1_2_stripes.append((shape + bl_2).hull())
+    outline_shapes.append(utils.sum_shapes(conn_1_2_stripes))
+    # Connection between 1 and 2
+    outline_shapes.append((br_1_curve[len(br_1_curve)//4] + conn_1_2_in + bl_2_curve_shapes[0]).hull())
+    # for stripe_idx in range(1, len(conn_0_1_stripes)):
+        # outline_shapes.append((conn_0_1_stripes[stripe_idx-1] + conn_0_1_stripes[stripe_idx]).hull())
+
+    # Bl 3 corner
+    l_3_anchor = np.array([-x_out_corner-3, -corner_offset-1.5, 0])
+    bl_3_off = np.array([-corner_offset+2, -y_out_corner, 0])
+    bl_3_curve = utils.sum_shapes(place_curve(
+        mount_3,
+        start=l_3_anchor,
+        end=bl_3_off,
+        curvature=[-curvature, -curvature, 0],
+        height=height,
+    ))
+    outline_shapes.append((bl_3_curve + bl_3).hull())
+
+
     # Make crosses
-    for point in outline_points:
-        shape_1 = Cube([19, 1, 3], center=True)
-        shape_2 = Cube([1, 18.5, 3], center=True)
-        shape = shape_1 + shape_2
-        shape = shape.rotate(point.rotation.tolist())
-        shape = shape.translate(point.translation.tolist())
-        outline_shapes.append(shape)
+    # for point in mount_centers:
+    #     shape_1 = Cube([19, 1, 3], center=True)
+    #     shape_2 = Cube([1, 18.5, 3], center=True)
+    #     shape = shape_1 + shape_2
+    #     shape = shape.rotate(point.rotation.tolist())
+    #     shape = shape.translate(point.translation.tolist())
+    #     outline_shapes.append(shape)
 
     # Make corners
-    for point in outline_points:
-        shape = Cube([3, 3, 3], center=True)
-        shape = utils.sum_shapes([
-            shape.translate([7.98, -7.68, 0]),
-            shape.translate([-7.98, 7.68, 0]),
-            shape.translate([7.98, 7.68, 0]),
-            shape.translate([-7.98, -7.68, 0]),
-        ])
-        shape = shape.rotate(point.rotation.tolist())
-        shape = shape.translate(point.translation.tolist())
-        outline_shapes.append(shape)
+    # for point in mount_centers:
+    #     shape = Cube([.1, .1, 3], center=True)
+    #     shape = utils.sum_shapes([
+    #         shape.translate([9.41, -9.13, 0]),
+    #         shape.translate([-9.41, 9.13, 0]),
+    #         shape.translate([9.41, 9.13, 0]),
+    #         shape.translate([-9.41, -9.13, 0]),
+    #     ])
+    #     shape = shape.rotate(point.rotation.tolist())
+    #     shape = shape.translate(point.translation.tolist())
+    #     outline_shapes.append(shape)
     return utils.sum_shapes(outline_shapes).turn_on_debug()
 
 

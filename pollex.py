@@ -1386,15 +1386,15 @@ conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + p
 # right_hand = conn_hulls + thumb.get_matrix() + plate.get_matrix() + supports + conn_hulls
 
 plate_state = keyboard_state.KeyboardState(pykeeb_matrix=plate)
-plate_outline = keyboard_outline.generate_plate_outline(plate_state,
-                                                        draft_version=False)
+# plate_outline = keyboard_outline.generate_plate_outline(plate_state,
+                                                        # draft_version=True)
 # back = case.generate_back(plate, plate_outline, plate_state, draft_version=True)
 # back -= plate_outline
 
 thumb_state = keyboard_state.KeyboardState(pykeeb_matrix=thumb)
 # thumb_outline = generate_thumb_outline(thumb, draft_version=True)
 thumb_outline = keyboard_outline.generate_thumb_outline(thumb_state,
-                                                        draft_version=False)
+                                                        draft_version=True)
 
 # Create an even top surface
 plate_plane = keyboard_state.Position(
@@ -1462,12 +1462,12 @@ right_hand = utils.sum_shapes([
     thumb.get_matrix(),
     plate.get_matrix(),
     # conn_hulls,
-    plate_outline,
+    # plate_outline,
     thumb_outline,
     generate_handle(plate_state, thumb_state),
     # utils.sum_shapes(switches),
     # generate_plate_outline(plate, draft_version=True).turn_on_debug(),
-    generate_thumb_outline(thumb, draft_version=False),
+    # generate_thumb_outline(thumb, draft_version=False),
 ])
 
 # back -= top_cutter
