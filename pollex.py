@@ -19,11 +19,9 @@ BOTTOM_ROW = 0
 CENTER_ROW = 1
 TOP_ROW = 2
 
-# 13.80 was too much.
-mount_width = 13.60
-mount_height = 13.60
 plate_thickness = 3
-mount_width = 18.915
+mount_height = 18.115
+mount_width = 18.115
 
 
 def rotate_point(point, angle_list):
@@ -224,17 +222,17 @@ def apply_columns_ergo_main(plate):
     plate.im[BOTTOM_ROW][INDEX_SIDE][Z_MOV] -= 1.5
 
     # Create column cavities to account for different finger lengths
-    plate.cm[INDEX_SIDE][Z_MOV] += -3
-    plate.cm[INDEX][Z_MOV]      += -3
+    plate.cm[INDEX_SIDE][Z_MOV] += -2.5
+    plate.cm[INDEX][Z_MOV]      += -2.5
     plate.cm[MIDDLE][Z_MOV]     += -8
-    plate.cm[RING][Z_MOV]       += -6
-    plate.cm[PINKY][Z_MOV]      += -5
+    plate.cm[RING][Z_MOV]       += -11
+    plate.cm[PINKY][Z_MOV]      += -16
 
     # Shift the pinky finger column away from the other columns
     plate.cm[PINKY][X_MOV]      += .4
 
     # Shift index side column towards the index
-    plate.cm[INDEX_SIDE][X_MOV]      += 1.4
+    plate.cm[INDEX_SIDE][X_MOV]      += 1.0
 
 
     # Variable arc length for each finger
@@ -249,11 +247,11 @@ def apply_columns_ergo_main(plate):
             # Make the arc length longer for longer fingers
             row_spacing = plate.row_spacing
             if column == INDEX_SIDE:
-                row_spacing -= 3.0
+                row_spacing -= 2.9
             if column == MIDDLE:
-                row_spacing += 2.0
+                row_spacing += 2.2
             if column == RING:
-                row_spacing += 0.8
+                row_spacing += 1.0
             if column == PINKY:
                 row_spacing -= 3.5
             switch = Keyswitch_mount([list(map(sum, zip(modifiers[row][column][:3], [column * (plate.mount_width + plate.column_spacing), row * (plate.mount_length + row_spacing), 0]))) + modifiers[row][column][3:6], [plate.origin[0], plate.origin[1], plate.origin[2], plate.x_tent, plate.y_tent, plate.z_tent]], modifiers[row][column][6], plate.switch_type, plate.mount_length, plate.mount_width, plate.mx_notches)
@@ -375,13 +373,13 @@ def generate_main_plate():
     num_columns = 5
     plate = Keyboard_matrix(num_rows,
                             num_columns,
-                            row_spacing=7.8,
-                            column_spacing=2.5,
+                            row_spacing=6.0,
+                            column_spacing=1.3,
                             plate_thickness=plate_thickness,
                             origin=[0, 0, 96],
-                            x_tent=0,
-                            y_tent=57,
-                            z_tent=-10,
+                            x_tent=-40,
+                            y_tent=87,
+                            z_tent=-50,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
@@ -399,28 +397,28 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-40, -28, 33])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-48, 6, 48])))
 
     thumb = Keyboard_matrix(1,
                             5,
                             row_spacing=3.1,
-                            column_spacing=4.4,
+                            column_spacing=1.6,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
-                            x_tent=-1,
-                            y_tent=-52,
-                            z_tent=14,
+                            x_tent=-5,
+                            y_tent=-45,
+                            z_tent=0,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
                             mx_notches=False)
     plate.side_wall_thickness = 1
     h_curve = 36
-    thumb.cm[4] = [-16, -29,   h_curve * 1.14,  -26, -h_curve * 2.45,  23]  # Top key
-    thumb.cm[3] = [  1,  -9,   h_curve * .52,  7, -h_curve * 1.3,  -8]
-    thumb.cm[2] = [  0,   0,   h_curve * .16,  5,              3,  0]
-    thumb.cm[1] = [ -1,  -10,   h_curve * .52,  7,  h_curve * 1.3,  8]
-    thumb.cm[0] = [ 15, -29,   h_curve * 1.14,  -22,  h_curve * 2.3,  -20]
+    thumb.cm[4] = [-13, -19,   h_curve * 0.9,  -20, -h_curve * 2.8,  18]  # Top key
+    thumb.cm[3] = [  1,  -7,   h_curve * .32,  6, -h_curve * 1.3,  -6]
+    thumb.cm[2] = [  0,   0,   h_curve * .10,  5,              3,  0]
+    thumb.cm[1] = [ -1,  -7,   h_curve * .32,  6,  h_curve * 1.3,  6]
+    thumb.cm[0] = [ 13, -19,   h_curve * 0.9,  -20,  h_curve * 2.8,  -18]
 
 
 
@@ -744,7 +742,7 @@ def generate_plate_outline(plate, draft_version=True):
             if col_idx == RING:
                 if side == "top":
                     shape="cyli_cube_2"
-                    offset = 7.99
+                    offset = 3.99
                 else:
                     shape = "cyli_cube_3"
                     offset = 0
@@ -754,7 +752,7 @@ def generate_plate_outline(plate, draft_version=True):
                     shape = "cyli_cube_3"
                 else:
                     shape="cyli_cube_2"
-                    offset = 7.99
+                    offset = 3.99
             elif col_idx == MIDDLE:
                 if side == "bottom":
                     shape="cyli_cube_3"
@@ -775,25 +773,27 @@ def generate_plate_outline(plate, draft_version=True):
                 shape="cube"
             offset = 0
             if col_idx == INDEX_SIDE:
-                offset = -7.99
-                #if side == "top":
-                    #y_offset += 0.1
+                offset = -3.99
+                if side == "bottom":
+                    shape = "cyli_cube_3"
+                else:
+                    shape = "cyli_cube_2"
             elif col_idx == INDEX:
                 if side == "bottom":
                     shape = "cyli_cube_3"
                     #y_offset -= 0.2
                 else:
                     shape = "cyli_cube_2"
-                offset = -7.99
+                offset = -3.99
             elif col_idx == MIDDLE:
                 if side == "bottom":
-                    offset = -7.99
+                    offset = -3.99
                     shape = "cyli_cube_6"
                 else:
                     shape = "cyli_cube_2"
             elif col_idx == RING:
                 if side == "bottom":
-                    offset = -7.99
+                    offset = -3.99
                     shape = "cyli_cube_3"
                 else:
                     shape = "cyli_cube_2"
@@ -823,8 +823,8 @@ def generate_plate_outline(plate, draft_version=True):
                                                 corner_radius,
                                                 corner_height,
                                                 corner_pos + "r",
-                                                [0,0,0],
-                                                [0,.4,0])
+                                                [0, 0, 0],
+                                                [-1, .4, 3.99])
                 if draft_version:
                     edge_list.append((corner1 + corner2 + curved_edge).hull())
                 else:
@@ -840,8 +840,8 @@ def generate_plate_outline(plate, draft_version=True):
                                                 corner_radius,
                                                 corner_height,
                                                 corner_pos + "r",
-                                                start_offset=[1,-.3,0],
-                                                end_offset=[.35,.1,.2])
+                                                start_offset=[1, -.3, 0],
+                                                end_offset=[.35, .1, 3.9])
                 if draft_version:
                     edge_list.append((corner1 + corner2 + curved_edge).hull())
                 else:
@@ -868,7 +868,7 @@ def generate_plate_outline(plate, draft_version=True):
             if col_idx != 0 and prev_corner:
                 edge_list.append((prev_corner + corner1).hull())
             prev_corner = corner2
-        return sum_shapes(edge_list)
+        return utils.sum_shapes(edge_list)
 
     def rounded_vertical_side(side, corner_radius, corner_height, x_offset=0, y_offset=0, z_offset=0):
         if side == "top":
@@ -883,9 +883,9 @@ def generate_plate_outline(plate, draft_version=True):
         for col_idx in range(plate.columns):
             # Only round first and last corners.
             if col_idx == 0:
-                shape="cylinder"
+                shape = "cylinder"
             else:
-                shape="cube"
+                shape = "cube"
             offset = 0
             if col_idx == RING:
                 if side == "top":
@@ -911,17 +911,21 @@ def generate_plate_outline(plate, draft_version=True):
             elif col_idx == INDEX:
                 offset = 1.8
                 if side == "top":
+                    shape = "cyli_cube_2"
                     y_offset = -.11
                 else:
                     y_offset = .17
                     x_offset = 3.17
+                    shape = "cyli_cube_3"
             elif col_idx == INDEX_SIDE:
                 offset = .07
                 if side == "top":
+                    shape = "cyli_cube_2"
                     y_offset = -.17
                     x_offset += .25
                 else:
                     y_offset = .17
+                    shape = "cyli_cube_3"
             corner1 = mount_corner(radius=corner_radius,
                                    height=corner_height,
                                    key_mount=plate.sm[row_idx][col_idx],
@@ -937,6 +941,10 @@ def generate_plate_outline(plate, draft_version=True):
                 shape="cube"
             offset = 0
             if col_idx == INDEX_SIDE:
+                if side == "bottom":
+                    shape = "cyli_cube_3"
+                else:
+                    shape = "cyli_cube_2"
                 offset = -.99
             elif col_idx == INDEX:
                 if side == "bottom":
@@ -987,22 +995,23 @@ def generate_plate_outline(plate, draft_version=True):
             if col_idx != 0 and prev_corner:
                 edge_list.append((prev_corner + corner1).hull())
             prev_corner = corner2
-        return sum_shapes(edge_list)
+        return utils.sum_shapes(edge_list)
     outer_outline_sides = [
-        rounded_horizontal_side(side="left", corner_radius=4, corner_height=6, z_offset=1),
-        rounded_horizontal_side(side="right", corner_radius=4, corner_height=6, z_offset=1),
-        sculped_vertical_side(side="top", corner_radius=4, corner_height=6, z_offset=1),
-        sculped_vertical_side(side="bottom", corner_radius=4, corner_height=6, z_offset=1),
+        rounded_horizontal_side(side="left", corner_radius=2, corner_height=5, z_offset=1),
+        rounded_horizontal_side(side="right", corner_radius=2, corner_height=5, z_offset=1),
+        sculped_vertical_side(side="top", corner_radius=2, corner_height=5, z_offset=1),
+        sculped_vertical_side(side="bottom", corner_radius=2, corner_height=5, z_offset=1),
     ]
-    outer_outline = sum_shapes(outer_outline_sides)
+    outer_outline = utils.sum_shapes(outer_outline_sides)
     inner_outline_sides = [
         rounded_horizontal_side(side="left", corner_radius=.95, corner_height=2, x_offset=.06, z_offset=3.5, is_cut=True),
         rounded_horizontal_side(side="right", corner_radius=.95, corner_height=2, x_offset=-.06, z_offset=3.5, is_cut=True),
         rounded_vertical_side(side="top", corner_radius=.95, corner_height=2, y_offset=-.01, z_offset=3.5),
         rounded_vertical_side(side="bottom", corner_radius=.95, corner_height=2, y_offset=.01, z_offset=3.5),
     ]
-    inner_outline = sum_shapes(inner_outline_sides)
-    outline = outer_outline - inner_outline.color([.4,.9,.4])
+    # inner_outline = utils.sum_shapes(inner_outline_sides)
+    # outline = outer_outline - inner_outline.color([.4,.9,.4])
+    outline = outer_outline
     #return outline.turn_on_debug()
     return outline
 
@@ -1098,10 +1107,10 @@ def generate_thumb_outline(thumb, draft_version=True):
             prev_corner = corner2
         return edge_list
 
-    edge_list = rounded_vertical_side(side="top", corner_radius=3, corner_height=3)
-    edge_list.extend(rounded_vertical_side(side="bottom", corner_radius=3, corner_height=3))
-    edge_list.extend(rounded_horizontal_side(side="left", corner_radius=3, corner_height=3))
-    edge_list.extend(rounded_horizontal_side(side="right", corner_radius=3, corner_height=3))
+    edge_list = rounded_vertical_side(side="top", corner_radius=2, corner_height=3)
+    edge_list.extend(rounded_vertical_side(side="bottom", corner_radius=2, corner_height=3))
+    edge_list.extend(rounded_horizontal_side(side="left", corner_radius=2, corner_height=3))
+    edge_list.extend(rounded_horizontal_side(side="right", corner_radius=2, corner_height=3))
 
     return utils.sum_shapes(edge_list).turn_on_debug()
 
@@ -1260,45 +1269,47 @@ def generate_supports(plate, thumb):
 
 def generate_handle(plate_state, thumb_state, detail=70):
     center_thumb = thumb_state.mount(0, 2)
-    start_pos = (center_thumb.center + [30, -60, 5])
+    start_pos = (center_thumb.center + [-10, -72, -6])
     cyl_1 = Cylinder(r=6, h=4, _fn=detail, center=True)
     cyl_2 = Cylinder(r=6, h=4, _fn=detail, center=True).translate([0, -15, 0])
     handle = (cyl_1 + cyl_2).hull()
-    handle = handle.rotate([90, -20, 180])
+    handle = handle.rotate([90, -60, 180])
     handle = handle.rotate(start_pos.rotation.tolist())
     handle = handle.translate(start_pos.translation.tolist())
     handle = round_edges(handle, xy_radius=1, detail=detail, z_radius=1)
 
-    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([5, 0, 6])
-    cyl_1 = cyl_1.rotate([0, 140, 180])
+    cyl_1 = Cylinder(r=3, h=2, _fn=detail, center=True).translate([5, 0, 6])
+    cyl_1 = cyl_1.rotate([0, 80, 180])
     cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
 
-    pinky_anchor = plate_state.mount(BOTTOM_ROW, PINKY).center + [2.5, -10, 6]
-    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
+    pinky_anchor = plate_state.mount(BOTTOM_ROW, PINKY).center + [3.2, -11, -1]
+    cyl_2 = Cylinder(r=3, h=2, _fn=detail, center=True)
     cyl_2 = cyl_2.rotate([120, 60, 0])
     cyl_2 = cyl_2.rotate(pinky_anchor.rotation.tolist())
     cyl_2 = cyl_2.translate((pinky_anchor.translation).tolist())
     plate_pipe = (cyl_1 + cyl_2).hull()
 
-    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([2, 0, 2])
+    cyl_1 = Cylinder(r=3, h=2, _fn=detail, center=True).translate([2, 0, 2])
     cyl_1 = cyl_1.rotate([-50, 0, 30])
     cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
-    thumb_anchor = thumb_state.mount(0, 1).center + [0, 0, -13]
-    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
+    thumb_anchor = thumb_state.mount(0, 1).center + [17, 0, -22]
+    cyl_2 = Cylinder(r=3, h=2, _fn=detail, center=True)
     cyl_2 = cyl_2.rotate([50, 60, 0])
     cyl_2 = cyl_2.rotate(thumb_anchor.rotation.tolist())
     cyl_2 = cyl_2.translate((thumb_anchor.translation).tolist())
     thumb_pipe = (cyl_1 + cyl_2).hull()
 
-    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([-2, 0, 2])
+    cyl_1 = Cylinder(r=3, h=2, _fn=detail, center=True).translate([-5, 0, -14])
     # cyl_1 = cyl_1.rotate([0, 140, 90])
     # cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
-    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
-    cyl_2 = cyl_2.translate([5, -74, 1])
-    floor_pipe = (cyl_1 + cyl_2).hull()
+    cyl_2 = Cylinder(r=3, h=2, _fn=detail, center=True)
+    cyl_3 = Cylinder(r=8, h=2, _fn=detail, center=True)
+    cyl_2 = cyl_2.translate([-36, -55, 1])
+    cyl_3 = cyl_3.translate([-36, -55, 1])
+    floor_pipe = (cyl_1 + cyl_2).hull() + cyl_3
     return handle + plate_pipe + thumb_pipe + floor_pipe
 
 
@@ -1359,9 +1370,43 @@ thumb = generate_thumb_cluster(plate)
 # hulls connecting thumb and matrix
 #conn_hulls = (thumb.sm[1][1].get_corner("br", .5, 4, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 7, 2, 4)).hull()
 #conn_hulls = (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[2][0].get_corner("bl", 3, 3, 0)).hull()
-conn_hulls = (thumb.sm[0][2].get_front(3, 3) + plate.sm[BOTTOM_ROW][MIDDLE].get_back(3, 3)).hull()
-#   conn_hulls += (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[MIDDLE]).hull()
-conn_hulls += (thumb.sm[0][3].get_front(3, 3) + plate.sm[BOTTOM_ROW][INDEX].get_back(3, 3)).hull()
+conn_hulls = (thumb.sm[0][2].get_right(3, 3) + plate.sm[CENTER_ROW][INDEX].get_left(3, 3)).hull()
+# conn_hulls += (thumb.sm[0][2].get_left(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_left(1, 1)).hull()
+conn_hulls += (thumb.sm[0][1].get_right(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_left(3, 3)).hull()
+# conn_hulls += (thumb.sm[0][2].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][1].get_front(3, 3) + plate.sm[CENTER_ROW][MIDDLE].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][4].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_left(3, 3)).hull()
+conn_hulls += project(thumb.sm[0][1].get_left(2, 2))
+conn_hulls += project(thumb.sm[0][0].get_left(2, 2))
+
+conn_hulls += project(plate.sm[BOTTOM_ROW][PINKY].get_right(3, 3))
+conn_hulls += project(plate.sm[CENTER_ROW][PINKY].get_right(3, 3))
+conn_hulls += project(plate.sm[TOP_ROW][PINKY].get_right(3, 3))
+
+conn_hulls += project(plate.sm[CENTER_ROW][PINKY].get_corner("tl", 3, .01, 3) + plate.sm[TOP_ROW][PINKY].get_corner("br", 3, .01, 3))
+conn_hulls += project(plate.sm[BOTTOM_ROW][PINKY].get_corner("tl", 3, .01, 3) + plate.sm[CENTER_ROW][PINKY].get_corner("br", 3, .01, 3))
+
+# Triangle pinky ring
+conn_hulls += (plate.sm[TOP_ROW][PINKY].get_front(3, 3) + plate.sm[TOP_ROW][RING].get_right(3, 3)).hull()
+
+# Thin walls fix pinky ring
+conn_hulls += (plate.sm[TOP_ROW][PINKY].get_left(1, 1) + plate.sm[TOP_ROW][RING].get_right(3, 3)).hull()
+conn_hulls += (plate.sm[CENTER_ROW][PINKY].get_left(1, 1) + plate.sm[CENTER_ROW][RING].get_right(1, 1)).hull()
+conn_hulls += (plate.sm[BOTTOM_ROW][PINKY].get_left(1, 1) + plate.sm[BOTTOM_ROW][RING].get_right(1, 1)).hull()
+conn_hulls += (plate.sm[CENTER_ROW][RING].get_corner("br", 1, .01, 1) + plate.sm[BOTTOM_ROW][RING].get_corner("tr", 1, .01, 1)).hull()
+conn_hulls += (plate.sm[TOP_ROW][RING].get_corner("br", 1, .01, 1) + plate.sm[CENTER_ROW][RING].get_corner("tr", 1, .01, 1)).hull()
+
+
+# Support rods
+# conn_hulls += (plate.sm[TOP_ROW][INDEX_SIDE].get_back(2, 2) + plate.sm[TOP_ROW][INDEX_SIDE].get_back(3, 3).translate([-40, 10, -80])).hull()
+# conn_hulls += project(plate.sm[TOP_ROW][INDEX_SIDE].get_back(18, 8).translate([-40, 10, -80]))
+conn_hulls += (plate.sm[TOP_ROW][INDEX].get_back(2, 2) + plate.sm[TOP_ROW][INDEX].get_back(3, 3).translate([-41, 50, -62])).hull()
+conn_hulls += project(plate.sm[TOP_ROW][INDEX].get_back(18, 8).translate([-41, 50, -62]))
+conn_hulls += Cube([70, 40, 3], center=True).translate([-59, 89, 1.5])
+
+# project(plate.sm[row][plate.columns-1].get_right(plate.side_wall_thickness, plate.side_extrude)) for row in range(plate.rows)]
+
+# conn_hulls += (thumb.sm[0][3].get_front(3, 3) + plate.sm[BOTTOM_ROW][INDEX].get_back(3, 3)).hull()
 #   conn_hulls = (thumb.sm[0][2].get_back(3, 3) + plate.back_wall_hulls[RING]).hull()
 #fr_corner = thumb.sm[0][3].get_corner("br", 3, 3, 3)
 #br_corner = thumb.sm[0][3].get_corner("bl", 3, 3, 3)
@@ -1369,7 +1414,7 @@ conn_hulls += (thumb.sm[0][3].get_front(3, 3) + plate.sm[BOTTOM_ROW][INDEX].get_
 #conn_hulls += (br_corner + plate.back_wall_hulls[RING]).hull()
 #conn_hulls += (fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
 #conn_hulls += (thumb.sm[0][2].get_right(3, 3) + fr_corner + br_corner + plate.back_wall_hulls[RING]).hull()
-conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
+# conn_hulls += (thumb.sm[0][3].get_back(thickness=2, extrude=3, extend=False) + plate.sm[BOTTOM_ROW][PINKY].get_back(3, 3)).hull()
 
 
 
@@ -1413,13 +1458,13 @@ top_cutter = top_cutter.rotate(left_plane.rotation.tolist())
 top_cutter = top_cutter.translate(left_plane.translation.tolist())
 
 
-# keys = []
-# for row in plate.sm:
-#     for mount in row:
-#         keys.append(mount.get_keycap(True))
-# for row in thumb.sm:
-#     for mount in row:
-#         keys.append(mount.get_keycap(True))
+keys = []
+for row in plate.sm:
+    for mount in row:
+        keys.append(mount.get_keycap(True))
+for row in thumb.sm:
+    for mount in row:
+        keys.append(mount.get_keycap(True))
 
 switches = []
 for row in plate.sm:
@@ -1457,17 +1502,23 @@ for row in thumb.sm:
 #     };
 
 # back += make_tube_support(plate_state),
+bottom_weight = Cube([100, 130, 8], center=True).translate([-65, 40, 4])
+bottom_weight += Cube([50, 70, 20], center=True).translate([-75, 40, 10])
+bottom_weight -= Cube([47, 67, 15], center=True).translate([-75, 40, 15])
+
 
 right_hand = utils.sum_shapes([
     thumb.get_matrix(),
     plate.get_matrix(),
-    # conn_hulls,
+    conn_hulls,
+    # bottom_weight,
     # plate_outline,
-    thumb_outline,
+    # thumb_outline,
     generate_handle(plate_state, thumb_state),
     # utils.sum_shapes(switches),
-    # generate_plate_outline(plate, draft_version=True).turn_on_debug(),
-    # generate_thumb_outline(thumb, draft_version=False),
+    # utils.sum_shapes(keys),
+    generate_plate_outline(plate, draft_version=True).turn_on_debug(),
+    generate_thumb_outline(thumb, draft_version=False),
 ])
 
 # back -= top_cutter
