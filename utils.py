@@ -158,3 +158,9 @@ def interpolate_cubic_bezier(start, end, bezier_1, bezier_2, segments=10):
         curve_points.append(curve_point.tolist())
     curve_points.append(end.tolist())
     return curve_points
+
+
+def get_middle_point(point_a, point_b, offset=[0, 0, 0]):
+    rel_middle = (point_b - point_a) / 2
+    rel_middle += offset
+    return point_a + rel_middle

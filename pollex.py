@@ -183,7 +183,7 @@ def apply_columns_ergo_main(plate):
     plate.cm[INDEX][Y_MOV]      += -3
     plate.cm[MIDDLE][Y_MOV]     += -3
     plate.cm[RING][Y_MOV]       += -10
-    plate.cm[PINKY][Y_MOV]      += -19
+    plate.cm[PINKY][Y_MOV]      += -20
 
     # Apply horizontal curvature
     h_curve = 2
@@ -229,7 +229,7 @@ def apply_columns_ergo_main(plate):
     plate.cm[PINKY][Z_MOV]      += -16
 
     # Shift the pinky finger column away from the other columns
-    plate.cm[PINKY][X_MOV]      += .4
+    plate.cm[PINKY][X_MOV]      += .8
 
     # Shift index side column towards the index
     plate.cm[INDEX_SIDE][X_MOV]      += 1.0
@@ -374,11 +374,11 @@ def generate_main_plate():
     plate = Keyboard_matrix(num_rows,
                             num_columns,
                             row_spacing=6.0,
-                            column_spacing=1.3,
+                            column_spacing=1.5,
                             plate_thickness=plate_thickness,
                             origin=[0, 0, 96],
-                            x_tent=-40,
-                            y_tent=87,
+                            x_tent=-43,
+                            y_tent=79,
                             z_tent=-50,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
@@ -397,17 +397,17 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-48, 6, 48])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-48, 3, 40])))
 
     thumb = Keyboard_matrix(1,
                             5,
                             row_spacing=3.1,
-                            column_spacing=1.6,
+                            column_spacing=1.7,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
-                            x_tent=-5,
+                            x_tent=-3,
                             y_tent=-45,
-                            z_tent=0,
+                            z_tent=5,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
@@ -1267,9 +1267,9 @@ def generate_supports(plate, thumb):
     return supports.color("Cyan")
 
 
-def generate_handle(plate_state, thumb_state, detail=70):
+def generate_handle(plate_state, thumb_state, detail=70, segments=40):
     center_thumb = thumb_state.mount(0, 2)
-    start_pos = (center_thumb.center + [-10, -72, -6])
+    start_pos = (center_thumb.center + [10, -72, -6])
     cyl_1 = Cylinder(r=6, h=4, _fn=detail, center=True)
     cyl_2 = Cylinder(r=6, h=4, _fn=detail, center=True).translate([0, -15, 0])
     handle = (cyl_1 + cyl_2).hull()
@@ -1278,39 +1278,60 @@ def generate_handle(plate_state, thumb_state, detail=70):
     handle = handle.translate(start_pos.translation.tolist())
     handle = round_edges(handle, xy_radius=1, detail=detail, z_radius=1)
 
-    cyl_1 = Cylinder(r=3, h=2, _fn=detail, center=True).translate([5, 0, 6])
+    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([5, 0, 6])
     cyl_1 = cyl_1.rotate([0, 80, 180])
     cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
 
     pinky_anchor = plate_state.mount(BOTTOM_ROW, PINKY).center + [3.2, -11, -1]
-    cyl_2 = Cylinder(r=3, h=2, _fn=detail, center=True)
+    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
     cyl_2 = cyl_2.rotate([120, 60, 0])
     cyl_2 = cyl_2.rotate(pinky_anchor.rotation.tolist())
     cyl_2 = cyl_2.translate((pinky_anchor.translation).tolist())
     plate_pipe = (cyl_1 + cyl_2).hull()
 
-    cyl_1 = Cylinder(r=3, h=2, _fn=detail, center=True).translate([2, 0, 2])
+    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([2, 0, 2])
     cyl_1 = cyl_1.rotate([-50, 0, 30])
     cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
-    thumb_anchor = thumb_state.mount(0, 1).center + [17, 0, -22]
-    cyl_2 = Cylinder(r=3, h=2, _fn=detail, center=True)
+    thumb_anchor = thumb_state.mount(0, 1).center + [19, 0, -22]
+    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
     cyl_2 = cyl_2.rotate([50, 60, 0])
     cyl_2 = cyl_2.rotate(thumb_anchor.rotation.tolist())
     cyl_2 = cyl_2.translate((thumb_anchor.translation).tolist())
     thumb_pipe = (cyl_1 + cyl_2).hull()
 
-    cyl_1 = Cylinder(r=3, h=2, _fn=detail, center=True).translate([-5, 0, -14])
+    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([-5, 0, -14])
     # cyl_1 = cyl_1.rotate([0, 140, 90])
     # cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
-    cyl_2 = Cylinder(r=3, h=2, _fn=detail, center=True)
+    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
     cyl_3 = Cylinder(r=8, h=2, _fn=detail, center=True)
-    cyl_2 = cyl_2.translate([-36, -55, 1])
-    cyl_3 = cyl_3.translate([-36, -55, 1])
+    cyl_2 = cyl_2.translate([-17, -66, 1])
+    cyl_3 = cyl_3.translate([-17, -66, 1])
     floor_pipe = (cyl_1 + cyl_2).hull() + cyl_3
-    return handle + plate_pipe + thumb_pipe + floor_pipe
+
+    point_a = start_pos + [-8, 0, -19]
+    point_b = start_pos + [30, -40, -4]
+
+    middle_point = utils.get_middle_point(point_a, point_b, offset=[0, 0, -40])
+    bezier_1 = middle_point + [-30, -5, 0]
+    bezier_2 = middle_point + [25, 5, 0]
+    trajectory = utils.interpolate_cubic_bezier(
+        start=point_a.translation,
+        end=point_b.translation,
+        bezier_1=bezier_1.translation,
+        bezier_2=bezier_2.translation,
+        segments=segments,
+    )
+    support_curve = []
+    prev_cube = None
+    for point in trajectory:
+        cube = Sphere(3, _fn=segments).translate(point)
+        if prev_cube:
+            support_curve.append((cube + prev_cube).hull())
+        prev_cube = cube
+    return handle + plate_pipe + thumb_pipe + floor_pipe + utils.sum_shapes(support_curve)
 
 
 def make_tube_support(plate_state, detail=70):
@@ -1370,11 +1391,11 @@ thumb = generate_thumb_cluster(plate)
 # hulls connecting thumb and matrix
 #conn_hulls = (thumb.sm[1][1].get_corner("br", .5, 4, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 7, 2, 4)).hull()
 #conn_hulls = (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[2][0].get_corner("bl", 3, 3, 0)).hull()
-conn_hulls = (thumb.sm[0][2].get_right(3, 3) + plate.sm[CENTER_ROW][INDEX].get_left(3, 3)).hull()
+conn_hulls = (thumb.sm[0][3].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX].get_back(3, 3)).hull()
 # conn_hulls += (thumb.sm[0][2].get_left(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_left(1, 1)).hull()
 conn_hulls += (thumb.sm[0][1].get_right(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_left(3, 3)).hull()
 # conn_hulls += (thumb.sm[0][2].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_back(3, 3)).hull()
-conn_hulls += (thumb.sm[0][1].get_front(3, 3) + plate.sm[CENTER_ROW][MIDDLE].get_back(3, 3)).hull()
+conn_hulls += (thumb.sm[0][2].get_front(3, 3) + plate.sm[CENTER_ROW][MIDDLE].get_back(3, 3)).hull()
 conn_hulls += (thumb.sm[0][4].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_left(3, 3)).hull()
 conn_hulls += project(thumb.sm[0][1].get_left(2, 2))
 conn_hulls += project(thumb.sm[0][0].get_left(2, 2))
