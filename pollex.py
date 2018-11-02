@@ -20,8 +20,8 @@ CENTER_ROW = 1
 TOP_ROW = 2
 
 plate_thickness = 3
-mount_height = 18.115
-mount_width = 18.115
+mount_height = 17.6
+mount_width = 17.6
 
 
 def rotate_point(point, angle_list):
