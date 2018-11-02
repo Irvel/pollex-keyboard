@@ -1302,21 +1302,28 @@ def generate_handle(plate_state, thumb_state, detail=70, segments=40):
     thumb_pipe = (cyl_1 + cyl_2).hull()
 
     cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([-5, 0, -14])
-    # cyl_1 = cyl_1.rotate([0, 140, 90])
-    # cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
     cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
     cyl_3 = Cylinder(r=8, h=2, _fn=detail, center=True)
-    cyl_2 = cyl_2.translate([-17, -66, 1])
-    cyl_3 = cyl_3.translate([-17, -66, 1])
+    cyl_2 = cyl_2.translate([8, -69, 1])
+    cyl_3 = cyl_3.translate([8, -69, 1])
     floor_pipe = (cyl_1 + cyl_2).hull() + cyl_3
 
-    point_a = start_pos + [-8, 0, -19]
-    point_b = start_pos + [30, -40, -4]
+    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([-5, 0, -14])
+    cyl_1 = cyl_1.translate(start_pos.translation.tolist())
+    cyl_1 = cyl_1.translate([25, -34, -20])
+    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
+    cyl_3 = Cylinder(r=8, h=2, _fn=detail, center=True)
+    cyl_2 = cyl_2.translate([47, -110, 1])
+    cyl_3 = cyl_3.translate([47, -110, 1])
+    handle_pipe = (cyl_1 + cyl_2).hull() + cyl_3
 
-    middle_point = utils.get_middle_point(point_a, point_b, offset=[0, 0, -40])
-    bezier_1 = middle_point + [-30, -5, 0]
-    bezier_2 = middle_point + [25, 5, 0]
+    point_a = start_pos + [-10, -3, -26]
+    point_b = start_pos + [35, -22, 3]
+
+    middle_point = utils.get_middle_point(point_a, point_b, offset=[0, 0, -46])
+    bezier_1 = middle_point + [-22, 5, 0]
+    bezier_2 = middle_point + [12, -15, 0]
     trajectory = utils.interpolate_cubic_bezier(
         start=point_a.translation,
         end=point_b.translation,
@@ -1324,14 +1331,37 @@ def generate_handle(plate_state, thumb_state, detail=70, segments=40):
         bezier_2=bezier_2.translation,
         segments=segments,
     )
-    support_curve = []
+    point_c = point_b + [-13, -30, -5]
+    middle_point = utils.get_middle_point(point_a, point_c, offset=[0, 0, -46])
+    bezier_1 = middle_point + [-30, -5, 0]
+    bezier_2 = middle_point + [14, -40, 0]
+    trajectory2 = utils.interpolate_cubic_bezier(
+        start=point_a.translation,
+        end=point_c.translation,
+        bezier_1=bezier_1.translation,
+        bezier_2=bezier_2.translation,
+        segments=segments,
+    )
+    support_curve_1 = []
     prev_cube = None
     for point in trajectory:
-        cube = Sphere(3, _fn=segments).translate(point)
+        # cube = Sphere(3, _fn=segments).translate(point)
+        cube = Cube(3).translate(point)
         if prev_cube:
-            support_curve.append((cube + prev_cube).hull())
+            support_curve_1.append((cube + prev_cube).hull())
         prev_cube = cube
-    return handle + plate_pipe + thumb_pipe + floor_pipe + utils.sum_shapes(support_curve)
+    support_curve_2 = []
+    prev_cube = None
+    for point in trajectory2:
+        # cube = Sphere(3, _fn=segments).translate(point)
+        cube = Cube(3).translate(point)
+        if prev_cube:
+            support_curve_2.append((cube + prev_cube).hull())
+        prev_cube = cube
+    support_curve = []
+    for piece_1, piece_2 in zip(support_curve_1, support_curve_2):
+        support_curve.append((piece_1 + piece_2).hull())
+    return handle + plate_pipe + thumb_pipe + floor_pipe + handle_pipe + utils.sum_shapes(support_curve)
 
 
 def make_tube_support(plate_state, detail=70):
