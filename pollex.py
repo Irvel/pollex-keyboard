@@ -1269,14 +1269,15 @@ def generate_supports(plate, thumb):
 
 def generate_handle(plate_state, thumb_state, detail=70, segments=40):
     center_thumb = thumb_state.mount(0, 2)
-    start_pos = (center_thumb.center + [10, -72, -6])
+    start_pos = (center_thumb.center + [35, -60, -2])
     cyl_1 = Cylinder(r=6, h=4, _fn=detail, center=True)
     cyl_2 = Cylinder(r=6, h=4, _fn=detail, center=True).translate([0, -15, 0])
     handle = (cyl_1 + cyl_2).hull()
-    handle = handle.rotate([90, -60, 180])
+    handle = round_edges(handle, xy_radius=1, detail=detail, z_radius=4)
+    handle = handle.rotate([0, 60, 0])
+    handle = handle.rotate([90, -65, 180])
     handle = handle.rotate(start_pos.rotation.tolist())
     handle = handle.translate(start_pos.translation.tolist())
-    handle = round_edges(handle, xy_radius=1, detail=detail, z_radius=1)
 
     cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([5, 0, 6])
     cyl_1 = cyl_1.rotate([0, 80, 180])
