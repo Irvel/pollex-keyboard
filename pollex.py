@@ -224,7 +224,7 @@ def apply_columns_ergo_main(plate):
     # Create column cavities to account for different finger lengths
     plate.cm[INDEX_SIDE][Z_MOV] += -2.5
     plate.cm[INDEX][Z_MOV]      += -2.5
-    plate.cm[MIDDLE][Z_MOV]     += -8
+    plate.cm[MIDDLE][Z_MOV]     += -9
     plate.cm[RING][Z_MOV]       += -11
     plate.cm[PINKY][Z_MOV]      += -16
 
