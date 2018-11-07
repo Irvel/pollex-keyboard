@@ -397,28 +397,28 @@ def generate_main_plate():
 
 
 def generate_thumb_cluster(plate):
-    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-44, -14, 40])))
+    thumb_origin = list(map(sum, zip(plate.switch_matrix[0][0].transformations[0][0:3], [-43, -15, 40])))
 
     thumb = Keyboard_matrix(1,
                             5,
                             row_spacing=3.1,
-                            column_spacing=1.7,
+                            column_spacing=2.1,
                             plate_thickness=plate_thickness,
                             origin=thumb_origin,
                             x_tent=0,
                             y_tent=-45,
-                            z_tent=16,
+                            z_tent=14,
                             mount_length=DSA_KEY_WIDTH,
                             mount_width=mount_width,
                             switch_type="mx",
                             mx_notches=False)
     plate.side_wall_thickness = 1
     h_curve = 36
-    thumb.cm[4] = [-13, -19,   h_curve * 0.9,  -20, -h_curve * 2.8,  18]  # Top key
+    thumb.cm[4] = [-13, -19,   h_curve * 0.9,  -20, -h_curve * 2.8,  14]  # Top key
     thumb.cm[3] = [  1,  -7,   h_curve * .32,  6, -h_curve * 1.3,  -6]
     thumb.cm[2] = [  0,   0,   h_curve * .10,  5,              3,  0]
     thumb.cm[1] = [ -1,  -7,   h_curve * .32,  6,  h_curve * 1.3,  6]
-    thumb.cm[0] = [ 13, -19,   h_curve * 0.9,  -20,  h_curve * 2.8,  -18]
+    thumb.cm[0] = [ 13, -19,   h_curve * 0.9,  -20,  h_curve * 2.8,  -14]
 
 
 
