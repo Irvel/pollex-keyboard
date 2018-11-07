@@ -1269,22 +1269,36 @@ def generate_supports(plate, thumb):
 
 def generate_handle(plate_state, thumb_state, detail=70, segments=40):
     center_thumb = thumb_state.mount(0, 2)
-    start_pos = (center_thumb.center + [35, -60, -2])
-    cyl_1 = Cylinder(r=6, h=4, _fn=detail, center=True)
-    cyl_2 = Cylinder(r=6, h=4, _fn=detail, center=True).translate([0, -15, 0])
-    handle = (cyl_1 + cyl_2).hull()
-    handle = round_edges(handle, xy_radius=1, detail=detail, z_radius=4)
-    handle = handle.rotate([0, 60, 0])
-    handle = handle.rotate([90, -65, 180])
-    handle = handle.rotate(start_pos.rotation.tolist())
-    handle = handle.translate(start_pos.translation.tolist())
+    start_pos = (center_thumb.center + [33, -55, -2])
+    head = Cylinder(r=6, h=2, _fn=detail, center=True)
+    head = round_edges(head, xy_radius=1, detail=detail, z_radius=2)
+
+    head = head.rotate([90, 5, 52])
+    head = head.translate(start_pos.translation.tolist())
+    head = head.translate([-6.3, -3, -13])
+
+    neck = Cylinder(r=2.5, h=4, _fn=detail, center=True)
+    neck = (neck + neck.translate([0, -10, 0])).hull()
+    neck = neck.rotate([90, 5, 52])
+    neck = neck.translate(start_pos.translation.tolist())
+    neck = neck.translate([-6.3, -3, -13])
+
+    # cyl_2 = Cylinder(r=6, h=4, _fn=detail, center=True).translate([0, -15, 0])
+    handle = head + neck
+    # handle = round_edges(handle, xy_radius=1, detail=detail, z_radius=4)
+    # handle = handle.rotate([90, 5, 51])
+    # handle = handle.rotate(start_pos.rotation.tolist())
+    # handle = handle.translate(start_pos.translation.tolist())
+    # handle = handle.translate([-6, -3, -13])
+    # handle = handle.rotate([0, 0, 10])
+
 
     cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([5, 0, 6])
     cyl_1 = cyl_1.rotate([0, 80, 180])
     cyl_1 = cyl_1.rotate(start_pos.rotation.tolist())
     cyl_1 = cyl_1.translate(start_pos.translation.tolist())
 
-    pinky_anchor = plate_state.mount(BOTTOM_ROW, PINKY).center + [3.2, -11, -1]
+    pinky_anchor = plate_state.mount(BOTTOM_ROW, PINKY).center + [3.2, -9, -1]
     cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
     cyl_2 = cyl_2.rotate([120, 60, 0])
     cyl_2 = cyl_2.rotate(pinky_anchor.rotation.tolist())
@@ -1310,19 +1324,21 @@ def generate_handle(plate_state, thumb_state, detail=70, segments=40):
     cyl_3 = cyl_3.translate([8, -69, 1])
     floor_pipe = (cyl_1 + cyl_2).hull() + cyl_3
 
-    cyl_1 = Cylinder(r=2, h=2, _fn=detail, center=True).translate([-5, 0, -14])
-    cyl_1 = cyl_1.translate(start_pos.translation.tolist())
-    cyl_1 = cyl_1.translate([25, -34, -20])
-    cyl_2 = Cylinder(r=2, h=2, _fn=detail, center=True)
-    cyl_3 = Cylinder(r=8, h=2, _fn=detail, center=True)
-    cyl_2 = cyl_2.translate([47, -110, 1])
-    cyl_3 = cyl_3.translate([47, -110, 1])
-    handle_pipe = (cyl_1 + cyl_2).hull() + cyl_3
+    cyl_1 = Cylinder(r=3, h=2, _fn=detail, center=True)
+    # cyl_1 = cyl_1.translate(start_pos.translation.tolist())
+    cyl_1 = cyl_1.translate([21, -95, 21])
+    cyl_2 = Cylinder(r=3, h=2, _fn=detail, center=True)
+    cyl_3 = Cylinder(r=18, h=2, _fn=detail, center=True)
+    cyl_4 = Cylinder(r=5, h=2, _fn=detail, center=True).translate([21, -95, 19.5])
 
-    point_a = start_pos + [-10, -3, -26]
-    point_b = start_pos + [35, -22, 3]
+    cyl_2 = cyl_2.translate([21, -95, 1])
+    cyl_3 = cyl_3.translate([21, -95, 1])
+    handle_pipe = (cyl_1 + cyl_2).hull() + cyl_3 + cyl_4
 
-    middle_point = utils.get_middle_point(point_a, point_b, offset=[0, 0, -46])
+    point_a = start_pos + [-5, -1, -8]
+    point_b = start_pos + [35, -22, 5]
+
+    middle_point = utils.get_middle_point(point_a, point_b, offset=[0, 0, -54])
     bezier_1 = middle_point + [-22, 5, 0]
     bezier_2 = middle_point + [12, -15, 0]
     trajectory = utils.interpolate_cubic_bezier(
@@ -1332,11 +1348,24 @@ def generate_handle(plate_state, thumb_state, detail=70, segments=40):
         bezier_2=bezier_2.translation,
         segments=segments,
     )
-    point_c = point_b + [-13, -30, -5]
-    middle_point = utils.get_middle_point(point_a, point_c, offset=[0, 0, -46])
-    bezier_1 = middle_point + [-30, -5, 0]
-    bezier_2 = middle_point + [14, -40, 0]
+    point_c = point_a + [-4, -10, 0]
+    point_d = point_b + [-8, -30, -5]
+    middle_point = utils.get_middle_point(point_c, point_d, offset=[0, 0, -54])
+    bezier_1 = middle_point + [-34, -5, 3]
+    bezier_2 = middle_point + [14, -50, 3]
     trajectory2 = utils.interpolate_cubic_bezier(
+        start=point_c.translation,
+        end=point_d.translation,
+        bezier_1=bezier_1.translation,
+        bezier_2=bezier_2.translation,
+        segments=segments,
+    )
+
+    # Tame the sharpness
+    middle_point = utils.get_middle_point(point_a, point_c, offset=[0, 0, 3])
+    bezier_1 = middle_point + [0, 0, 0]
+    bezier_2 = middle_point + [0, 0, 0]
+    trajectory3 = utils.interpolate_cubic_bezier(
         start=point_a.translation,
         end=point_c.translation,
         bezier_1=bezier_1.translation,
@@ -1346,23 +1375,28 @@ def generate_handle(plate_state, thumb_state, detail=70, segments=40):
     support_curve_1 = []
     prev_cube = None
     for point in trajectory:
-        # cube = Sphere(3, _fn=segments).translate(point)
-        cube = Cube(3).translate(point)
+        cube = Sphere(3, _fn=segments).translate(point)
+        # cube = Cube(3).translate(point)
         if prev_cube:
             support_curve_1.append((cube + prev_cube).hull())
         prev_cube = cube
     support_curve_2 = []
     prev_cube = None
     for point in trajectory2:
-        # cube = Sphere(3, _fn=segments).translate(point)
-        cube = Cube(3).translate(point)
+        cube = Sphere(3, _fn=segments).translate(point)
+        # cube = Cube(3).translate(point)
         if prev_cube:
             support_curve_2.append((cube + prev_cube).hull())
         prev_cube = cube
     support_curve = []
     for piece_1, piece_2 in zip(support_curve_1, support_curve_2):
         support_curve.append((piece_1 + piece_2).hull())
-    return handle + plate_pipe + thumb_pipe + floor_pipe + handle_pipe + utils.sum_shapes(support_curve)
+    cap = []
+    for point in trajectory3:
+        cube = Sphere(3, _fn=segments).translate(point)
+        # cube = Cube(3).translate(point)
+        cap.append(cube)
+    return handle_pipe + utils.sum_shapes(support_curve)
 
 
 def make_tube_support(plate_state, detail=70):
@@ -1566,7 +1600,7 @@ right_hand = utils.sum_shapes([
     # bottom_weight,
     # plate_outline,
     # thumb_outline,
-    generate_handle(plate_state, thumb_state),
+    # generate_handle(plate_state, thumb_state),
     # utils.sum_shapes(switches),
     # utils.sum_shapes(keys),
     generate_plate_outline(plate, draft_version=True).turn_on_debug(),
