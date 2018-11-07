@@ -19,7 +19,7 @@ BOTTOM_ROW = 0
 CENTER_ROW = 1
 TOP_ROW = 2
 
-plate_thickness = 3
+plate_thickness = 4
 mount_height = 17.6
 mount_width = 17.6
 
