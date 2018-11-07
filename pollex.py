@@ -161,7 +161,7 @@ def apply_rows_ergo_main(plate):
     # left to right are columns 0 and up, bottom to up are rows 0 and up
     # TODO: Make this dynamically adjust to the number of rows
     # TODO: Find formula for the curvature angle and xyz shift compensation
-    v_curve = 36  # Amount of vertical curvature
+    v_curve = 38  # Amount of vertical curvature
     middle_height = -v_curve/plate.columns
     #                         x   y              z            x_rot    y_rot  z_rot
     plate.row_modifiers[0] = [0,  0,            -2,   -v_curve + 10,   0,     0]
@@ -181,7 +181,7 @@ def apply_columns_ergo_main(plate):
     # Shift columns back towards the base of the hand
     plate.cm[INDEX_SIDE][Y_MOV] += -.4
     plate.cm[INDEX][Y_MOV]      += -3
-    plate.cm[MIDDLE][Y_MOV]     += -2.5
+    plate.cm[MIDDLE][Y_MOV]     += -2
     plate.cm[RING][Y_MOV]       += -10
     plate.cm[PINKY][Y_MOV]      += -20
 
