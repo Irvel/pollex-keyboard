@@ -1456,14 +1456,21 @@ thumb = generate_thumb_cluster(plate)
 # hulls connecting thumb and matrix
 #conn_hulls = (thumb.sm[1][1].get_corner("br", .5, 4, 3, 3).translate([-3, 0, 0]) + plate.sm[0][4].get_corner("bl", 7, 2, 4)).hull()
 #conn_hulls = (thumb.sm[2][0].get_corner("fl", .5, 6, 3, 3) + plate.sm[2][0].get_corner("bl", 3, 3, 0)).hull()
-conn_hulls = (thumb.sm[0][3].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX].get_back(3, 3)).hull()
+conn_hulls = (thumb.sm[0][3].get_back(3, 3) + plate.sm[BOTTOM_ROW][INDEX].get_back(3, 3)).hull()
+conn_hulls = (thumb.sm[0][4].get_left(3, 3) + plate.sm[BOTTOM_ROW][INDEX_SIDE].get_back(3, 3)).hull()
+
+    # + plate.sm[BOTTOM_ROW][INDEX_SIDE].get_back(3, 3)).hull()
 # conn_hulls += (thumb.sm[0][2].get_left(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_left(1, 1)).hull()
 conn_hulls += (thumb.sm[0][1].get_right(3, 3) + plate.sm[BOTTOM_ROW][PINKY].get_left(3, 3)).hull()
 # conn_hulls += (thumb.sm[0][2].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_back(3, 3)).hull()
 conn_hulls += (thumb.sm[0][2].get_front(3, 3) + plate.sm[CENTER_ROW][MIDDLE].get_back(3, 3)).hull()
-conn_hulls += (thumb.sm[0][4].get_front(3, 3) + plate.sm[CENTER_ROW][INDEX_SIDE].get_left(3, 3)).hull()
+conn_hulls += (thumb.sm[0][4].get_front(3, 3) + plate.sm[BOTTOM_ROW][INDEX_SIDE].get_left(3, 3)).hull()
+# Thumb floor supports
 conn_hulls += project(thumb.sm[0][1].get_left(2, 2))
-conn_hulls += project(thumb.sm[0][0].get_left(2, 2))
+conn_hulls += project(thumb.sm[0][0].get_left(2, 2).translate([-3,0,0]))
+conn_hulls += (thumb.sm[0][0].get_front(2, 2) + thumb.sm[0][0].get_front(2, 2).translate([0, 60, -80])).hull()
+conn_hulls += (thumb.sm[0][1].get_front(2, 2) + thumb.sm[0][1].get_front(2, 2).translate([0, 60, -80])).hull()
+
 
 conn_hulls += project(plate.sm[BOTTOM_ROW][PINKY].get_right(3, 3))
 conn_hulls += project(plate.sm[CENTER_ROW][PINKY].get_right(3, 3))
@@ -1483,12 +1490,30 @@ conn_hulls += (plate.sm[CENTER_ROW][RING].get_corner("br", 1, .01, 1) + plate.sm
 conn_hulls += (plate.sm[TOP_ROW][RING].get_corner("br", 1, .01, 1) + plate.sm[CENTER_ROW][RING].get_corner("tr", 1, .01, 1)).hull()
 
 
-# Support rods
-# conn_hulls += (plate.sm[TOP_ROW][INDEX_SIDE].get_back(2, 2) + plate.sm[TOP_ROW][INDEX_SIDE].get_back(3, 3).translate([-40, 10, -80])).hull()
-# conn_hulls += project(plate.sm[TOP_ROW][INDEX_SIDE].get_back(18, 8).translate([-40, 10, -80]))
-conn_hulls += (plate.sm[TOP_ROW][INDEX].get_back(2, 2) + plate.sm[TOP_ROW][INDEX].get_back(3, 3).translate([-41, 50, -62])).hull()
-conn_hulls += project(plate.sm[TOP_ROW][INDEX].get_back(18, 8).translate([-41, 50, -62]))
-conn_hulls += Cube([70, 40, 3], center=True).translate([-59, 89, 1.5])
+# Support back rods
+conn_hulls += (plate.sm[TOP_ROW][INDEX_SIDE].get_front(2, 2) + plate.sm[TOP_ROW][INDEX_SIDE].get_front(3, 3).translate([-41, 50, -77])).hull()
+conn_hulls += project(plate.sm[TOP_ROW][INDEX_SIDE].get_front(18, 8).translate([-41, 50, -77]))
+conn_hulls += (plate.sm[TOP_ROW][INDEX_SIDE].get_back(2, 2) + plate.sm[TOP_ROW][INDEX_SIDE].get_back(3, 3).translate([-41, 50, -77])).hull()
+conn_hulls += project(plate.sm[TOP_ROW][INDEX_SIDE].get_back(18, 8).translate([-41, 50, -77]))
+conn_hulls += (plate.sm[TOP_ROW][INDEX_SIDE].get_back(2, 2) + plate.sm[TOP_ROW][INDEX_SIDE].get_back(3, 3).translate([-41, 50, -77])).hull()
+conn_hulls += project(plate.sm[TOP_ROW][INDEX_SIDE].get_back(18, 8).translate([-41, 50, -77]))
+conn_hulls += (plate.sm[TOP_ROW][MIDDLE].get_front(2, 2) + plate.sm[TOP_ROW][INDEX_SIDE].get_front(3, 3).translate([-41, 50, -77])).hull()
+
+
+conn_hulls += (plate.sm[CENTER_ROW][INDEX_SIDE].get_front(3, 4) + plate.sm[CENTER_ROW][INDEX_SIDE].get_front(3, 4).translate([-81, 4, -77])).hull()
+conn_hulls += project(plate.sm[CENTER_ROW][INDEX_SIDE].get_front(18, 8).translate([-81, 4, -77]))
+conn_hulls += (plate.sm[CENTER_ROW][INDEX_SIDE].get_back(3, 4) + plate.sm[CENTER_ROW][INDEX_SIDE].get_back(3, 4).translate([-81, 4, -77])).hull()
+conn_hulls += project(plate.sm[CENTER_ROW][INDEX_SIDE].get_back(18, 8).translate([-81, 4, -77]))
+conn_hulls += (plate.sm[CENTER_ROW][INDEX_SIDE].get_back(3, 4) + plate.sm[CENTER_ROW][INDEX_SIDE].get_back(3, 4).translate([-81, 4, -77])).hull()
+conn_hulls += project(plate.sm[CENTER_ROW][INDEX_SIDE].get_back(18, 8).translate([-81, 4, -77]))
+conn_hulls += (plate.sm[CENTER_ROW][MIDDLE].get_front(3, 4) + plate.sm[CENTER_ROW][MIDDLE].get_front(3, 3).translate([-61, 4, -77])).hull()
+conn_hulls += (plate.sm[CENTER_ROW][PINKY].get_back(3, 4) + plate.sm[CENTER_ROW][PINKY].get_back(3, 3).translate([-16, 0, -6])).hull()
+conn_hulls += (plate.sm[TOP_ROW][PINKY].get_back(3, 4) + plate.sm[TOP_ROW][PINKY].get_back(3, 3).translate([-16, 8, -6])).hull()
+
+
+
+
+# conn_hulls += Cube([70, 40, 3], center=True).translate([-59, 89, 1.5])
 
 # project(plate.sm[row][plate.columns-1].get_right(plate.side_wall_thickness, plate.side_extrude)) for row in range(plate.rows)]
 
@@ -1536,11 +1561,12 @@ left_plane = keyboard_state.Position(
     # BUG: We should be able to just rotate the plane by 90 degrees but the
     # result is not quite right. The -3.5 compensation in X is a HACK.
     rotation=plate_plane.rotation + [-3.5, -90, 0],
-    translation=plate_plane.translation + [-80, 0, 0],
+    translation=plate_plane.translation + [-70, 25, 90],
 )
-top_cutter = Cube([90, 110, 10], center=True)
-top_cutter = top_cutter.translate([40, 25, 4.8])
-top_cutter = top_cutter.rotate(left_plane.rotation.tolist())
+top_cutter = Cube([90, 140, 200], center=True)
+top_cutter = top_cutter.translate([40, -3, -32])
+top_cutter = top_cutter.rotate([-11, -10, 0])
+# top_cutter = top_cutter.rotate(left_plane.rotation.tolist())
 top_cutter = top_cutter.translate(left_plane.translation.tolist())
 
 
@@ -1588,16 +1614,18 @@ for row in thumb.sm:
 #     };
 
 # back += make_tube_support(plate_state),
-bottom_weight = Cube([100, 130, 8], center=True).translate([-65, 40, 4])
-bottom_weight += Cube([50, 70, 20], center=True).translate([-75, 40, 10])
-bottom_weight -= Cube([47, 67, 15], center=True).translate([-75, 40, 15])
+bottom_weight = round_edges(Cube([120, 140, 35], center=True).translate([-85, 40, 4]), detail=90)
+base_w = 110
+base_h = 130
+# bottom_weight += round_edges(Cube([base_w, base_h, 20], center=True).translate([-75, 40, 10]), detail=90)
+bottom_weight -= round_edges(Cube([base_w - 6, base_h - 6, 30], center=True).translate([-85, 40, 18]), detail=90)
 
 
 right_hand = utils.sum_shapes([
     thumb.get_matrix(),
     plate.get_matrix(),
     conn_hulls,
-    # bottom_weight,
+    bottom_weight,
     # plate_outline,
     # thumb_outline,
     # generate_handle(plate_state, thumb_state),
@@ -1609,7 +1637,7 @@ right_hand = utils.sum_shapes([
 
 # back -= top_cutter
 floor_cutter = Cube([805, 805, 100], center=True).translate([0, 0, -50])
-# back -= floor_cutter
+right_hand -= floor_cutter
 
 #right_hand = plate.sm[0][0].transform(make_arc())
 
